@@ -1,6 +1,5 @@
-import { Chess, Color, KING, PieceSymbol, Square } from 'chess.js';
+import { Chess, Square } from 'chess.js';
 import { CommonCellAndChessProps } from '../types';
-import PromotionOptions from './PromotionOptions';
 import Cell from './Cell';
 import { twMerge } from 'tailwind-merge';
 

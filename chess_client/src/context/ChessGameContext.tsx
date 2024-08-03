@@ -10,6 +10,7 @@ interface ChessGameContextType {
   showLegalMoves: boolean,
   legalMoves: Square[],
   isDragging: boolean,
+  playedMoves: string[],
   setMyPlayer: React.Dispatch<React.SetStateAction<Color>>,
   setShowPromotionOption: React.Dispatch<
     React.SetStateAction<{
@@ -21,6 +22,7 @@ interface ChessGameContextType {
   setShowLegalMoves: React.Dispatch<React.SetStateAction<boolean>>,
   setLegalMoves: React.Dispatch<React.SetStateAction<Square[]>>,
   setIsDragging: React.Dispatch<React.SetStateAction<boolean>>,
+  setPlayedMoves: React.Dispatch<React.SetStateAction<string[]>>,
 }
 
 const defaultValue = {
@@ -33,12 +35,14 @@ const defaultValue = {
   legalMoves: [],
   isDragging: false,
   draggedImg: null,
+  playedMoves: [],
   setShowPromotionOption: () => {},
   setPromotion: () => {},
   setMyPlayer: ()=>{} ,
   setShowLegalMoves: ()=>{},
   setLegalMoves: ()=>{},
-  setIsDragging: ()=>{}
+  setIsDragging: ()=>{},
+  setPlayedMoves: ()=>{},
 };
 
 export const ChessGameContext =
@@ -55,6 +59,7 @@ export function ChessGameProvider({ children }: { children: ReactNode }) {
   const [showLegalMoves, setShowLegalMoves] = useState(defaultValue.showLegalMoves)
   const [legalMoves, setLegalMoves] = useState<Square[]>(defaultValue.legalMoves)
   const [isDragging, setIsDragging] = useState<boolean>(defaultValue.isDragging)
+  const [playedMoves, setPlayedMoves] = useState<string[]>([])
   return (
     <ChessGameContext.Provider
       value={{
@@ -65,12 +70,14 @@ export function ChessGameProvider({ children }: { children: ReactNode }) {
         showLegalMoves,
         legalMoves,
         isDragging,
+        playedMoves,
         setMyPlayer,
         setShowPromotionOption,
         setPromotion,
         setShowLegalMoves,
         setLegalMoves,
         setIsDragging,
+        setPlayedMoves,
       }}
     >
       {children}

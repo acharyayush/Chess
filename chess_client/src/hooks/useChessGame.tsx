@@ -4,7 +4,7 @@ import useUpdateMove from "./useUpdateMove";
 import { Winner } from "../types";
 import { ChessGameContext } from "../context/ChessGameContext";
 export default function useChessGame(){
-  const {chess} = useContext(ChessGameContext)
+  const {chess, setPlayedMoves} = useContext(ChessGameContext)
   const [board, setBoard] = useState(chess.board());
   const [turn, setTurn] = useState(chess.turn());
   const { move, setMove, updateMove } = useUpdateMove();
@@ -71,6 +71,7 @@ export default function useChessGame(){
     if (move.from && move.to) {
       try {
         let moveRes = chess.move(move);
+        setPlayedMoves(chess.history())
         setBoard(chess.board());
         setTurn(chess.turn());
         if(chess.inCheck()){

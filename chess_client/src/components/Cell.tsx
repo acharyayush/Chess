@@ -1,3 +1,6 @@
+//TODO: Make a dragging feature
+
+
 import { Color, KING, PieceSymbol, Square } from 'chess.js';
 import { CommonCellAndChessProps } from '../types';
 import PromotionOptions from './PromotionOptions';

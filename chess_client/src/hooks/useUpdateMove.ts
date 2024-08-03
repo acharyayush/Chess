@@ -1,8 +1,8 @@
 import { useContext, useState } from 'react';
 import { Move, updateMoveType } from '../types';
 import { ChessGameContext } from '../context/ChessGameContext';
-import { Chess, PAWN, Square, WHITE } from 'chess.js';
-
+import { Chess, PAWN, Square} from 'chess.js';
+import extractPosition from '../utils/extractPosition';
 export default function useUpdateMove() {
   const [move, setMove] = useState<Move>({
     from: '',
@@ -28,28 +28,7 @@ export default function useUpdateMove() {
     if (turn == cell?.color) {
       setMove({ from: cell.square, to: '' });
       if (showLegalMoves) {
-        let moves = chess.moves({ square: position }).map((move) => {
-          if (move[move.length - 1] >= '1' && move[move.length - 1] <= '8') {
-            return move.slice(-2) as Square;
-          }
-          console.log(move);
-          //castle moves
-          if (move == 'O-O') {
-            if (turn == WHITE) return 'g1';
-            return 'g8';
-          }
-          if (move == 'O-O-O') {
-            if (turn == WHITE) return 'c1';
-            return 'c8';
-          }
-          //if move is something like d8=Q, d8=R
-          if (move.slice(-2, -1) == '=') {
-            return move.slice(0, 2) as Square;
-          }
-          //if move is something like Nf7+ then take f7 only
-          return move.slice(-3, -1) as Square;
-        });
-        console.log(chess.moves({ square: position }));
+        let moves = chess.moves({ square: position }).map((move)=>extractPosition(move, turn));
         setLegalMoves(moves);
       }
       return;
@@ -61,7 +40,6 @@ export default function useUpdateMove() {
     //promotion logic
     //if updateMove is called after promotion piece is selected then go for promotion
     if (promotion) {
-      console.log('promotion: I am here');
       setMove({ ...moveToSet, promotion });
       setPromotion(null);
       setShowPromotionOption({ canShow: false });
