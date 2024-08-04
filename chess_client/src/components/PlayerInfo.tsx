@@ -1,4 +1,4 @@
-import { Color, WHITE } from "chess.js"
+import { Color} from "chess.js"
 import ProfileImg from "./ProfileImg"
 
 interface PlayerInfoProps{

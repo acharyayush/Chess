@@ -6,7 +6,7 @@ import { ChessGameContext } from '../context/ChessGameContext';
 import { GameControlContext } from '../context/GameControlContext';
 export default function useChessGame() {
   const { chess } = useContext(ChessGameContext);
-  const { setPlayedMoves, undo, setUndo, rematch } = useContext(GameControlContext);
+  const { setPlayedMoves, undo } = useContext(GameControlContext);
   const [board, setBoard] = useState(chess.board());
   const [turn, setTurn] = useState(chess.turn());
   const { move, setMove, updateMove } = useUpdateMove();

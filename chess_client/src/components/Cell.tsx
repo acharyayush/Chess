@@ -3,7 +3,7 @@
 import { Color, KING, PieceSymbol, Square } from 'chess.js';
 import { CommonCellAndChessProps } from '../types';
 import PromotionOptions from './PromotionOptions';
-import { useContext, useState } from 'react';
+import { useContext} from 'react';
 import { ChessGameContext } from '../context/ChessGameContext';
 import { twMerge } from 'tailwind-merge';
 import { GameControlContext } from '../context/GameControlContext';
@@ -28,11 +28,11 @@ export default function Cell({
   updateMove,
   isDisable,
 }: CellProps) {
-  const { showPromotionOption, legalMoves, isDragging, setIsDragging } =
+  const { showPromotionOption, legalMoves} =
     useContext(ChessGameContext);
   const { showLegalMoves } = useContext(GameControlContext);
-  const [pieceImg, setPieceImg] = useState<HTMLImageElement>();
-  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  // const [pieceImg, setPieceImg] = useState<HTMLImageElement>();
+  // const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const stylesforCell = () => {
     let classes = cellColor;
 
@@ -60,27 +60,27 @@ export default function Cell({
     return classes;
   };
   //dragging feature
-  const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
-    setPieceImg(e.target as HTMLImageElement);
-    setStartPos({ x: e.clientX, y: e.clientY });
-    updateMove(cell, turn, position);
-  };
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-  const handleDrag = (e: React.DragEvent<HTMLImageElement>) => {
-    if (!pieceImg) return;
-    pieceImg.style.opacity = '0';
-  };
-  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
-    if (!pieceImg) return;
-    pieceImg.style.opacity = '1';
-  };
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    if (!isDisable) {
-      updateMove(cell, turn, position);
-    }
-  };
+  // const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
+  //   setPieceImg(e.target as HTMLImageElement);
+  //   setStartPos({ x: e.clientX, y: e.clientY });
+  //   updateMove(cell, turn, position);
+  // };
+  // const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  //   e.preventDefault();
+  // };
+  // const handleDrag = (e: React.DragEvent<HTMLImageElement>) => {
+  //   if (!pieceImg) return;
+  //   pieceImg.style.opacity = '0';
+  // };
+  // const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+  //   if (!pieceImg) return;
+  //   pieceImg.style.opacity = '1';
+  // };
+  // const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  //   if (!isDisable) {
+  //     updateMove(cell, turn, position);
+  //   }
+  // };
   let classes = stylesforCell();
   return (
     <div
@@ -88,20 +88,20 @@ export default function Cell({
         !isDisable && updateMove(cell, turn, position);
       }}
       className={`${classes} relative flex items-center justify-center select-none`}
-      onDragOver={(e) => {
-        handleDragOver(e);
-      }}
-      onDrop={(e) => handleDrop(e)}
+      // onDragOver={(e) => {
+      //   handleDragOver(e);
+      // }}
+      // onDrop={(e) => handleDrop(e)}
     >
       {cell && (
         <img
           src={`/pieces/${cell.color}${cell.type}.svg`}
           draggable
-          onDragStart={(e) => {
-            handleDragStart(e);
-          }}
-          onDrag={(e) => handleDrag(e)}
-          onDragEnd={(e) => handleDragEnd(e)}
+          // onDragStart={(e) => {
+          //   // handleDragStart(e);
+          // }}
+          // onDrag={(e) => handleDrag(e)}
+          // onDragEnd={(e) => handleDragEnd(e)}
           className={'w-[95%] left-28'}
         />
       )}

@@ -5,7 +5,7 @@ import GameOverPopUp from './GameOverPopUp';
 import PlayerInfo from './PlayerInfo';
 import Button from './shared/Button';
 import SwitchToggle from './shared/SwitchToggle';
-import { TbArrowBigLeftFilled } from 'react-icons/tb';
+// import { TbArrowBigLeftFilled } from 'react-icons/tb';
 import { FaFlag } from 'react-icons/fa';
 import { useContext, useEffect, useRef } from 'react';
 import { ChessGameContext } from '../context/ChessGameContext';
@@ -24,7 +24,7 @@ export default function Offline() {
     inCheck,
   } = useChessGame();
   const { chess, setLegalMoves} = useContext(ChessGameContext);
-  const { showLegalMoves, setShowLegalMoves, setUndo, playedMoves} =
+  const { showLegalMoves, setShowLegalMoves, playedMoves} =
     useContext(GameControlContext);
   const historyDiv = useRef<HTMLDivElement>(null);
 
