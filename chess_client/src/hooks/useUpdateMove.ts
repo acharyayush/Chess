@@ -1,14 +1,12 @@
-import { useContext, useState } from 'react';
+import { useContext} from 'react';
 import { Move, updateMoveType } from '../types';
 import { ChessGameContext } from '../context/ChessGameContext';
 import { Chess, PAWN, Square} from 'chess.js';
 import extractPosition from '../utils/extractPosition';
+import { GameControlContext } from '../context/GameControlContext';
 export default function useUpdateMove() {
-  const [move, setMove] = useState<Move>({
-    from: '',
-    to: '',
-  });
-  const { chess, showLegalMoves, setLegalMoves } = useContext(ChessGameContext);
+  const { chess, setLegalMoves, move, setMove } = useContext(ChessGameContext);
+  const { showLegalMoves } = useContext(GameControlContext);
   const { promotion, setPromotion, setShowPromotionOption } =
     useContext(ChessGameContext);
   const isValidMove = (move: Move) => {

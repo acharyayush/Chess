@@ -1,7 +1,8 @@
-import {Color, PieceSymbol, Square } from 'chess.js';
+import { Color, PieceSymbol, Square } from 'chess.js';
 import { useContext, useEffect } from 'react';
 import { ChessGameContext } from '../context/ChessGameContext';
 import { Cell, updateMoveType } from '../types';
+import { GameControlContext } from '../context/GameControlContext';
 interface PromotionOptionsProps {
   player: Color;
   updateMove: updateMoveType;
@@ -16,16 +17,19 @@ function PromotionOptions({
   turn,
   position,
 }: PromotionOptionsProps) {
-  const {promotion, setPromotion, myPlayer } = useContext(ChessGameContext);
+  const { promotion, setPromotion } = useContext(ChessGameContext);
+  const { myPlayer } = useContext(GameControlContext);
   const handlePromotionOnClick = (promoteTo: PieceSymbol) => {
     setPromotion(promoteTo);
   };
-  useEffect(()=>{
-     updateMove(cell, turn, position);
-  }, [promotion])
+  useEffect(() => {
+    updateMove(cell, turn, position);
+  }, [promotion]);
   return (
     //height = 290 = (260 + 30), 260/4 for each piece and 30 for cross symbol
-    <div className={`${turn==myPlayer ? "flex-col" : "flex-col-reverse -translate-y-[var(--yTranslate)]"} flex w-[var(--cell-size)] h-[calc(var(--cell-size) * 10 + 30px)] absolute top-0 left-0 bg-white z-10 shadow-dark-lg`}>
+    <div
+      className={`${turn == myPlayer ? 'flex-col' : 'flex-col-reverse -translate-y-[var(--yTranslate)]'} flex w-[var(--cell-size)] h-[calc(var(--cell-size) * 10 + 30px)] absolute top-0 left-0 bg-white z-10 shadow-dark-lg`}
+    >
       <div
         className='cursor-pointer'
         onClick={() => {

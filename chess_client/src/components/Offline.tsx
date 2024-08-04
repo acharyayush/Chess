@@ -10,6 +10,7 @@ import { FaFlag } from 'react-icons/fa';
 import { useContext, useEffect, useRef } from 'react';
 import { ChessGameContext } from '../context/ChessGameContext';
 import extractPosition from '../utils/extractPosition';
+import { GameControlContext } from '../context/GameControlContext';
 export default function Offline() {
   const {
     board,
@@ -22,13 +23,9 @@ export default function Offline() {
     isGameOver,
     inCheck,
   } = useChessGame();
-  const {
-    chess,
-    showLegalMoves,
-    setShowLegalMoves,
-    setLegalMoves,
-    playedMoves,
-  } = useContext(ChessGameContext);
+  const { chess, setLegalMoves} = useContext(ChessGameContext);
+  const { showLegalMoves, setShowLegalMoves, setUndo, playedMoves} =
+    useContext(GameControlContext);
   const historyDiv = useRef<HTMLDivElement>(null);
 
   //calculate legal moves if showLegalMoves is toggled to active (to sync with the board)
@@ -49,15 +46,25 @@ export default function Offline() {
   const renderhistory = () => {
     const historyMoves: JSX.Element[] = [];
     let isEvenMoves = playedMoves.length % 2 == 0;
-    let len =
-      isEvenMoves ? playedMoves.length : playedMoves.length - 1;
+    let len = isEvenMoves ? playedMoves.length : playedMoves.length - 1;
     let count = 1;
     for (let i = 0; i < len; i += 2) {
       let myRow = (
-        <div className={`${count%2==0 && "bg-[rgba(255,255,255,0.05)]"} py-0.5`}>
+        <div
+          key={count}
+          className={`${count % 2 == 0 && 'bg-[rgba(255,255,255,0.05)]'} py-0.5`}
+        >
           <div className='count w-[50px] inline-block pl-4'>{`${count}. `}</div>
-          <div className='whiteMove w-[100px] inline-block'><span className={`px-2 rounded-sm `}>{playedMoves[i]}</span></div>
-          <div className='blackMove w-[100px] inline-block'><span className={`px-2 rounded-sm ${i+1==playedMoves.length-1 && "bg-[rgba(255,255,255,0.2)]"}`}>{playedMoves[i + 1]}</span></div>
+          <div className='whiteMove w-[100px] inline-block'>
+            <span className={`px-2 rounded-sm `}>{playedMoves[i]}</span>
+          </div>
+          <div className='blackMove w-[100px] inline-block'>
+            <span
+              className={`px-2 rounded-sm ${i + 1 == playedMoves.length - 1 && 'bg-[rgba(255,255,255,0.2)]'}`}
+            >
+              {playedMoves[i + 1]}
+            </span>
+          </div>
         </div>
       );
       historyMoves.push(myRow);
@@ -65,9 +72,16 @@ export default function Offline() {
     }
     if (!isEvenMoves) {
       let myRow = (
-        <div className={`${count%2==0 && "bg-[rgba(255,255,255,0.05)]"} py-0.5`}>
+        <div
+          key={count}
+          className={`${count % 2 == 0 && 'bg-[rgba(255,255,255,0.05)]'} py-0.5`}
+        >
           <div className='count w-[50px] inline-block pl-4'>{`${count}. `}</div>
-          <div className='whiteMove w-[100px] inline-block'><span className='bg-[rgba(255,255,255,0.2)] px-2 rounded-sm'>{playedMoves[len]}</span></div>
+          <div className='whiteMove w-[100px] inline-block'>
+            <span className='bg-[rgba(255,255,255,0.2)] px-2 rounded-sm'>
+              {playedMoves[len]}
+            </span>
+          </div>
         </div>
       );
       historyMoves.push(myRow);
@@ -77,7 +91,7 @@ export default function Offline() {
   };
   return (
     <div className='bg-slate-700 w-screen min-h-screen p-5'>
-      <div className='w-[80%] sm:w-[100%] mx-auto flex justify-evenly sm:flex-col'>
+      <div className='w-[90%] lg:w-[100%] mx-auto flex justify-evenly md:flex-col'>
         <div className='boardSectionContainer'>
           <div className='boardSection'>
             {/* Logo, Name of player 1 */}
@@ -105,7 +119,7 @@ export default function Offline() {
             <PlayerInfo player='w' name='White' rating={1200} />
           </div>
         </div>
-        <div className='text-white gameDetailSection bg-gray-500 w-[500px] rounded-md'>
+        <div className='text-white gameDetailSection bg-[#465f83c9] shadow-md w-[500px] rounded-md'>
           <div
             className='history scrollbar-hide scrollbar-custom h-[460px] overflow-y-auto pt-8'
             ref={historyDiv}
@@ -114,12 +128,19 @@ export default function Offline() {
             <div>{renderhistory()}</div>
           </div>
           <div className='settings p-4 h-[132px]'>
-            <div className='buttons'>
-              <Button noShadow className='px-8 py-3 mx-0 bg-[rgba(0,0,0,0.2)]'>
-                <TbArrowBigLeftFilled />
-              </Button>{' '}
-              <Button noShadow className='px-8 py-3 mx-0 bg-[rgba(0,0,0,0.2)]'>
+            <div className='buttons flex'>
+              {/* <Button onClick={()=>{setUndo((prevUndo)=>{prevUndo.count: prevUndo.count+1})}} noShadow className='undo hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)]'>                <TbArrowBigLeftFilled /></Button>{' '} */}
+              <Button
+                noShadow
+                className='resign hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)]'
+              >
                 <FaFlag className='scale-75' />
+              </Button>
+              <Button
+                noShadow
+                className='draw hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)] text-2xl'
+              >
+                1/2
               </Button>
             </div>
             <div className='additionalSettings text-lg text-white pl-2 pr-8 flex items-center justify-between'>

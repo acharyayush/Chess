@@ -1,83 +1,86 @@
-import { ReactNode } from 'react';
-import { Chess, Color, PieceSymbol, Square, WHITE } from 'chess.js';
+import React, { ReactNode, useContext, useEffect } from 'react';
+import { Chess, PieceSymbol, Square } from 'chess.js';
 import { createContext, useState } from 'react';
+import { Move } from '../types';
+import { GameControlContext } from './GameControlContext';
 
 interface ChessGameContextType {
-  chess: Chess,
-  myPlayer: Color,
-  showPromotionOption: { canShow: boolean; position?: Square },
-  promotion: PieceSymbol | null,
-  showLegalMoves: boolean,
-  legalMoves: Square[],
-  isDragging: boolean,
-  playedMoves: string[],
-  setMyPlayer: React.Dispatch<React.SetStateAction<Color>>,
+  chess: Chess;
+  showPromotionOption: { canShow: boolean; position?: Square };
+  promotion: PieceSymbol | null;
+  legalMoves: Square[];
+  isDragging: boolean;
+  move: Move;
   setShowPromotionOption: React.Dispatch<
     React.SetStateAction<{
-      canShow: boolean,
-      position?: Square,
+      canShow: boolean;
+      position?: Square;
     }>
   >;
-  setPromotion: React.Dispatch<React.SetStateAction<PieceSymbol | null>>,
-  setShowLegalMoves: React.Dispatch<React.SetStateAction<boolean>>,
-  setLegalMoves: React.Dispatch<React.SetStateAction<Square[]>>,
-  setIsDragging: React.Dispatch<React.SetStateAction<boolean>>,
-  setPlayedMoves: React.Dispatch<React.SetStateAction<string[]>>,
+  setPromotion: React.Dispatch<React.SetStateAction<PieceSymbol | null>>;
+  setLegalMoves: React.Dispatch<React.SetStateAction<Square[]>>;
+  setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
+  setMove: React.Dispatch<React.SetStateAction<Move>>;
 }
 
 const defaultValue = {
-  //test positions of near the end of game: '8/8/3PK3/8/8/3pk3/8/8 w - - 0 1'
-  chess: new Chess(),
-  myPlayer: WHITE as Color,
-  showPromotionOption: {canShow: false},
+  //test positions of near the end of game: '8/1PQ5/5K1k/8/8/8/8/8 w - - 0 1'
+  chess: new Chess('8/1PQ5/5K1k/8/8/8/8/8 w - - 0 1'),
+  showPromotionOption: { canShow: false },
   promotion: null,
-  showLegalMoves: true,
   legalMoves: [],
   isDragging: false,
   draggedImg: null,
-  playedMoves: [],
+  move: { from: '', to: '' },
   setShowPromotionOption: () => {},
   setPromotion: () => {},
-  setMyPlayer: ()=>{} ,
-  setShowLegalMoves: ()=>{},
-  setLegalMoves: ()=>{},
-  setIsDragging: ()=>{},
-  setPlayedMoves: ()=>{},
+  setLegalMoves: () => {},
+  setIsDragging: () => {},
+  setMove: () => {},
 };
 
 export const ChessGameContext =
   createContext<ChessGameContextType>(defaultValue);
 
 export function ChessGameProvider({ children }: { children: ReactNode }) {
-  const [chess] = useState(defaultValue.chess);
-  const [myPlayer, setMyPlayer] = useState(defaultValue.myPlayer)
+  const { rematch } = useContext(GameControlContext);
+  const [chess, setChess] = useState(defaultValue.chess);
   const [promotion, setPromotion] = useState<PieceSymbol | null>(null);
   const [showPromotionOption, setShowPromotionOption] = useState<{
     canShow: boolean;
     position?: Square;
   }>(defaultValue.showPromotionOption);
-  const [showLegalMoves, setShowLegalMoves] = useState(defaultValue.showLegalMoves)
-  const [legalMoves, setLegalMoves] = useState<Square[]>(defaultValue.legalMoves)
-  const [isDragging, setIsDragging] = useState<boolean>(defaultValue.isDragging)
-  const [playedMoves, setPlayedMoves] = useState<string[]>([])
+  const [legalMoves, setLegalMoves] = useState<Square[]>(
+    defaultValue.legalMoves
+  );
+  const [isDragging, setIsDragging] = useState<boolean>(
+    defaultValue.isDragging
+  );
+  const [move, setMove] = useState<Move>(defaultValue.move);
+
+  useEffect(() => {
+    if (!rematch) return;
+    setChess(new Chess());
+    setShowPromotionOption(defaultValue.showPromotionOption);
+    setPromotion(defaultValue.promotion);
+    setLegalMoves(defaultValue.legalMoves);
+    setIsDragging(defaultValue.isDragging);
+    setMove(defaultValue.move);
+  }, [rematch]);
   return (
     <ChessGameContext.Provider
       value={{
         chess,
-        myPlayer,
         showPromotionOption,
         promotion,
-        showLegalMoves,
         legalMoves,
         isDragging,
-        playedMoves,
-        setMyPlayer,
+        move,
         setShowPromotionOption,
         setPromotion,
-        setShowLegalMoves,
         setLegalMoves,
         setIsDragging,
-        setPlayedMoves,
+        setMove,
       }}
     >
       {children}

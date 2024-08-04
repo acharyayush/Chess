@@ -1,12 +1,12 @@
 //TODO: Make a dragging feature
 
-
 import { Color, KING, PieceSymbol, Square } from 'chess.js';
 import { CommonCellAndChessProps } from '../types';
 import PromotionOptions from './PromotionOptions';
 import { useContext, useState } from 'react';
 import { ChessGameContext } from '../context/ChessGameContext';
 import { twMerge } from 'tailwind-merge';
+import { GameControlContext } from '../context/GameControlContext';
 
 interface CellProps extends CommonCellAndChessProps {
   cell: {
@@ -28,15 +28,11 @@ export default function Cell({
   updateMove,
   isDisable,
 }: CellProps) {
-  const {
-    showPromotionOption,
-    legalMoves,
-    showLegalMoves,
-    isDragging,
-    setIsDragging,
-  } = useContext(ChessGameContext);
-  const [pieceImg, setPieceImg] = useState<HTMLImageElement>()
-  const [startPos, setStartPos] = useState({x:0, y:0})
+  const { showPromotionOption, legalMoves, isDragging, setIsDragging } =
+    useContext(ChessGameContext);
+  const { showLegalMoves } = useContext(GameControlContext);
+  const [pieceImg, setPieceImg] = useState<HTMLImageElement>();
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const stylesforCell = () => {
     let classes = cellColor;
 
@@ -49,36 +45,36 @@ export default function Cell({
     if (activeSquare === position) {
       classes = twMerge(classes, '!bg-blue-300');
     }
-    if(position=="a1"){
+    if (position == 'a1') {
       classes = twMerge(classes, 'rounded-bl-md');
     }
-    if(position=="a8"){
+    if (position == 'a8') {
       classes = twMerge(classes, 'rounded-tl-md');
     }
-    if(position=="h1"){
+    if (position == 'h1') {
       classes = twMerge(classes, 'rounded-br-md');
     }
-    if(position=="h8"){
+    if (position == 'h8') {
       classes = twMerge(classes, 'rounded-tr-md');
     }
     return classes;
   };
   //dragging feature
   const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
-    setPieceImg(e.target as HTMLImageElement)
-    setStartPos({x:e.clientX, y:e.clientY})
+    setPieceImg(e.target as HTMLImageElement);
+    setStartPos({ x: e.clientX, y: e.clientY });
     updateMove(cell, turn, position);
   };
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
   const handleDrag = (e: React.DragEvent<HTMLImageElement>) => {
-    if(!pieceImg) return;
-    pieceImg.style.opacity = "0"
+    if (!pieceImg) return;
+    pieceImg.style.opacity = '0';
   };
   const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
-    if(!pieceImg) return;
-    pieceImg.style.opacity = "1"
+    if (!pieceImg) return;
+    pieceImg.style.opacity = '1';
   };
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     if (!isDisable) {
@@ -104,7 +100,7 @@ export default function Cell({
           onDragStart={(e) => {
             handleDragStart(e);
           }}
-          onDrag={(e)=>handleDrag(e)}
+          onDrag={(e) => handleDrag(e)}
           onDragEnd={(e) => handleDragEnd(e)}
           className={'w-[95%] left-28'}
         />

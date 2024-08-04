@@ -2,6 +2,8 @@ import ProfileImg from './ProfileImg';
 import Button from './shared/Button';
 import { twMerge } from 'tailwind-merge';
 import { Winner } from '../types';
+import { useContext } from 'react';
+import { GameControlContext } from '../context/GameControlContext';
 interface GameOverPopUp {
   className?: string;
   winner: Winner;
@@ -14,6 +16,7 @@ function GameOverPopUp({
   isDraw,
   isStalemate,
 }: GameOverPopUp) {
+  const {setRematch} = useContext(GameControlContext)
   const getHeading = () => {
     let heading: string;
     if (isStalemate) {
@@ -50,7 +53,7 @@ function GameOverPopUp({
           <span className='mt-1'>Player 2</span>
         </div>
       </div>
-      <Button>Rematch</Button>
+      <Button onClick={()=>setRematch(true)}>Rematch</Button>
     </div>
   );
 }
