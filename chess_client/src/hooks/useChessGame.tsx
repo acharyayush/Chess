@@ -13,7 +13,7 @@ export default function useChessGame() {
   const { move, setMove, updateMove } = useUpdateMove();
   const [winner, setWinner] = useState<Winner>('d');
   const [isGameOver, setIsGameOver] = useState(false);
-  const [isStalemate, setIsStalemate] = useState(false);
+  const [gameOverDesc, setGameOverDesc] = useState<string>("");
   const [isDraw, setIsDraw] = useState(false);
   const [inCheck, setInCheck] = useState(false);
   //audios
@@ -47,12 +47,11 @@ export default function useChessGame() {
   };
   //reset local states for rematch
   const resetLocalStates = () => {
-    console.log('iamhere');
     setBoard(chess.board());
     setTurn(chess.turn());
     setWinner('d');
     setIsGameOver(false);
-    setIsStalemate(false);
+    setGameOverDesc("");
     setIsDraw(false);
     setInCheck(false);
   };
@@ -64,17 +63,23 @@ export default function useChessGame() {
     if (!chess.isGameOver() && !hasResigned) return;
     setIsGameOver(true);
     if (hasResigned || chess.isCheckmate()) {
+      if(hasResigned)
+          setGameOverDesc("resignation")
+      else
+        setGameOverDesc("checkmate")
       setWinner(getWinner());
-      return;
-    }
-    if (chess.isStalemate()) {
-      setIsStalemate(true);
-      setIsDraw(true);
-      setWinner('d');
       return;
     }
     if (chess.isDraw()) {
       //the draw is from three fold repetition or insufficient material or 50 move rule
+      if(chess.isThreefoldRepetition())
+        setGameOverDesc("repetition")
+      else if(chess.isStalemate())
+        setGameOverDesc("stalemate")
+      else if(chess.isInsufficientMaterial())
+        setGameOverDesc("insufficient material")
+      else
+        setGameOverDesc("50 move rule")
       setIsDraw(true);
       setWinner('d');
       return;
@@ -129,7 +134,7 @@ export default function useChessGame() {
     updateMove,
     winner,
     isGameOver,
-    isStalemate,
+    gameOverDesc,
     isDraw,
     inCheck,
   };

@@ -20,7 +20,7 @@ export default function Offline() {
     updateMove,
     winner,
     isDraw,
-    isStalemate,
+    gameOverDesc,
     isGameOver,
     inCheck,
   } = useChessGame();
@@ -101,7 +101,7 @@ export default function Offline() {
               {isGameOver && (
                 <GameOverPopUp
                   isDraw={isDraw}
-                  isStalemate={isStalemate}
+                  gameOverDesc={gameOverDesc}
                   winner={winner}
                   className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
                 />
@@ -139,14 +139,6 @@ export default function Offline() {
               >
                 <FaFlag className='scale-75' />
               </Button>
-              {
-                //request draw is not available for offline mode. draw in offline doesn't make any sense
-              /* <Button
-                noShadow
-                className='draw hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)] text-2xl'
-              >
-                1/2
-              </Button> */}
             </div>
             <div className='additionalSettings text-lg text-white pl-2 pr-8 flex items-center justify-between'>
               <span className=''>Show Legal Moves</span>

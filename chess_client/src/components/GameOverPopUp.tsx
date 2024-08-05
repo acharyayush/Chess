@@ -8,20 +8,18 @@ interface GameOverPopUp {
   className?: string;
   winner: Winner;
   isDraw: boolean;
-  isStalemate: boolean;
+  gameOverDesc: string,
 }
 function GameOverPopUp({
   className,
   winner,
   isDraw,
-  isStalemate,
+  gameOverDesc
 }: GameOverPopUp) {
   const {setRematch} = useContext(GameControlContext)
   const getHeading = () => {
     let heading: string;
-    if (isStalemate) {
-      heading = 'Stalemate';
-    } else if (isDraw) {
+    if (isDraw) {
       heading = 'Draw';
     } else {
       heading = winner == 'w' ? 'Player 1 Won' : 'Player 2 Won';
@@ -35,7 +33,8 @@ function GameOverPopUp({
         className
       )}
     >
-      <h1 className='text-center text-3xl font-bold'>{getHeading()}</h1>
+      <h1 className='text-center text-2xl font-bold'>{getHeading()}</h1>
+      <h2 className='text-center text-md font-bold'>by {gameOverDesc}</h2>
       <div className='flex justify-between my-8  px-9'>
         <div className='flex flex-col font-bold'>
           <ProfileImg
