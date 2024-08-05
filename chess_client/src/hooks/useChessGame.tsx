@@ -6,14 +6,14 @@ import { ChessGameContext } from '../context/ChessGameContext';
 import { GameControlContext } from '../context/GameControlContext';
 export default function useChessGame() {
   const { chess } = useContext(ChessGameContext);
-  const { setPlayedMoves, hasResigned, setHasResigned, undo } =
+  const { setPlayedMoves, hasResigned, setHasResigned, undo, setUndo } =
     useContext(GameControlContext);
   const [board, setBoard] = useState(chess.board());
   const [turn, setTurn] = useState(chess.turn());
   const { move, setMove, updateMove } = useUpdateMove();
   const [winner, setWinner] = useState<Winner>('d');
   const [isGameOver, setIsGameOver] = useState(false);
-  const [gameOverDesc, setGameOverDesc] = useState<string>("");
+  const [gameOverDesc, setGameOverDesc] = useState<string>('');
   const [isDraw, setIsDraw] = useState(false);
   const [inCheck, setInCheck] = useState(false);
   //audios
@@ -51,7 +51,7 @@ export default function useChessGame() {
     setTurn(chess.turn());
     setWinner('d');
     setIsGameOver(false);
-    setGameOverDesc("");
+    setGameOverDesc('');
     setIsDraw(false);
     setInCheck(false);
   };
@@ -63,23 +63,18 @@ export default function useChessGame() {
     if (!chess.isGameOver() && !hasResigned) return;
     setIsGameOver(true);
     if (hasResigned || chess.isCheckmate()) {
-      if(hasResigned)
-          setGameOverDesc("resignation")
-      else
-        setGameOverDesc("checkmate")
+      if (hasResigned) setGameOverDesc('resignation');
+      else setGameOverDesc('checkmate');
       setWinner(getWinner());
       return;
     }
     if (chess.isDraw()) {
       //the draw is from three fold repetition or insufficient material or 50 move rule
-      if(chess.isThreefoldRepetition())
-        setGameOverDesc("repetition")
-      else if(chess.isStalemate())
-        setGameOverDesc("stalemate")
-      else if(chess.isInsufficientMaterial())
-        setGameOverDesc("insufficient material")
-      else
-        setGameOverDesc("50 move rule")
+      if (chess.isThreefoldRepetition()) setGameOverDesc('repetition');
+      else if (chess.isStalemate()) setGameOverDesc('stalemate');
+      else if (chess.isInsufficientMaterial())
+        setGameOverDesc('insufficient material');
+      else setGameOverDesc('50 move rule');
       setIsDraw(true);
       setWinner('d');
       return;
@@ -103,7 +98,7 @@ export default function useChessGame() {
     let moveRes = chess.undo();
     if (!moveRes) return;
     handleBoardUpdateOnMove(moveRes);
-    // setUndo(false);
+    setUndo(false);
   }, [undo]);
   useEffect(() => {
     //if player has moved from one position to another, then attempt moving the move
@@ -121,6 +116,7 @@ export default function useChessGame() {
   useEffect(() => {
     resetLocalStates();
   }, [chess]);
+
   useEffect(() => {
     if (!hasResigned) return;
     gameOverChecks();

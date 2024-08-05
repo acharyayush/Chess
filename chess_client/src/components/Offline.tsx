@@ -5,7 +5,7 @@ import GameOverPopUp from './GameOverPopUp';
 import PlayerInfo from './PlayerInfo';
 import Button from './shared/Button';
 import SwitchToggle from './shared/SwitchToggle';
-// import { TbArrowBigLeftFilled } from 'react-icons/tb';
+import { TbArrowBigLeftFilled } from 'react-icons/tb';
 import { FaFlag } from 'react-icons/fa';
 import { useContext, useEffect, useRef } from 'react';
 import { ChessGameContext } from '../context/ChessGameContext';
@@ -25,7 +25,7 @@ export default function Offline() {
     inCheck,
   } = useChessGame();
   const { chess, setLegalMoves} = useContext(ChessGameContext);
-  const { showLegalMoves, setShowLegalMoves, playedMoves, setHasResigned} =
+  const { showLegalMoves, setShowLegalMoves, playedMoves, setHasResigned, setUndo} =
     useContext(GameControlContext);
     const historyDiv = useRef<HTMLDivElement>(null);
 
@@ -129,7 +129,8 @@ export default function Offline() {
           </div>
           <div className='settings p-4 h-[132px]'>
             <div className='buttons flex'>
-              {/* <Button onClick={()=>{setUndo((prevUndo)=>{prevUndo.count: prevUndo.count+1})}} noShadow className='undo hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)]'>                <TbArrowBigLeftFilled /></Button>{' '} */}
+              {/* setUndo(prev=>!prev), wait for preceeding undo, after renders -> undo is false -> now, perform current undo*/}
+              <Button onClick={()=>{setUndo((prev)=>!prev)}} noShadow className='undo hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)]'>                <TbArrowBigLeftFilled /></Button>{' '}
               <Button
               allowModal
               modalTitle='Are you sure you want to resign?'

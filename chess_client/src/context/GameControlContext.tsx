@@ -4,13 +4,13 @@ interface GameControlContextType {
   myPlayer: Color;
   showLegalMoves: boolean;
   playedMoves: string[];
-  undo: { count: number };
+  undo: boolean,
   rematch: boolean;
   hasResigned: boolean;
   setMyPlayer: React.Dispatch<React.SetStateAction<Color>>;
   setShowLegalMoves: React.Dispatch<React.SetStateAction<boolean>>;
   setPlayedMoves: React.Dispatch<React.SetStateAction<string[]>>;
-  setUndo: React.Dispatch<React.SetStateAction<{ count: number }>>;
+  setUndo: React.Dispatch<React.SetStateAction<boolean>>;
   setRematch: React.Dispatch<React.SetStateAction<boolean>>;
   setHasResigned: React.Dispatch<
     React.SetStateAction<boolean>
@@ -20,7 +20,7 @@ const defaultValue = {
   myPlayer: WHITE as Color,
   showLegalMoves: true,
   playedMoves: [],
-  undo: { count: 0 },
+  undo: false,
   rematch: false,
   hasResigned: false,
   setMyPlayer: () => {},

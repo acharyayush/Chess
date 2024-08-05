@@ -25,7 +25,7 @@ interface ChessGameContextType {
 
 const defaultValue = {
   //test positions of near the end of game: '8/1PQ5/5K1k/8/8/8/8/8 w - - 0 1'
-  chess: new Chess('8/1PQ5/5K1k/8/8/8/8/8 w - - 0 1'),
+  chess: new Chess(),
   showPromotionOption: { canShow: false },
   promotion: null,
   legalMoves: [],
