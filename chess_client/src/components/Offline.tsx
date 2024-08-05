@@ -11,6 +11,7 @@ import { useContext, useEffect, useRef } from 'react';
 import { ChessGameContext } from '../context/ChessGameContext';
 import extractPosition from '../utils/extractPosition';
 import { GameControlContext } from '../context/GameControlContext';
+
 export default function Offline() {
   const {
     board,
@@ -24,9 +25,9 @@ export default function Offline() {
     inCheck,
   } = useChessGame();
   const { chess, setLegalMoves} = useContext(ChessGameContext);
-  const { showLegalMoves, setShowLegalMoves, playedMoves} =
+  const { showLegalMoves, setShowLegalMoves, playedMoves, setHasResigned} =
     useContext(GameControlContext);
-  const historyDiv = useRef<HTMLDivElement>(null);
+    const historyDiv = useRef<HTMLDivElement>(null);
 
   //calculate legal moves if showLegalMoves is toggled to active (to sync with the board)
   useEffect(() => {
@@ -42,7 +43,6 @@ export default function Offline() {
       historyDiv.current.scrollTop = historyDiv.current.scrollHeight;
     }
   }, [playedMoves]);
-
   const renderhistory = () => {
     const historyMoves: JSX.Element[] = [];
     let isEvenMoves = playedMoves.length % 2 == 0;
@@ -131,17 +131,22 @@ export default function Offline() {
             <div className='buttons flex'>
               {/* <Button onClick={()=>{setUndo((prevUndo)=>{prevUndo.count: prevUndo.count+1})}} noShadow className='undo hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)]'>                <TbArrowBigLeftFilled /></Button>{' '} */}
               <Button
+              allowModal
+              modalTitle='Are you sure you want to resign?'
+              onClick={()=>setHasResigned(true)}
                 noShadow
                 className='resign hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)]'
               >
                 <FaFlag className='scale-75' />
               </Button>
-              <Button
+              {
+                //request draw is not available for offline mode. draw in offline doesn't make any sense
+              /* <Button
                 noShadow
                 className='draw hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)] text-2xl'
               >
                 1/2
-              </Button>
+              </Button> */}
             </div>
             <div className='additionalSettings text-lg text-white pl-2 pr-8 flex items-center justify-between'>
               <span className=''>Show Legal Moves</span>

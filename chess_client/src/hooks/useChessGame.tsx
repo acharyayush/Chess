@@ -1,4 +1,4 @@
-import { BLACK, Color, Move, WHITE } from 'chess.js';
+import { BLACK, Move, WHITE } from 'chess.js';
 import { useContext, useEffect, useState } from 'react';
 import useUpdateMove from './useUpdateMove';
 import { Winner } from '../types';
@@ -6,7 +6,8 @@ import { ChessGameContext } from '../context/ChessGameContext';
 import { GameControlContext } from '../context/GameControlContext';
 export default function useChessGame() {
   const { chess } = useContext(ChessGameContext);
-  const { setPlayedMoves, undo } = useContext(GameControlContext);
+  const { setPlayedMoves, hasResigned, setHasResigned, undo } =
+    useContext(GameControlContext);
   const [board, setBoard] = useState(chess.board());
   const [turn, setTurn] = useState(chess.turn());
   const { move, setMove, updateMove } = useUpdateMove();
@@ -46,7 +47,7 @@ export default function useChessGame() {
   };
   //reset local states for rematch
   const resetLocalStates = () => {
-    console.log("iamhere")
+    console.log('iamhere');
     setBoard(chess.board());
     setTurn(chess.turn());
     setWinner('d');
@@ -55,13 +56,15 @@ export default function useChessGame() {
     setIsDraw(false);
     setInCheck(false);
   };
+  const getWinner = () => {
+    return chess.turn() == BLACK ? WHITE : BLACK;
+  };
   //check if the game is over and update the status based on its result
   const gameOverChecks = () => {
-    if (!chess.isGameOver()) return;
+    if (!chess.isGameOver() && !hasResigned) return;
     setIsGameOver(true);
-    if (chess.isCheckmate()) {
-      let wr: Color = chess.turn() == BLACK ? WHITE : BLACK;
-      setWinner(wr);
+    if (hasResigned || chess.isCheckmate()) {
+      setWinner(getWinner());
       return;
     }
     if (chess.isStalemate()) {
@@ -110,9 +113,14 @@ export default function useChessGame() {
       }
     }
   }, [move]);
-  useEffect(()=>{
+  useEffect(() => {
     resetLocalStates();
-  },[chess])
+  }, [chess]);
+  useEffect(() => {
+    if (!hasResigned) return;
+    gameOverChecks();
+    setHasResigned(false);
+  }, [hasResigned]);
 
   return {
     board,

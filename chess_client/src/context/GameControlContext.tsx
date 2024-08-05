@@ -6,11 +6,15 @@ interface GameControlContextType {
   playedMoves: string[];
   undo: { count: number };
   rematch: boolean;
+  hasResigned: boolean;
   setMyPlayer: React.Dispatch<React.SetStateAction<Color>>;
   setShowLegalMoves: React.Dispatch<React.SetStateAction<boolean>>;
   setPlayedMoves: React.Dispatch<React.SetStateAction<string[]>>;
   setUndo: React.Dispatch<React.SetStateAction<{ count: number }>>;
   setRematch: React.Dispatch<React.SetStateAction<boolean>>;
+  setHasResigned: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
 }
 const defaultValue = {
   myPlayer: WHITE as Color,
@@ -18,11 +22,13 @@ const defaultValue = {
   playedMoves: [],
   undo: { count: 0 },
   rematch: false,
+  hasResigned: false,
   setMyPlayer: () => {},
   setShowLegalMoves: () => {},
   setPlayedMoves: () => {},
   setUndo: () => {},
   setRematch: () => {},
+  setHasResigned: ()=>{},
 };
 export const GameControlContext =
   createContext<GameControlContextType>(defaultValue);
@@ -34,6 +40,7 @@ export function GameControlProvider({ children }: { children: ReactNode }) {
   const [playedMoves, setPlayedMoves] = useState<string[]>([]);
   const [undo, setUndo] = useState(defaultValue.undo);
   const [rematch, setRematch] = useState(defaultValue.rematch);
+  const [hasResigned, setHasResigned] = useState(defaultValue.hasResigned);
   useEffect(() => {
     if (!rematch) return;
     //reset states
@@ -51,11 +58,13 @@ export function GameControlProvider({ children }: { children: ReactNode }) {
         playedMoves,
         undo,
         rematch,
+        hasResigned,
         setMyPlayer,
         setShowLegalMoves,
         setPlayedMoves,
         setUndo,
         setRematch,
+        setHasResigned,
       }}
     >
       {children}
