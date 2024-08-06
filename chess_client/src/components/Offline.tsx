@@ -130,8 +130,9 @@ export default function Offline() {
           <div className='settings p-4 h-[132px]'>
             <div className='buttons flex'>
               {/* setUndo(prev=>!prev), wait for preceeding undo, after renders -> undo is false -> now, perform current undo*/}
-              <Button onClick={()=>{setUndo((prev)=>!prev)}} noShadow className='undo hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)]'>                <TbArrowBigLeftFilled /></Button>{' '}
+              <Button isDisable={isGameOver} onClick={()=>{setUndo((prev)=>!prev)}} noShadow className='undo hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)]'>                <TbArrowBigLeftFilled /></Button>{' '}
               <Button
+              isDisable={isGameOver}
               allowModal
               modalTitle='Are you sure you want to resign?'
               onClick={()=>setHasResigned(true)}

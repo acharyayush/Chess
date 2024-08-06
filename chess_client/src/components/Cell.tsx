@@ -1,6 +1,6 @@
 //TODO: Make a dragging feature
 
-import { Color, KING, PieceSymbol, Square } from 'chess.js';
+import { BLACK, Color, KING, PieceSymbol, Square } from 'chess.js';
 import { CommonCellAndChessProps } from '../types';
 import PromotionOptions from './PromotionOptions';
 import { useContext, useState } from 'react';
@@ -101,7 +101,7 @@ export default function Cell({
           }}
           onDrag={handleDrag}
           onDragEnd={handleDragEnd}
-          className={'w-[95%] left-28'}
+          className={`w-[95%] left-28 ${cell.color==BLACK && 'rotate-180'}`}
         />
       )}
       {/* show possible legal moves */}
