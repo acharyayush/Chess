@@ -1,5 +1,4 @@
 import Button from './shared/Button';
-
 export default function App() {
   return (
     <div className='bg-slate-400 flex min-w-screen min-h-screen justify-evenly items-center'>

@@ -1,7 +1,7 @@
 import React, { ReactNode, useContext, useEffect } from 'react';
 import { Chess, PieceSymbol, Square } from 'chess.js';
 import { createContext, useState } from 'react';
-import { Move } from '../types';
+import { capturedPiecesAndNumberType, Move } from '../types';
 import { GameControlContext } from './GameControlContext';
 
 interface ChessGameContextType {
@@ -11,6 +11,9 @@ interface ChessGameContextType {
   legalMoves: Square[];
   isDragging: boolean;
   move: Move;
+  whiteNetScore: number;
+  capturedPiecesByWhite: capturedPiecesAndNumberType;
+  capturedPiecesByBlack: capturedPiecesAndNumberType;
   setShowPromotionOption: React.Dispatch<
     React.SetStateAction<{
       canShow: boolean;
@@ -21,6 +24,13 @@ interface ChessGameContextType {
   setLegalMoves: React.Dispatch<React.SetStateAction<Square[]>>;
   setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
   setMove: React.Dispatch<React.SetStateAction<Move>>;
+  setWhiteNetScore: React.Dispatch<React.SetStateAction<number>>;
+  setCapturedPiecesByWhite: React.Dispatch<
+    React.SetStateAction<capturedPiecesAndNumberType>
+  >;
+  setCapturedPiecesByBlack: React.Dispatch<
+    React.SetStateAction<capturedPiecesAndNumberType>
+  >;
 }
 
 const defaultValue = {
@@ -32,18 +42,24 @@ const defaultValue = {
   isDragging: false,
   draggedImg: null,
   move: { from: '', to: '' },
+  whiteNetScore: 0,
+  capturedPiecesByWhite: { p: 0, n: 0, b: 0, r: 0, q: 0 },
+  capturedPiecesByBlack: { p: 0, n: 0, b: 0, r: 0, q: 0 },
   setShowPromotionOption: () => {},
   setPromotion: () => {},
   setLegalMoves: () => {},
   setIsDragging: () => {},
   setMove: () => {},
+  setWhiteNetScore: () => {},
+  setCapturedPiecesByWhite: () => {},
+  setCapturedPiecesByBlack: () => {},
 };
 
 export const ChessGameContext =
   createContext<ChessGameContextType>(defaultValue);
 
 export function ChessGameProvider({ children }: { children: ReactNode }) {
-  const { rematch } = useContext(GameControlContext);
+  const { rematch} = useContext(GameControlContext);
   const [chess, setChess] = useState(defaultValue.chess);
   const [promotion, setPromotion] = useState<PieceSymbol | null>(null);
   const [showPromotionOption, setShowPromotionOption] = useState<{
@@ -57,6 +73,15 @@ export function ChessGameProvider({ children }: { children: ReactNode }) {
     defaultValue.isDragging
   );
   const [move, setMove] = useState<Move>(defaultValue.move);
+  const [whiteNetScore, setWhiteNetScore] = useState(
+    defaultValue.whiteNetScore
+  );
+  const [capturedPiecesByWhite, setCapturedPiecesByWhite] = useState(
+    defaultValue.capturedPiecesByWhite
+  );
+  const [capturedPiecesByBlack, setCapturedPiecesByBlack] = useState(
+    defaultValue.capturedPiecesByBlack
+  );
 
   useEffect(() => {
     if (!rematch) return;
@@ -66,6 +91,9 @@ export function ChessGameProvider({ children }: { children: ReactNode }) {
     setLegalMoves(defaultValue.legalMoves);
     setIsDragging(defaultValue.isDragging);
     setMove(defaultValue.move);
+    setWhiteNetScore(defaultValue.whiteNetScore);
+    setCapturedPiecesByWhite(defaultValue.capturedPiecesByWhite);
+    setCapturedPiecesByBlack(defaultValue.capturedPiecesByBlack);
   }, [rematch]);
   return (
     <ChessGameContext.Provider
@@ -76,11 +104,17 @@ export function ChessGameProvider({ children }: { children: ReactNode }) {
         legalMoves,
         isDragging,
         move,
+        whiteNetScore,
+        capturedPiecesByWhite,
+        setCapturedPiecesByWhite,
         setShowPromotionOption,
         setPromotion,
         setLegalMoves,
         setIsDragging,
         setMove,
+        setWhiteNetScore,
+        capturedPiecesByBlack,
+        setCapturedPiecesByBlack,
       }}
     >
       {children}

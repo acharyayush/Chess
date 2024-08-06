@@ -1,11 +1,18 @@
 import { BLACK, Move, WHITE } from 'chess.js';
 import { useContext, useEffect, useState } from 'react';
 import useUpdateMove from './useUpdateMove';
-import { Winner } from '../types';
+import { PieceSymbolExcludingKing, Winner } from '../types';
 import { ChessGameContext } from '../context/ChessGameContext';
 import { GameControlContext } from '../context/GameControlContext';
+import { piecesPoints } from '../constants';
 export default function useChessGame() {
-  const { chess } = useContext(ChessGameContext);
+  const {
+    chess,
+    setWhiteNetScore,
+    setCapturedPiecesByWhite,
+    setCapturedPiecesByBlack,
+    setLegalMoves,
+  } = useContext(ChessGameContext);
   const { setPlayedMoves, hasResigned, setHasResigned, undo, setUndo } =
     useContext(GameControlContext);
   const [board, setBoard] = useState(chess.board());
@@ -80,6 +87,7 @@ export default function useChessGame() {
       return;
     }
   };
+
   const handleBoardUpdateOnMove = (moveRes: Move) => {
     setPlayedMoves(chess.history());
     setBoard(chess.board());
@@ -93,11 +101,59 @@ export default function useChessGame() {
     }
     gameOverChecks();
   };
+
+  const handleCapturedPiecesAndScores = (moveRes: Move, isUndo?: boolean) => {
+    if (moveRes.promotion) {
+      let promotedPiece = moveRes.promotion as PieceSymbolExcludingKing;
+      if (moveRes.color == WHITE) {
+        setWhiteNetScore((prevScore) =>
+          !undo
+            ? prevScore + piecesPoints[promotedPiece] - 1
+            : prevScore - piecesPoints[promotedPiece] + 1
+        );
+      } else {
+        setWhiteNetScore((prevScore) =>
+          !undo
+            ? prevScore - piecesPoints[promotedPiece] + 1
+            : prevScore + piecesPoints[promotedPiece] - 1
+        );
+      }
+    }
+    if (moveRes.captured) {
+      let capturedPiece = moveRes.captured as PieceSymbolExcludingKing;
+      let capturedPoint = piecesPoints[capturedPiece];
+      if (moveRes.color == WHITE) {
+        setWhiteNetScore((prevScore) =>
+          !isUndo ? prevScore + capturedPoint : prevScore - capturedPoint
+        );
+        setCapturedPiecesByWhite((prev) => ({
+          ...prev,
+          [capturedPiece]: !isUndo
+            ? prev[capturedPiece] + 1
+            : prev[capturedPiece] - 1,
+        }));
+      } else {
+        setWhiteNetScore((prevScore) =>
+          !undo ? prevScore - capturedPoint : prevScore + capturedPoint
+        );
+        setCapturedPiecesByBlack((prev) => ({
+          ...prev,
+          [capturedPiece]: !undo
+            ? prev[capturedPiece] + 1
+            : prev[capturedPiece] - 1,
+        }));
+      }
+    }
+  };
   useEffect(() => {
     if (!undo) return;
     let moveRes = chess.undo();
+    console.log(moveRes);
     if (!moveRes) return;
+    handleCapturedPiecesAndScores(moveRes, true);
     handleBoardUpdateOnMove(moveRes);
+    setLegalMoves([]);
+    setMove({ from: '', to: '' });
     setUndo(false);
   }, [undo]);
   useEffect(() => {
@@ -105,6 +161,7 @@ export default function useChessGame() {
     if (move.from && move.to) {
       try {
         let moveRes = chess.move(move);
+        handleCapturedPiecesAndScores(moveRes);
         handleBoardUpdateOnMove(moveRes);
       } catch (e) {
         console.log('Invalid Move');

@@ -9,6 +9,7 @@ export default function useUpdateMove() {
   const { showLegalMoves } = useContext(GameControlContext);
   const { promotion, setPromotion, setShowPromotionOption } =
     useContext(ChessGameContext);
+  
   const isValidMove = (move: Move) => {
     let temp = new Chess(chess.fen());
     try {

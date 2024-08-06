@@ -11,6 +11,8 @@ export type Cell = {
   type: PieceSymbol;
   color: Color;
 } | null;
+export type PieceSymbolExcludingKing = Exclude<PieceSymbol, "k">
+export type capturedPiecesAndNumberType = Record<PieceSymbolExcludingKing, number>
 export type updateMoveType = (
   cell: Cell,
   turn: Color,

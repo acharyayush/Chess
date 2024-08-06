@@ -24,7 +24,7 @@ export default function Offline() {
     isGameOver,
     inCheck,
   } = useChessGame();
-  const { chess, setLegalMoves} = useContext(ChessGameContext);
+  const { chess, setLegalMoves, whiteNetScore, capturedPiecesByWhite, capturedPiecesByBlack} = useContext(ChessGameContext);
   const { showLegalMoves, setShowLegalMoves, playedMoves, setHasResigned, setUndo} =
     useContext(GameControlContext);
     const historyDiv = useRef<HTMLDivElement>(null);
@@ -90,12 +90,12 @@ export default function Offline() {
     return historyMoves;
   };
   return (
-    <div className='bg-slate-700 w-screen min-h-screen p-5 xsm:p-2'>
+    <div className='bg-slate-700 min-h-screen p-5 xsm:p-2'>
       <div className='w-[90%] xl:w-[100%] mx-auto flex justify-evenly lg:flex-col lg:items-center'>
         <div className='boardSectionContainer lg:mb-6'>
           <div className='boardSection'>
             {/* Logo, Name of player 1 */}
-            <PlayerInfo player='b' name='Black' rating={1200} />
+            <PlayerInfo className='mb-2' player='b' name='Black' rating={1200} score={whiteNetScore} capturedPieces={capturedPiecesByBlack}/>
             {/* Chess Board */}
             <div className='relative inline-block'>
               {isGameOver && (
@@ -116,7 +116,7 @@ export default function Offline() {
               />
             </div>
             {/* Logo, Name of player 2 */}
-            <PlayerInfo player='w' name='White' rating={1200} />
+            <PlayerInfo className='mt-2' player='w' name='White' rating={1200} score={whiteNetScore} capturedPieces={capturedPiecesByWhite}/>
           </div>
         </div>
         <div className='text-white gameDetailSection bg-[#465f83c9] shadow-md max-w-[480px] w-[100%] rounded-md lg:flex lg:flex-col-reverse'>
