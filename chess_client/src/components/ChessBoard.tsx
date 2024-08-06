@@ -40,7 +40,7 @@ export default function ChessBoard({
     });
   }
   return (
-    <div className={twMerge("w-[var(--chessboard-size)] h-[var(--chessboard-size)] grid grid-cols-8 grid-rows-8", className)}>
+    <div className={twMerge("w-[var(--chessboard-size)] h-[var(--chessboard-size)] grid grid-cols-8 grid-rows-8 sm:w-[100%] sm:h-auto", className)}>
       {displayBoard()}
     </div>
   );

@@ -90,9 +90,9 @@ export default function Offline() {
     return historyMoves;
   };
   return (
-    <div className='bg-slate-700 w-screen min-h-screen p-5'>
-      <div className='w-[90%] lg:w-[100%] mx-auto flex justify-evenly md:flex-col'>
-        <div className='boardSectionContainer'>
+    <div className='bg-slate-700 w-screen min-h-screen p-5 xsm:p-2'>
+      <div className='w-[90%] xl:w-[100%] mx-auto flex justify-evenly lg:flex-col lg:items-center'>
+        <div className='boardSectionContainer lg:mb-6'>
           <div className='boardSection'>
             {/* Logo, Name of player 1 */}
             <PlayerInfo player='b' name='Black' rating={1200} />
@@ -119,7 +119,7 @@ export default function Offline() {
             <PlayerInfo player='w' name='White' rating={1200} />
           </div>
         </div>
-        <div className='text-white gameDetailSection bg-[#465f83c9] shadow-md w-[500px] rounded-md'>
+        <div className='text-white gameDetailSection bg-[#465f83c9] shadow-md max-w-[480px] w-[100%] rounded-md lg:flex lg:flex-col-reverse'>
           <div
             className='history scrollbar-hide scrollbar-custom h-[460px] overflow-y-auto pt-8'
             ref={historyDiv}
@@ -141,7 +141,7 @@ export default function Offline() {
                 <FaFlag className='scale-75' />
               </Button>
             </div>
-            <div className='additionalSettings text-lg text-white pl-2 pr-8 flex items-center justify-between'>
+            <div className='additionalSettings text-lg text-white pl-2 pr-8 xsm:pr-2 flex items-center justify-between'>
               <span className=''>Show Legal Moves</span>
               <span className='flex items-center'>
                 <SwitchToggle

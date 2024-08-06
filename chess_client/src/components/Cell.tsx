@@ -86,7 +86,7 @@ export default function Cell({
       onClick={() => {
         !isDisable && updateMove(cell, turn, position);
       }}
-      className={`${classes} relative flex items-center justify-center select-none`}
+      className={`${classes} relative flex items-center justify-center select-none sm:w-auto sm:h-auto`}
       onDragOver={(e) => {
         handleDragOver(e);
       }}
