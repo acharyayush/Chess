@@ -18,9 +18,7 @@ export type updateMoveType = (
   turn: Color,
   position: Square,
 ) => void;
-export interface CommonCellAndChessProps{
-  turn: Color;
-  activeSquare: Square,
-  inCheck: boolean
-  updateMove: updateMoveType;
+export type updateMovePayload = {
+   cell: Cell,
+   position: string
 }

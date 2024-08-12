@@ -1,44 +1,51 @@
 import { BLACK, Move, WHITE } from 'chess.js';
-import { useContext, useEffect, useState } from 'react';
-import useUpdateMove from './useUpdateMove';
-import { PieceSymbolExcludingKing, Winner } from '../types';
-import { ChessGameContext } from '../context/ChessGameContext';
-import { GameControlContext } from '../context/GameControlContext';
+import { useEffect, useState } from 'react';
+import { PieceSymbolExcludingKing } from '../types';
 import { piecesPoints } from '../constants';
+import { useSelector } from 'react-redux';
+import { RootState } from '../state/store';
+
+import {
+  setMoveHistory,
+  setBoard,
+  setTurn,
+  setLegalMoves,
+  setUndo,
+  resetMove,
+  resetChess,
+} from '../state/chess/chessSlice';
+import {
+  setWinner,
+  setIsDraw,
+  setIsGameOver,
+  setHasResigned,
+  setGameOverDescription,
+  resetGameStatus,
+  setIsCheck,
+} from '../state/gameStatus/gameStatusSlice';
+import {
+  setWhiteNetScore,
+  setCapturedPiecesByWhite,
+  setCapturedPiecesByBlack,
+  resetPlayers,
+} from '../state/players/playerSlice';
+
+import { useDispatch } from 'react-redux';
+
 export default function useChessGame() {
-  const {
-    chess,
-    setWhiteNetScore,
-    setCapturedPiecesByWhite,
-    setCapturedPiecesByBlack,
-    setLegalMoves,
-  } = useContext(ChessGameContext);
-  const { setPlayedMoves, hasResigned, setHasResigned, undo, setUndo } =
-    useContext(GameControlContext);
-  const [board, setBoard] = useState(chess.board());
-  const [turn, setTurn] = useState(chess.turn());
-  const { move, setMove, updateMove } = useUpdateMove();
-  const [winner, setWinner] = useState<Winner>('d');
-  const [isGameOver, setIsGameOver] = useState(false);
-  const [gameOverDesc, setGameOverDesc] = useState<string>('');
-  const [isDraw, setIsDraw] = useState(false);
-  const [inCheck, setInCheck] = useState(false);
+  const { chess, move, undo } = useSelector((state: RootState) => state.chess);
+  const { hasResigned, rematch } = useSelector(
+    (state: RootState) => state.gameStatus
+  );
+  const { whiteNetScore, capturedPiecesByWhite, capturedPiecesByBlack } =
+    useSelector((state: RootState) => state.players);
+  const dispatch = useDispatch();
   //audios
   const [normalMove] = useState(new Audio('/sounds/move-self.mp3'));
   const [capture] = useState(new Audio('/sounds/capture.mp3'));
   const [castle] = useState(new Audio('/sounds/castle.mp3'));
   const [check] = useState(new Audio('/sounds/move-check.mp3'));
   const handleSoundEffects = (flag: string) => {
-    //library flags definition
-    // const FLAGS: Record<string, string> = {
-    //   NORMAL: 'n',
-    //   CAPTURE: 'c',
-    //   BIG_PAWN: 'b',
-    //   EP_CAPTURE: 'e',
-    //   PROMOTION: 'p',
-    //   KSIDE_CASTLE: 'k',
-    //   QSIDE_CASTLE: 'q',
-    // }
     if (flag == 'n' || flag == 'b' || flag == 'p' || flag == 'e') {
       normalMove.play();
       return;
@@ -52,52 +59,44 @@ export default function useChessGame() {
       return;
     }
   };
-  //reset local states for rematch
-  const resetLocalStates = () => {
-    setBoard(chess.board());
-    setTurn(chess.turn());
-    setWinner('d');
-    setIsGameOver(false);
-    setGameOverDesc('');
-    setIsDraw(false);
-    setInCheck(false);
-  };
   const getWinner = () => {
     return chess.turn() == BLACK ? WHITE : BLACK;
   };
   //check if the game is over and update the status based on its result
   const gameOverChecks = () => {
     if (!chess.isGameOver() && !hasResigned) return;
-    setIsGameOver(true);
+    dispatch(setIsGameOver(true));
     if (hasResigned || chess.isCheckmate()) {
-      if (hasResigned) setGameOverDesc('resignation');
-      else setGameOverDesc('checkmate');
-      setWinner(getWinner());
+      if (hasResigned) dispatch(setGameOverDescription('resignation'));
+      else dispatch(setGameOverDescription('checkmate'));
+      dispatch(setWinner(getWinner()));
       return;
     }
     if (chess.isDraw()) {
-      //the draw is from three fold repetition or insufficient material or 50 move rule
-      if (chess.isThreefoldRepetition()) setGameOverDesc('repetition');
-      else if (chess.isStalemate()) setGameOverDesc('stalemate');
+      //the draw can be by three fold repetition or insufficient material or stalemate or 50 move rule
+      if (chess.isThreefoldRepetition())
+        dispatch(setGameOverDescription('repetition'));
+      else if (chess.isStalemate())
+        dispatch(setGameOverDescription('stalemate'));
       else if (chess.isInsufficientMaterial())
-        setGameOverDesc('insufficient material');
-      else setGameOverDesc('50 move rule');
-      setIsDraw(true);
-      setWinner('d');
+        dispatch(setGameOverDescription('insufficient material'));
+      else dispatch(setGameOverDescription('50 move rule'));
+      dispatch(setIsDraw(true));
+      dispatch(setWinner('d'));
       return;
     }
   };
 
   const handleBoardUpdateOnMove = (moveRes: Move) => {
-    setPlayedMoves(chess.history());
-    setBoard(chess.board());
-    setTurn(chess.turn());
+    dispatch(setMoveHistory(chess.history()));
+    dispatch(setBoard(chess.board()));
+    dispatch(setTurn(chess.turn()));
     if (chess.inCheck()) {
       check.play();
-      setInCheck(true);
+      dispatch(setIsCheck(true));
     } else {
       handleSoundEffects(moveRes.flags);
-      setInCheck(false);
+      dispatch(setIsCheck(false));
     }
     gameOverChecks();
   };
@@ -106,16 +105,20 @@ export default function useChessGame() {
     if (moveRes.promotion) {
       let promotedPiece = moveRes.promotion as PieceSymbolExcludingKing;
       if (moveRes.color == WHITE) {
-        setWhiteNetScore((prevScore) =>
-          !undo
-            ? prevScore + piecesPoints[promotedPiece] - 1
-            : prevScore - piecesPoints[promotedPiece] + 1
+        dispatch(
+          setWhiteNetScore(
+            !undo
+              ? whiteNetScore + piecesPoints[promotedPiece] - 1
+              : whiteNetScore - piecesPoints[promotedPiece] + 1
+          )
         );
       } else {
-        setWhiteNetScore((prevScore) =>
-          !undo
-            ? prevScore - piecesPoints[promotedPiece] + 1
-            : prevScore + piecesPoints[promotedPiece] - 1
+        dispatch(
+          setWhiteNetScore(
+            !undo
+              ? whiteNetScore - piecesPoints[promotedPiece] + 1
+              : whiteNetScore + piecesPoints[promotedPiece] - 1
+          )
         );
       }
     }
@@ -123,38 +126,49 @@ export default function useChessGame() {
       let capturedPiece = moveRes.captured as PieceSymbolExcludingKing;
       let capturedPoint = piecesPoints[capturedPiece];
       if (moveRes.color == WHITE) {
-        setWhiteNetScore((prevScore) =>
-          !isUndo ? prevScore + capturedPoint : prevScore - capturedPoint
+        dispatch(
+          setWhiteNetScore(
+            !isUndo
+              ? whiteNetScore + capturedPoint
+              : whiteNetScore - capturedPoint
+          )
         );
-        setCapturedPiecesByWhite((prev) => ({
-          ...prev,
-          [capturedPiece]: !isUndo
-            ? prev[capturedPiece] + 1
-            : prev[capturedPiece] - 1,
-        }));
+        dispatch(
+          setCapturedPiecesByWhite({
+            ...capturedPiecesByWhite,
+            [capturedPiece]: !isUndo
+              ? capturedPiecesByWhite[capturedPiece] + 1
+              : capturedPiecesByWhite[capturedPiece] - 1,
+          })
+        );
       } else {
-        setWhiteNetScore((prevScore) =>
-          !undo ? prevScore - capturedPoint : prevScore + capturedPoint
+        dispatch(
+          setWhiteNetScore(
+            !isUndo
+              ? whiteNetScore - capturedPoint
+              : whiteNetScore + capturedPoint
+          )
         );
-        setCapturedPiecesByBlack((prev) => ({
-          ...prev,
-          [capturedPiece]: !undo
-            ? prev[capturedPiece] + 1
-            : prev[capturedPiece] - 1,
-        }));
+        dispatch(
+          setCapturedPiecesByBlack({
+            ...capturedPiecesByBlack,
+            [capturedPiece]: !isUndo
+              ? capturedPiecesByBlack[capturedPiece] + 1
+              : capturedPiecesByBlack[capturedPiece] - 1,
+          })
+        );
       }
     }
   };
   useEffect(() => {
     if (!undo) return;
     let moveRes = chess.undo();
-    console.log(moveRes);
     if (!moveRes) return;
     handleCapturedPiecesAndScores(moveRes, true);
     handleBoardUpdateOnMove(moveRes);
-    setLegalMoves([]);
-    setMove({ from: '', to: '' });
-    setUndo(false);
+    dispatch(setLegalMoves([]));
+    dispatch(resetMove());
+    dispatch(setUndo(false));
   }, [undo]);
   useEffect(() => {
     //if player has moved from one position to another, then attempt moving the move
@@ -166,29 +180,19 @@ export default function useChessGame() {
       } catch (e) {
         console.log('Invalid Move');
       } finally {
-        setMove({ from: '', to: '' });
+        dispatch(resetMove());
       }
     }
   }, [move]);
   useEffect(() => {
-    resetLocalStates();
-  }, [chess]);
-
+    dispatch(resetChess());
+    dispatch(resetPlayers());
+    dispatch(resetGameStatus());
+    dispatch(setBoard(chess.board()))
+  }, [rematch]);
   useEffect(() => {
     if (!hasResigned) return;
     gameOverChecks();
-    setHasResigned(false);
+    dispatch(setHasResigned(false));
   }, [hasResigned]);
-
-  return {
-    board,
-    turn,
-    move,
-    updateMove,
-    winner,
-    isGameOver,
-    gameOverDesc,
-    isDraw,
-    inCheck,
-  };
 }

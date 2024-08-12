@@ -1,44 +1,47 @@
 //TODO: Make a dragging feature
 
 import { BLACK, Color, KING, PieceSymbol, Square } from 'chess.js';
-import { CommonCellAndChessProps } from '../types';
 import PromotionOptions from './PromotionOptions';
-import { useContext, useState } from 'react';
-import { ChessGameContext } from '../context/ChessGameContext';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { GameControlContext } from '../context/GameControlContext';
-
-interface CellProps extends CommonCellAndChessProps {
+import { useSelector } from 'react-redux';
+import { RootState } from '../state/store';
+import { updateMove } from '../state/chess/chessSlice';
+import { useDispatch } from 'react-redux';
+interface CellProps {
   cell: {
     square: Square;
     type: PieceSymbol;
     color: Color;
   } | null;
   cellColor: string;
-  position: Square;
+  position: string;
   isDisable: boolean;
 }
 export default function Cell({
   cell,
   cellColor,
   position,
-  activeSquare,
-  turn,
-  inCheck,
-  updateMove,
   isDisable,
 }: CellProps) {
-  const { showPromotionOption, legalMoves } = useContext(ChessGameContext);
-  const { showLegalMoves } = useContext(GameControlContext);
+  const { legalMoves, turn, showPromotionOption } = useSelector(
+    (state: RootState) => state.chess
+  );
+  const dispatch = useDispatch();
+  const { showLegalMoves, move } = useSelector(
+    (state: RootState) => state.chess
+  );
+  const { isCheck } = useSelector((state: RootState) => state.gameStatus);
   const [pieceImg, setPieceImg] = useState<HTMLImageElement>();
   // const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const stylesforCell = () => {
+    let activeSquare = move.from;
     let classes = cellColor;
 
     if (cell) {
       classes = twMerge(classes, 'cursor-pointer');
     }
-    if (inCheck && turn == cell?.color && cell?.type == KING) {
+    if (isCheck && turn == cell?.color && cell?.type == KING) {
       classes = twMerge(classes, '!bg-red-300');
     }
     if (activeSquare === position) {
@@ -62,7 +65,7 @@ export default function Cell({
   const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
     setPieceImg(e.target as HTMLImageElement);
     // setStartPos({ x: e.clientX, y: e.clientY });
-    updateMove(cell, turn, position);
+    dispatch(updateMove({ cell, position }));
   };
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -77,14 +80,14 @@ export default function Cell({
   };
   const handleDrop = () => {
     if (!isDisable) {
-      updateMove(cell, turn, position);
+      dispatch(updateMove({ cell, position }));
     }
   };
   let classes = stylesforCell();
   return (
     <div
       onClick={() => {
-        !isDisable && updateMove(cell, turn, position);
+        !isDisable && dispatch(updateMove({ cell, position }));
       }}
       className={`${classes} relative flex items-center justify-center select-none sm:w-auto sm:h-auto`}
       onDragOver={(e) => {
@@ -101,7 +104,7 @@ export default function Cell({
           }}
           onDrag={handleDrag}
           onDragEnd={handleDragEnd}
-          className={`w-[95%] left-28 ${cell.color==BLACK && 'rotate-180'}`}
+          className={`w-[95%] left-28 ${cell.color == BLACK && 'rotate-180'}`}
         />
       )}
       {/* show possible legal moves */}
@@ -132,13 +135,7 @@ export default function Cell({
       {/* If there is going to be a promotion, display promotion options*/}
       {showPromotionOption.canShow &&
         showPromotionOption.position == position && (
-          <PromotionOptions
-            player={turn}
-            updateMove={updateMove}
-            cell={cell}
-            turn={turn}
-            position={position}
-          />
+          <PromotionOptions player={turn} cell={cell} position={position} />
         )}
     </div>
   );
