@@ -110,6 +110,7 @@ const chessSlice = createSlice({
     resetChess: (state) => {
       Object.assign(state, initialState);
       state.chess = new Chess();
+      state.board = state.chess.board()
     },
   },
 });

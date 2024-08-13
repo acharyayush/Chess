@@ -33,7 +33,7 @@ export default function App() {
         </div>
         <div className='offlinePlayBtn'>
           <Button
-            navigateTo='/play/offline'
+            navigateTo='/play/offline/askName'
             className='bg-gray-500 text-md w-[350px] xsm:w-[270px]  xsm:py-6 lg:w-[320px] md:w-[350px]'
           >
             <h1 className='text-3xl lg:text-2xl'>Play Offline</h1>

@@ -20,7 +20,7 @@ export default function Offline() {
   const { showLegalMoves, moveHistory } = useSelector(
     (state: RootState) => state.chess
   );
-  const { whiteNetScore, capturedPiecesByWhite, capturedPiecesByBlack } =
+  const { player1, player2, whiteNetScore, capturedPiecesByWhite, capturedPiecesByBlack } =
     useSelector((state: RootState) => state.players);
   const { isGameOver } = useSelector((state: RootState) => state.gameStatus);
   
@@ -33,7 +33,7 @@ export default function Offline() {
             <PlayerInfo
               className='mb-2'
               player='b'
-              name='Black'
+              name={player2}
               rating={1200}
               score={whiteNetScore}
               capturedPieces={capturedPiecesByBlack}
@@ -49,7 +49,7 @@ export default function Offline() {
             <PlayerInfo
               className='mt-2'
               player='w'
-              name='White'
+              name={player1}
               rating={1200}
               score={whiteNetScore}
               capturedPieces={capturedPiecesByWhite}

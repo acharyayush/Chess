@@ -1,0 +1,63 @@
+import { useState } from 'react';
+import Button from './shared/Button';
+import { useDispatch } from 'react-redux';
+import { setPlayers } from '../state/players/playerSlice';
+export default function AskNameForTwoPlayer() {
+  const dispatch = useDispatch();
+  const initialDetail = {
+    player1: '',
+    player2: '',
+  };
+  const [detail, setDetail] = useState(initialDetail);
+  const handleDetailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDetail((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+  const handleSubmit = () => {
+    // localStorage.setItem("offline/player1", detail.player1);
+    // localStorage.setItem("offline/player2", detail.player2);
+    dispatch(setPlayers(detail));
+  };
+  return (
+    <div className='menuContainer grid place-content-center h-screen'>
+      <div className='menu w-[350px] xsm:w-[270px] shadow-xl p-4 py-8 xsm:p-0 xsm:shadow-none'>
+        <div className='player1 mb-6'>
+          <label htmlFor='player1' className='font-bold text-lg'>
+            Player 1
+          </label>
+          <br />
+          <input
+            type='text'
+            autoComplete='off'
+            name='player1'
+            className='mt-1 outline-none border-2 border-blue-500 text-center bg-[#fff] rounded-md text-[1.05rem] p-2 w-full'
+            placeholder='Enter name of Player 1'
+            onChange={handleDetailChange}
+          />
+        </div>
+        <div className='player2 mb-6'>
+          <label htmlFor='player1' className='font-bold text-lg'>
+            Player2
+          </label>
+          <br />
+          <input
+            type='text'
+            autoComplete='off'
+            name='player2'
+            className='mt-1 outline-none border-2 border-blue-500 text-center bg-[#fff] rounded-md text-[1.05rem] p-2 w-full'
+            placeholder='Enter name of Player 2'
+            onChange={handleDetailChange}
+          />
+        </div>
+        <div className='text-center'>
+          <Button
+            navigateTo='/play/offline'
+            className='text-xl py-3 px-8'
+            onClick={handleSubmit}
+          >
+            Let's go
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

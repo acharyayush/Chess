@@ -23,11 +23,11 @@ export default function Button({children, isDisable, onClick, className, navigat
   }
   const renderButton = ()=>{
     if (!navigateTo){
-      return <button disabled={isDisable} style={!noShadow ? {boxShadow: "0 0.4rem 0.1rem rgba(0, 18, 47, 0.5)"} : {}} onClick={handleButtonClick} className={twMerge(`inline-block bg-blue-500 py-4 px-16 rounded-xl text-3xl font-bold text-white m-2`, className)}>
+      return <button disabled={isDisable} style={!noShadow ? {boxShadow: "0 0.4rem 0.1rem rgba(0, 18, 47, 0.5)"} : {}} onClick={handleButtonClick} className={twMerge(`inline-block outline-none bg-blue-500 py-4 px-16 rounded-xl text-3xl font-bold text-white m-2`, className)}>
       {children}
     </button>;
     }
-    return <Link style={!noShadow ? {boxShadow: "0 0.4rem 0.1rem rgba(0, 18, 47, 0.5)"} : {}} to={navigateTo} className={twMerge(`inline-block bg-blue-500 py-4 px-16 rounded-xl text-3xl font-bold text-white m-2`, className)}>
+    return <Link style={!noShadow ? {boxShadow: "0 0.4rem 0.1rem rgba(0, 18, 47, 0.5)"} : {}} onClick={handleButtonClick} to={navigateTo} className={twMerge(`inline-block outline-none bg-blue-500 py-4 px-16 rounded-xl text-3xl font-bold text-white m-2`, className)}>
       {children}
     </Link>;
   }

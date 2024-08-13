@@ -28,6 +28,7 @@ import {
   setCapturedPiecesByWhite,
   setCapturedPiecesByBlack,
   resetPlayers,
+  setPlayers,
 } from '../state/players/playerSlice';
 
 import { useDispatch } from 'react-redux';
@@ -37,7 +38,7 @@ export default function useChessGame() {
   const { hasResigned, rematch } = useSelector(
     (state: RootState) => state.gameStatus
   );
-  const { whiteNetScore, capturedPiecesByWhite, capturedPiecesByBlack } =
+  const {player1, player2, whiteNetScore, capturedPiecesByWhite, capturedPiecesByBlack } =
     useSelector((state: RootState) => state.players);
   const dispatch = useDispatch();
   //audios
@@ -160,6 +161,9 @@ export default function useChessGame() {
       }
     }
   };
+  useEffect(()=>{
+    dispatch(setBoard(chess.board()))
+  }, [])
   useEffect(() => {
     if (!undo) return;
     let moveRes = chess.undo();
@@ -185,10 +189,12 @@ export default function useChessGame() {
     }
   }, [move]);
   useEffect(() => {
+    if(!rematch) return
     dispatch(resetChess());
     dispatch(resetPlayers());
     dispatch(resetGameStatus());
-    dispatch(setBoard(chess.board()))
+    if(player1=="White" || player2=="Black") return
+    dispatch(setPlayers({player1: player2, player2: player1}))
   }, [rematch]);
   useEffect(() => {
     if (!hasResigned) return;

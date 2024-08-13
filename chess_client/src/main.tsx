@@ -7,12 +7,14 @@ import Offline from './components/Offline';
 import Online from './components/Online';
 import { Provider } from 'react-redux';
 import { store } from './state/store';
+import AskNameForTwoPlayer from './components/AskNameForTwoPlayer';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<App />}></Route>
+          <Route path='/play/offline/askName' element={<AskNameForTwoPlayer />}></Route>
           <Route path='/play/offline' element={<Offline />}></Route>
           <Route path='/play/online' element={<Online />}></Route>
         </Routes>
