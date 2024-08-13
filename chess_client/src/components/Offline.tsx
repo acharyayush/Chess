@@ -12,8 +12,8 @@ import { setHasResigned } from '../state/gameStatus/gameStatusSlice';
 import { setShowLegalMoves, setUndo } from '../state/chess/chessSlice';
 import { useDispatch } from 'react-redux';
 import useChessGame from '../hooks/useChessGame';
+import { BLACK, WHITE } from 'chess.js';
 export default function Offline() {
-  
   useChessGame();
 
   const dispatch = useDispatch();
@@ -32,7 +32,7 @@ export default function Offline() {
             {/* Logo, Name of player 1 */}
             <PlayerInfo
               className='mb-2'
-              player='b'
+              color={BLACK}
               name={player2}
               rating={1200}
               score={whiteNetScore}
@@ -48,7 +48,7 @@ export default function Offline() {
             {/* Logo, Name of player 2 */}
             <PlayerInfo
               className='mt-2'
-              player='w'
+              color={WHITE}
               name={player1}
               rating={1200}
               score={whiteNetScore}

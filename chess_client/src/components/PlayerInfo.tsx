@@ -5,7 +5,7 @@ import { capturedPiecesAndNumberType } from '../types';
 import { twMerge } from 'tailwind-merge';
 
 interface PlayerInfoProps {
-  player: Color;
+  color: Color;
   name: string;
   rating: number;
   capturedPieces: capturedPiecesAndNumberType;
@@ -13,7 +13,7 @@ interface PlayerInfoProps {
   className?: string,
 }
 export default function PlayerInfo({
-  player,
+  color,
   name,
   rating,
   capturedPieces,
@@ -46,7 +46,7 @@ export default function PlayerInfo({
             }}
             key={uuidv4()}
             className={`absolute top-[0]`}
-            src={`/pieces/${player === WHITE ? 'b' : 'w'}${piece}.svg`}
+            src={`/pieces/${color === WHITE ? 'b' : 'w'}${piece}.svg`}
             alt=''
           />
         );
@@ -75,17 +75,17 @@ export default function PlayerInfo({
     );
   };
   const renderScore = () => {
-    if (score > 0 && player == WHITE) {
+    if (score > 0 && color == WHITE) {
       return <>+{score}</>;
     }
-    if (score < 0 && player == BLACK) {
+    if (score < 0 && color == BLACK) {
       return <>+{-score}</>;
     }
   };
   return (
     <div className={twMerge('flex text-white', className)}>
       <div className='profileImg'>
-        <ProfileImg player={player} />
+        <ProfileImg color={color} />
       </div>
       <div className='details px-2'>
         <div className='name font-bold'>
