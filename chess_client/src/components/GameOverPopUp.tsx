@@ -1,4 +1,4 @@
-import ProfileImg from './ProfileImg';
+import ProfileImg from './shared/ProfileImg';
 import Button from './shared/Button';
 import { twMerge } from 'tailwind-merge';
 import { useSelector, useDispatch } from 'react-redux';

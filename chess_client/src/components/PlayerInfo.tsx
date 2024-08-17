@@ -1,6 +1,6 @@
 import { BLACK, Color, WHITE } from 'chess.js';
 import { v4 as uuidv4 } from 'uuid';
-import ProfileImg from './ProfileImg';
+import ProfileImg from './shared/ProfileImg';
 import { capturedPiecesAndNumberType } from '../types';
 import { twMerge } from 'tailwind-merge';
 

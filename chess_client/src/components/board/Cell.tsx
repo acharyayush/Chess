@@ -5,8 +5,8 @@ import PromotionOptions from './PromotionOptions';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
-import { updateMove } from '../state/chess/chessSlice';
+import { RootState } from '../../state/store';
+import { updateMove } from '../../state/chess/chessSlice';
 import { useDispatch } from 'react-redux';
 interface CellProps {
   cell: {

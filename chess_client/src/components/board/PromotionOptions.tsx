@@ -1,12 +1,12 @@
 import { Color, PieceSymbol, WHITE } from 'chess.js';
-import { Cell } from '../types';
+import { Cell } from '../../types';
 import { useDispatch } from 'react-redux';
 import {
   setPromotion,
   setShowPromotionOption,
-} from '../state/chess/chessSlice';
+} from '../../state/chess/chessSlice';
 import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
+import { RootState } from '../../state/store';
 interface PromotionOptionsProps {
   player: Color;
   cell: Cell;
