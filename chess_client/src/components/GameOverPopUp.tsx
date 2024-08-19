@@ -12,9 +12,7 @@ function GameOverPopUp({ className }: GameOverPopUp) {
   const { winner, gameOverDescription, isDraw } = useSelector(
     (state: RootState) => state.gameStatus
   );
-  const { player1, player2 } = useSelector(
-    (state: RootState) => state.players
-  );
+  const { player1, player2 } = useSelector((state: RootState) => state.players);
   const dispatch = useDispatch();
   const getHeading = () => {
     let heading: string;

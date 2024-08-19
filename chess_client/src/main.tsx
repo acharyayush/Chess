@@ -14,7 +14,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<App />}></Route>
-          <Route path='/play/offline/askName' element={<AskNameForTwoPlayer />}></Route>
+          <Route
+            path='/play/offline/askName'
+            element={<AskNameForTwoPlayer />}
+          ></Route>
           <Route path='/play/offline' element={<Offline />}></Route>
           <Route path='/play/online' element={<Online />}></Route>
         </Routes>

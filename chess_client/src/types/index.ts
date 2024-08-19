@@ -11,14 +11,17 @@ export type Cell = {
   type: PieceSymbol;
   color: Color;
 } | null;
-export type PieceSymbolExcludingKing = Exclude<PieceSymbol, "k">
-export type capturedPiecesAndNumberType = Record<PieceSymbolExcludingKing, number>
+export type PieceSymbolExcludingKing = Exclude<PieceSymbol, 'k'>;
+export type capturedPiecesAndNumberType = Record<
+  PieceSymbolExcludingKing,
+  number
+>;
 export type updateMoveType = (
   cell: Cell,
   turn: Color,
-  position: Square,
+  position: Square
 ) => void;
 export type updateMovePayload = {
-   cell: Cell,
-   position: string
-}
+  cell: Cell;
+  position: string;
+};

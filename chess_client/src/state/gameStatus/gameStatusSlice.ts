@@ -7,7 +7,7 @@ export interface gameStatusState {
   hasResigned: boolean;
   gameOverDescription: string;
   isDraw: boolean;
-  isCheck: boolean,
+  isCheck: boolean;
   rematch: boolean;
 }
 const initialState: gameStatusState = {

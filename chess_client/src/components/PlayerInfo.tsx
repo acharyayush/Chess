@@ -10,7 +10,7 @@ interface PlayerInfoProps {
   rating: number;
   capturedPieces: capturedPiecesAndNumberType;
   score: number;
-  className?: string,
+  className?: string;
 }
 export default function PlayerInfo({
   color,
@@ -27,18 +27,16 @@ export default function PlayerInfo({
     //then calculate the total width of groups, (render the pieces in the process)
 
     const capturedPiecesGroups: JSX.Element[] = [];
-    let numberOfGroups = 0;
     let groupsWidth = 0;
     for (const [piece, count] of Object.entries(capturedPieces)) {
       let numberOfCaptures = count;
       if (numberOfCaptures <= 0) continue;
-      numberOfGroups++;
       const group: JSX.Element[] = [];
       let captureOfSimilarPiece = 0;
       let groupWidth = 0;
       while (numberOfCaptures--) {
         groupWidth = (captureOfSimilarPiece * pieceWidth) / 3;
-        let pieceImgElement = (
+        const pieceImgElement = (
           <img
             style={{
               width: pieceWidth + 'px',
@@ -53,7 +51,7 @@ export default function PlayerInfo({
         group.push(pieceImgElement);
         captureOfSimilarPiece++;
       }
-      groupWidth += pieceWidth
+      groupWidth += pieceWidth;
       groupsWidth += groupWidth;
       capturedPiecesGroups.push(
         <div
@@ -92,7 +90,7 @@ export default function PlayerInfo({
           {name}
           <span className='font-normal'>{` (${rating})`}</span>
         </div>
-        <div className='flex' style={{height: pieceWidth+"px"}}>
+        <div className='flex' style={{ height: pieceWidth + 'px' }}>
           <div className='capturedPieces'>{renderCapturedPieces()}</div>
           <div className='score ml-2 text-gray-100'>{renderScore()}</div>
         </div>

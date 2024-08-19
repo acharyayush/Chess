@@ -1,5 +1,4 @@
-import { Color, PieceSymbol } from "chess.js";
-import { Socket } from "socket.io";
+import {PieceSymbol } from "chess.js";
 
 export type Move = {
     from: string;

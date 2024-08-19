@@ -36,7 +36,7 @@ export default function Cell({
   const [pieceImg, setPieceImg] = useState<HTMLImageElement>();
   // const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const stylesforCell = () => {
-    let activeSquare = move.from;
+    const activeSquare = move.from;
     let classes = cellColor;
 
     if (cell) {
@@ -63,8 +63,8 @@ export default function Cell({
     return classes;
   };
   const displayBoardIdx = () => {
-    let compareWith = mainPlayer == WHITE ? 0 : 1;
-    let indices: JSX.Element[] = [];
+    const compareWith = mainPlayer == WHITE ? 0 : 1;
+    const indices: JSX.Element[] = [];
     if (
       (mainPlayer == WHITE && position[0] == 'a') ||
       (mainPlayer == BLACK && position[0] == 'h')
@@ -114,7 +114,7 @@ export default function Cell({
     if (isDisable) return;
     dispatch(updateMove({ cell, position }));
   };
-  let classes = stylesforCell();
+  const classes = stylesforCell();
   return (
     <div
       onClick={handleDrop}

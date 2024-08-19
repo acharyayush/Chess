@@ -72,7 +72,7 @@ const chessSlice = createSlice({
     setPromotion: (state, action: PayloadAction<PieceSymbol | null>) => {
       state.promotion = action.payload;
       if (state.promotion) {
-        let moveToSet = {
+        const moveToSet = {
           ...state.move,
           to: state.showPromotionOption?.position || '',
           promotion: state.promotion,
@@ -82,7 +82,7 @@ const chessSlice = createSlice({
         return;
       }
     },
-    setMove: (state,action:PayloadAction<Move>)=>{
+    setMove: (state, action: PayloadAction<Move>) => {
       state.move = action.payload;
     },
     resetMove: (state) => {
@@ -105,11 +105,11 @@ const chessSlice = createSlice({
 
       //UPDATE TO
       state.legalMoves = [];
-      let moveToSet = { ...state.move, to: payload.position };
+      const moveToSet = { ...state.move, to: payload.position };
 
       //To show promotion Option if pawn is at last position
       if (payload.position[1] == '1' || payload.position[1] == '8') {
-        let pieceToMove = state.chess.get(moveToSet.from as Square).type;
+        const pieceToMove = state.chess.get(moveToSet.from as Square).type;
         //validation check
         if (
           pieceToMove == PAWN &&
@@ -124,13 +124,13 @@ const chessSlice = createSlice({
       }
       //Normal game move
       state.move = moveToSet;
-      if(state.isOnline) socket.emit(SEND_MOVE, moveToSet)
+      if (state.isOnline) socket.emit(SEND_MOVE, moveToSet);
     },
     setIsOnline: (state, action: PayloadAction<boolean>) => {
       state.isOnline = action.payload;
     },
     resetChess: (state) => {
-      let isOnline = state.isOnline;
+      const isOnline = state.isOnline;
       Object.assign(state, initialState);
       state.chess = new Chess();
       state.board = state.chess.board();

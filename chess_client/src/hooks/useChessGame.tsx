@@ -39,9 +39,14 @@ export default function useChessGame() {
   const { hasResigned, rematch } = useSelector(
     (state: RootState) => state.gameStatus
   );
-  const {player1, player2, whiteNetScore, capturedPiecesByWhite, capturedPiecesByBlack } =
-    useSelector((state: RootState) => state.players);
-  const {handleSoundEffects} = useSound()
+  const {
+    player1,
+    player2,
+    whiteNetScore,
+    capturedPiecesByWhite,
+    capturedPiecesByBlack,
+  } = useSelector((state: RootState) => state.players);
+  const { handleSoundEffects } = useSound();
   const dispatch = useDispatch();
   const getWinner = () => {
     return chess.turn() == BLACK ? WHITE : BLACK;
@@ -86,7 +91,7 @@ export default function useChessGame() {
 
   const handleCapturedPiecesAndScores = (moveRes: Move, isUndo?: boolean) => {
     if (moveRes.promotion) {
-      let promotedPiece = moveRes.promotion as PieceSymbolExcludingKing;
+      const promotedPiece = moveRes.promotion as PieceSymbolExcludingKing;
       if (moveRes.color == WHITE) {
         dispatch(
           setWhiteNetScore(
@@ -106,8 +111,8 @@ export default function useChessGame() {
       }
     }
     if (moveRes.captured) {
-      let capturedPiece = moveRes.captured as PieceSymbolExcludingKing;
-      let capturedPoint = piecesPoints[capturedPiece];
+      const capturedPiece = moveRes.captured as PieceSymbolExcludingKing;
+      const capturedPoint = piecesPoints[capturedPiece];
       if (moveRes.color == WHITE) {
         dispatch(
           setWhiteNetScore(
@@ -143,12 +148,12 @@ export default function useChessGame() {
       }
     }
   };
-  useEffect(()=>{
-    dispatch(setBoard(chess.board()))
-  }, [])
+  useEffect(() => {
+    dispatch(setBoard(chess.board()));
+  }, []);
   useEffect(() => {
     if (!undo) return;
-    let moveRes = chess.undo();
+    const moveRes = chess.undo();
     if (!moveRes) return;
     handleCapturedPiecesAndScores(moveRes, true);
     handleBoardUpdateOnMove(moveRes);
@@ -160,7 +165,7 @@ export default function useChessGame() {
     //if player has moved from one position to another, then attempt moving the move
     if (move.from && move.to) {
       try {
-        let moveRes = chess.move(move);
+        const moveRes = chess.move(move);
         handleCapturedPiecesAndScores(moveRes);
         handleBoardUpdateOnMove(moveRes);
       } catch (e) {
@@ -171,12 +176,12 @@ export default function useChessGame() {
     }
   }, [move]);
   useEffect(() => {
-    if(!rematch) return
+    if (!rematch) return;
     dispatch(resetChess());
     dispatch(resetPlayers());
     dispatch(resetGameStatus());
-    if(player1=="White" || player2=="Black") return
-    dispatch(setPlayers({player1: player2, player2: player1}))
+    if (player1 == 'White' || player2 == 'Black') return;
+    dispatch(setPlayers({ player1: player2, player2: player1 }));
   }, [rematch]);
   useEffect(() => {
     if (!hasResigned) return;

@@ -9,7 +9,7 @@ export default function useSound() {
   const handleSoundEffects = (flag: string, inCheck: boolean) => {
     if (inCheck) {
       check.play();
-      return
+      return;
     }
     if (flag == 'n' || flag == 'b' || flag == 'p' || flag == 'e') {
       normalMove.play();

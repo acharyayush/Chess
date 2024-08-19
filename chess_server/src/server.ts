@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     //remove player if he was in waiting list
-    let wasWaiting = gameManager.removePlayerFromWaitingList(socket)
+    const wasWaiting = gameManager.removePlayerFromWaitingList(socket)
     if(wasWaiting) return;
     
     //try to reconnect and if it fails, remove player from the game, declare another player as winner  

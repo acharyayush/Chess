@@ -1,5 +1,4 @@
 import { BLACK, Color, PieceSymbol, WHITE } from 'chess.js';
-import { Cell } from '../../types';
 import { useDispatch } from 'react-redux';
 import {
   setPromotion,
@@ -25,38 +24,54 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
       <div
         className='cursor-pointer'
         onClick={(e) => {
-          e.stopPropagation()
+          e.stopPropagation();
           handlePromotionOnClick('q');
         }}
       >
-        <img src={`/pieces/${player}q.svg`} className={`${player==BLACK && "rotate-180"}`} alt='' />
+        <img
+          src={`/pieces/${player}q.svg`}
+          className={`${player == BLACK && 'rotate-180'}`}
+          alt=''
+        />
       </div>
       <div
         className='cursor-pointer'
         onClick={(e) => {
-          e.stopPropagation()
+          e.stopPropagation();
           handlePromotionOnClick('r');
         }}
       >
-        <img src={`/pieces/${player}r.svg`} className={`${player==BLACK && "rotate-180"}`} alt='' />
+        <img
+          src={`/pieces/${player}r.svg`}
+          className={`${player == BLACK && 'rotate-180'}`}
+          alt=''
+        />
       </div>
       <div
         className='cursor-pointer'
         onClick={(e) => {
-          e.stopPropagation()
+          e.stopPropagation();
           handlePromotionOnClick('n');
         }}
       >
-        <img src={`/pieces/${player}n.svg`} className={`${player==BLACK && "rotate-180"}`} alt='' />
+        <img
+          src={`/pieces/${player}n.svg`}
+          className={`${player == BLACK && 'rotate-180'}`}
+          alt=''
+        />
       </div>
       <div
         className='cursor-pointer'
         onClick={(e) => {
-          e.stopPropagation()
+          e.stopPropagation();
           handlePromotionOnClick('b');
         }}
       >
-        <img src={`/pieces/${player}b.svg`} className={`${player==BLACK && "rotate-180"}`} alt='' />
+        <img
+          src={`/pieces/${player}b.svg`}
+          className={`${player == BLACK && 'rotate-180'}`}
+          alt=''
+        />
       </div>
       <div className='h-[30px] bg-gray-300 text-gray-800 grid place-content-center font-bold'>
         <span>X</span>

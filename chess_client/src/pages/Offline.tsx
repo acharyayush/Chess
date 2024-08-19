@@ -20,10 +20,15 @@ export default function Offline() {
   const { showLegalMoves, moveHistory } = useSelector(
     (state: RootState) => state.chess
   );
-  const { player1, player2, whiteNetScore, capturedPiecesByWhite, capturedPiecesByBlack } =
-    useSelector((state: RootState) => state.players);
+  const {
+    player1,
+    player2,
+    whiteNetScore,
+    capturedPiecesByWhite,
+    capturedPiecesByBlack,
+  } = useSelector((state: RootState) => state.players);
   const { isGameOver } = useSelector((state: RootState) => state.gameStatus);
-  
+
   return (
     <div className='bg-slate-700 min-h-screen p-5 xsm:p-2'>
       <div className='w-[90%] xl:w-[100%] mx-auto flex justify-evenly lg:flex-col lg:items-center'>

@@ -12,11 +12,11 @@ function MoveHistory() {
   }, [moveHistory]);
   const renderhistory = () => {
     const historyMoves: JSX.Element[] = [];
-    let isEvenMoves = moveHistory.length % 2 == 0;
-    let len = isEvenMoves ? moveHistory.length : moveHistory.length - 1;
+    const isEvenMoves = moveHistory.length % 2 == 0;
+    const len = isEvenMoves ? moveHistory.length : moveHistory.length - 1;
     let count = 1;
     for (let i = 0; i < len; i += 2) {
-      let myRow = (
+      const myRow = (
         <div
           key={count}
           className={`${count % 2 == 0 && 'bg-[rgba(255,255,255,0.05)]'} py-0.5`}
@@ -38,7 +38,7 @@ function MoveHistory() {
       count++;
     }
     if (!isEvenMoves) {
-      let myRow = (
+      const myRow = (
         <div
           key={count}
           className={`${count % 2 == 0 && 'bg-[rgba(255,255,255,0.05)]'} py-0.5`}

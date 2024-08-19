@@ -7,12 +7,12 @@ import { useSelector } from 'react-redux';
 import useSocket from '../hooks/useSocket';
 import useChessGame from '../hooks/useChessGame';
 export default function Online() {
-  useChessGame()
+  useChessGame();
   const { isOnline, turn } = useSelector((state: RootState) => state.chess);
   const { isGameOver } = useSelector((state: RootState) => state.gameStatus);
   const { mainPlayer } = useSelector((state: RootState) => state.players);
   // const dispatch = useDispatch()
-  const {success} = useSocket()
+  const { success } = useSocket();
   // useEffect(()=>{
   //   dispatch(setBoard(chess.board()))
   // }, [])
@@ -29,7 +29,7 @@ export default function Online() {
               >
                 waiting for your opponent
               </div>
-              <Loader className='sm:!w-[120px] sm:!h-[120px]'/>
+              <Loader className='sm:!w-[120px] sm:!h-[120px]' />
             </>
           </LoaderContainer>
         )}
@@ -40,7 +40,9 @@ export default function Online() {
               {isGameOver && (
                 <GameOverPopUp className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' />
               )}
-              <ChessBoard isDisable={isGameOver || (isOnline && turn!=mainPlayer)} />
+              <ChessBoard
+                isDisable={isGameOver || (isOnline && turn != mainPlayer)}
+              />
             </div>
           </div>
         )}

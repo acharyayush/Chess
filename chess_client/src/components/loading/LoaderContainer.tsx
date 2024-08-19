@@ -4,13 +4,11 @@ interface LoaderContainerProps {
   className?: string;
   children: JSX.Element;
 }
-export default function LoaderContainer({ className, children }: LoaderContainerProps) {
+export default function LoaderContainer({
+  className,
+  children,
+}: LoaderContainerProps) {
   return (
-    <div
-      className={twMerge('loaderContainer', className)}
-    >
-        {children}
-    </div>
+    <div className={twMerge('loaderContainer', className)}>{children}</div>
   );
 }
-

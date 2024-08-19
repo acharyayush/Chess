@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { INIT_GAME, RECEIVE_MOVE, SEND_MOVE } from './events';
+import { INIT_GAME, SEND_MOVE } from './events';
 import Game from './Game';
 import { Move } from './types';
 import { BLACK, WHITE } from 'chess.js';
@@ -21,7 +21,7 @@ export default class GameManager {
   private addMoveEventHandler(player: Socket) {
     player.on(SEND_MOVE, (move: Move) => {
       //get the game that belongs to the socket getting move
-      let game = this.findGame(player);
+      const game = this.findGame(player);
       try{
       //make the move in that game
       game?.makeMove(player, move);
@@ -36,7 +36,7 @@ export default class GameManager {
       this.waitingPlayer = player;
       return;
     }
-    let game = new Game(this.waitingPlayer, player);
+    const game = new Game(this.waitingPlayer, player);
     this.games.push(game);
     //send event to both sockets to start the game
     //socket 1 = WHITE and socket 2 = BLACK
@@ -51,9 +51,9 @@ export default class GameManager {
     return false;
   }
   handleRematch(player: Socket) {
-    let game = this.findGame(player);
+    const game = this.findGame(player);
     if(!game) return;
-    let isReady = game.handleResetForRematch(player)
+    const isReady = game.handleResetForRematch(player)
     if(isReady){
       this.emitToInitiateGame(game)
     }

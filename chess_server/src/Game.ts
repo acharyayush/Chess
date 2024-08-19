@@ -38,7 +38,7 @@ export default class Game {
   //if player is making move on his turn then update chess by making move
   makeMove(player: Socket, move: Move) {
     try {
-      let playerColor = this.getPlayerColor(player.id);
+      const playerColor = this.getPlayerColor(player.id);
       if (playerColor != this.chess.turn()) return;
       this.chess.move(move);
       player.to(this.roomId).emit(RECEIVE_MOVE, move);
@@ -59,7 +59,7 @@ export default class Game {
 
     this.chess = new Chess();
     //swapping player color after rematch
-    let temp = this.player1;
+    const temp = this.player1;
     this.player1 = this.player2;
     this.player2 = temp;
     this.rematchStatus = { player1: false, player2: false };

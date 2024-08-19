@@ -13,7 +13,7 @@ export default function AskNameForTwoPlayer() {
     setDetail((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   const handleSubmit = () => {
-    if(!detail.player1 || !detail.player2) return;
+    if (!detail.player1 || !detail.player2) return;
     dispatch(setPlayers(detail));
   };
   return (

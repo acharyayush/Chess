@@ -4,7 +4,7 @@ import { Color, WHITE } from 'chess.js';
 export interface PlayerState {
   player1: string;
   player2: string;
-  mainPlayer: Color,
+  mainPlayer: Color;
   whiteNetScore: number;
   capturedPiecesByWhite: capturedPiecesAndNumberType;
   capturedPiecesByBlack: capturedPiecesAndNumberType;
@@ -44,7 +44,7 @@ const playerSlice = createSlice({
     ) => {
       state.capturedPiecesByBlack = action.payload;
     },
-    setMainPlayer: (state, action:PayloadAction<Color>)=>{
+    setMainPlayer: (state, action: PayloadAction<Color>) => {
       state.mainPlayer = action.payload;
     },
     resetPlayers: (state) => {
@@ -58,6 +58,6 @@ export const {
   setCapturedPiecesByWhite,
   setCapturedPiecesByBlack,
   resetPlayers,
-  setMainPlayer
+  setMainPlayer,
 } = playerSlice.actions;
 export default playerSlice.reducer;

@@ -10,11 +10,11 @@ export function extractPosition(move: string, turn: Color) {
     if (turn == WHITE) return 'c1';
     return 'c8';
   }
-  let regex = /[a-h][1-9]/;
+  const regex = /[a-h][1-9]/;
   return move.match(regex)?.[0] as Square;
 }
 export const isValidMove = (chess: Chess, move: Move) => {
-  let temp = new Chess(chess.fen());
+  const temp = new Chess(chess.fen());
   try {
     //just to check if move is valid, queen is taken as promotion sample
     temp.move({ ...move, promotion: 'q' });
