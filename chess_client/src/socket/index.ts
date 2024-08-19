@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-const URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+const URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+console.log(import.meta.env.VITE_BACKEND_URL);
 const socket: Socket = io(URL);
 export default socket;
