@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getLegalMoves, isValidMove } from '../../utils/utils';
 import { Chess, Color, PAWN, PieceSymbol, Square, WHITE } from 'chess.js';
 import { Move, updateMovePayload } from '../../types';
+import socket from '../../socket';
+import { SEND_MOVE } from '../../constants';
 export type ChessState = {
   chess: Chess;
   moveHistory: string[];
@@ -13,6 +15,7 @@ export type ChessState = {
   move: Move;
   showPromotionOption: { canShow: boolean; position?: string };
   promotion: PieceSymbol | null;
+  isOnline: boolean;
 };
 
 const initialState: ChessState = {
@@ -26,6 +29,7 @@ const initialState: ChessState = {
   move: { from: '', to: '' },
   showPromotionOption: { canShow: false },
   promotion: null,
+  isOnline: false,
 };
 const chessSlice = createSlice({
   name: 'chess',
@@ -51,8 +55,12 @@ const chessSlice = createSlice({
     },
     setShowLegalMoves: (state, action: PayloadAction<boolean>) => {
       state.showLegalMoves = action.payload;
-      if(state.showLegalMoves && state.move.from){
-        state.legalMoves = getLegalMoves(state.chess as Chess, state.move.from as Square, state.turn)
+      if (state.showLegalMoves && state.move.from) {
+        state.legalMoves = getLegalMoves(
+          state.chess as Chess,
+          state.move.from as Square,
+          state.turn
+        );
       }
     },
     setShowPromotionOption: (
@@ -74,16 +82,23 @@ const chessSlice = createSlice({
         return;
       }
     },
+    setMove: (state,action:PayloadAction<Move>)=>{
+      state.move = action.payload;
+    },
     resetMove: (state) => {
       state.move = { from: '', to: '' };
     },
     updateMove: (state, { payload }: PayloadAction<updateMovePayload>) => {
-      //to update 'from' the selected piece must belong to active player
+      //to update the key 'from', the selected piece must belong to active player
       //UPDATE FROM
       if (state.turn == payload.cell?.color) {
         state.move = { from: payload.cell.square, to: '' };
         if (state.showLegalMoves) {
-          state.legalMoves = getLegalMoves(state.chess as Chess, payload.position as Square, state.turn)
+          state.legalMoves = getLegalMoves(
+            state.chess as Chess,
+            payload.position as Square,
+            state.turn
+          );
         }
         return;
       }
@@ -96,7 +111,10 @@ const chessSlice = createSlice({
       if (payload.position[1] == '1' || payload.position[1] == '8') {
         let pieceToMove = state.chess.get(moveToSet.from as Square).type;
         //validation check
-        if (pieceToMove == PAWN && isValidMove(state.chess as Chess, moveToSet)) {
+        if (
+          pieceToMove == PAWN &&
+          isValidMove(state.chess as Chess, moveToSet)
+        ) {
           state.showPromotionOption = {
             canShow: true,
             position: payload.position,
@@ -106,11 +124,17 @@ const chessSlice = createSlice({
       }
       //Normal game move
       state.move = moveToSet;
+      if(state.isOnline) socket.emit(SEND_MOVE, moveToSet)
+    },
+    setIsOnline: (state, action: PayloadAction<boolean>) => {
+      state.isOnline = action.payload;
     },
     resetChess: (state) => {
+      let isOnline = state.isOnline;
       Object.assign(state, initialState);
       state.chess = new Chess();
-      state.board = state.chess.board()
+      state.board = state.chess.board();
+      state.isOnline = isOnline;
     },
   },
 });
@@ -125,7 +149,9 @@ export const {
   setPromotion,
   setShowPromotionOption,
   updateMove,
+  setMove,
   resetMove,
+  setIsOnline,
   resetChess,
 } = chessSlice.actions;
 export default chessSlice.reducer;

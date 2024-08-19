@@ -1,3 +1,5 @@
+import { JOIN_GAME } from '../constants';
+import socket from '../socket';
 import Button from './shared/Button';
 export default function App() {
   return (
@@ -21,6 +23,7 @@ export default function App() {
         <div className='flex flex-col'>
           <div className='onlinePlayBtn mb-4'>
             <Button
+              onClick={()=>{socket.emit(JOIN_GAME)}}
               navigateTo='/play/online'
               className='text-md w-[350px] xsm:py-6 xsm:w-[270px] lg:w-[320px] md:w-[350px]'
             >

@@ -1,6 +1,6 @@
 //TODO: Make a dragging feature
 
-import { BLACK, Color, KING, PieceSymbol, Square } from 'chess.js';
+import { BLACK, Color, KING, PieceSymbol, Square, WHITE } from 'chess.js';
 import PromotionOptions from './PromotionOptions';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -32,6 +32,7 @@ export default function Cell({
     (state: RootState) => state.chess
   );
   const { isCheck } = useSelector((state: RootState) => state.gameStatus);
+  const { mainPlayer } = useSelector((state: RootState) => state.players);
   const [pieceImg, setPieceImg] = useState<HTMLImageElement>();
   // const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const stylesforCell = () => {
@@ -61,8 +62,39 @@ export default function Cell({
     }
     return classes;
   };
+  const displayBoardIdx = () => {
+    let compareWith = mainPlayer == WHITE ? 0 : 1;
+    let indices: JSX.Element[] = [];
+    if (
+      (mainPlayer == WHITE && position[0] == 'a') ||
+      (mainPlayer == BLACK && position[0] == 'h')
+    )
+      indices.push(
+        <span
+          key={`letter-${position}`}
+          className={`${Number(position[1]) % 2 == compareWith ? 'text-blue-500' : 'text-white'} absolute  ${mainPlayer == BLACK ? 'rotate-180 bottom-0 right-1' : 'top-0 left-1'}`}
+        >
+          {position[1]}
+        </span>
+      );
+    if (
+      (mainPlayer == WHITE && position[1] == '1') ||
+      (mainPlayer == BLACK && position[1] == '8')
+    )
+      indices.push(
+        <span
+          key={`num-${position}`}
+          className={`${(position.charCodeAt(0) - 97) % 2 == compareWith ? 'text-white' : 'text-blue-500'} absolute ${mainPlayer == BLACK ? 'rotate-180 top-0 left-1' : 'bottom-0 right-1'}`}
+        >
+          {position[0]}
+        </span>
+      );
+    return indices;
+  };
+
   //dragging feature
   const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
+    if (isDisable) return;
     setPieceImg(e.target as HTMLImageElement);
     // setStartPos({ x: e.clientX, y: e.clientY });
     dispatch(updateMove({ cell, position }));
@@ -79,16 +111,13 @@ export default function Cell({
     pieceImg.style.opacity = '1';
   };
   const handleDrop = () => {
-    if (!isDisable) {
-      dispatch(updateMove({ cell, position }));
-    }
+    if (isDisable) return;
+    dispatch(updateMove({ cell, position }));
   };
   let classes = stylesforCell();
   return (
     <div
-      onClick={() => {
-        !isDisable && dispatch(updateMove({ cell, position }));
-      }}
+      onClick={handleDrop}
       className={`${classes} relative flex items-center justify-center select-none sm:w-auto sm:h-auto`}
       onDragOver={(e) => {
         handleDragOver(e);
@@ -118,24 +147,11 @@ export default function Cell({
         ></span>
       )}
       {/* display corresponding position at the bottom row and first column */}
-      {position[0] == 'a' && (
-        <span
-          className={`${Number(position[1]) % 2 == 0 ? 'text-blue-500' : 'text-white'} absolute top-0 left-1`}
-        >
-          {position[1]}
-        </span>
-      )}
-      {position[1] == '1' && (
-        <span
-          className={`${(position.charCodeAt(0) - 97) % 2 == 0 ? 'text-white' : 'text-blue-500'} absolute bottom-0 right-1`}
-        >
-          {position[0]}
-        </span>
-      )}
+      {displayBoardIdx()}
       {/* If there is going to be a promotion, display promotion options*/}
       {showPromotionOption.canShow &&
         showPromotionOption.position == position && (
-          <PromotionOptions player={turn} cell={cell} position={position} />
+          <PromotionOptions player={turn} />
         )}
     </div>
   );

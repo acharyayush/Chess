@@ -1,5 +1,5 @@
 import { BLACK, Move, WHITE } from 'chess.js';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { PieceSymbolExcludingKing } from '../types';
 import { piecesPoints } from '../constants';
 import { useSelector } from 'react-redux';
@@ -32,6 +32,7 @@ import {
 } from '../state/players/playerSlice';
 
 import { useDispatch } from 'react-redux';
+import useSound from './useSound';
 
 export default function useChessGame() {
   const { chess, move, undo } = useSelector((state: RootState) => state.chess);
@@ -40,26 +41,8 @@ export default function useChessGame() {
   );
   const {player1, player2, whiteNetScore, capturedPiecesByWhite, capturedPiecesByBlack } =
     useSelector((state: RootState) => state.players);
+  const {handleSoundEffects} = useSound()
   const dispatch = useDispatch();
-  //audios
-  const [normalMove] = useState(new Audio('/sounds/move-self.mp3'));
-  const [capture] = useState(new Audio('/sounds/capture.mp3'));
-  const [castle] = useState(new Audio('/sounds/castle.mp3'));
-  const [check] = useState(new Audio('/sounds/move-check.mp3'));
-  const handleSoundEffects = (flag: string) => {
-    if (flag == 'n' || flag == 'b' || flag == 'p' || flag == 'e') {
-      normalMove.play();
-      return;
-    }
-    if (flag == 'c') {
-      capture.play();
-      return;
-    }
-    if (flag == 'k' || flag == 'q') {
-      castle.play();
-      return;
-    }
-  };
   const getWinner = () => {
     return chess.turn() == BLACK ? WHITE : BLACK;
   };
@@ -92,11 +75,10 @@ export default function useChessGame() {
     dispatch(setMoveHistory(chess.history()));
     dispatch(setBoard(chess.board()));
     dispatch(setTurn(chess.turn()));
+    handleSoundEffects(moveRes.flags, chess.inCheck());
     if (chess.inCheck()) {
-      check.play();
       dispatch(setIsCheck(true));
     } else {
-      handleSoundEffects(moveRes.flags);
       dispatch(setIsCheck(false));
     }
     gameOverChecks();

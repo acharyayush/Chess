@@ -1,4 +1,4 @@
-import { Color, PieceSymbol, WHITE } from 'chess.js';
+import { BLACK, Color, PieceSymbol, WHITE } from 'chess.js';
 import { Cell } from '../../types';
 import { useDispatch } from 'react-redux';
 import {
@@ -9,8 +9,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 interface PromotionOptionsProps {
   player: Color;
-  cell: Cell;
-  position: string;
 }
 function PromotionOptions({ player }: PromotionOptionsProps) {
   const { turn } = useSelector((state: RootState) => state.chess);
@@ -31,7 +29,7 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
           handlePromotionOnClick('q');
         }}
       >
-        <img src={`/pieces/${player}q.svg`} alt='' />
+        <img src={`/pieces/${player}q.svg`} className={`${player==BLACK && "rotate-180"}`} alt='' />
       </div>
       <div
         className='cursor-pointer'
@@ -40,7 +38,7 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
           handlePromotionOnClick('r');
         }}
       >
-        <img src={`/pieces/${player}r.svg`} alt='' />
+        <img src={`/pieces/${player}r.svg`} className={`${player==BLACK && "rotate-180"}`} alt='' />
       </div>
       <div
         className='cursor-pointer'
@@ -49,7 +47,7 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
           handlePromotionOnClick('n');
         }}
       >
-        <img src={`/pieces/${player}n.svg`} alt='' />
+        <img src={`/pieces/${player}n.svg`} className={`${player==BLACK && "rotate-180"}`} alt='' />
       </div>
       <div
         className='cursor-pointer'
@@ -58,7 +56,7 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
           handlePromotionOnClick('b');
         }}
       >
-        <img src={`/pieces/${player}b.svg`} alt='' />
+        <img src={`/pieces/${player}b.svg`} className={`${player==BLACK && "rotate-180"}`} alt='' />
       </div>
       <div className='h-[30px] bg-gray-300 text-gray-800 grid place-content-center font-bold'>
         <span>X</span>

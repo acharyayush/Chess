@@ -1,8 +1,8 @@
-import { Square } from 'chess.js';
+import { BLACK, Color, Square, WHITE } from 'chess.js';
 import Cell from './Cell';
 import { twMerge } from 'tailwind-merge';
 import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
+import { RootState } from '../../state/store';
 
 interface ChessBoardProps {
   isDisable: boolean;
@@ -14,6 +14,7 @@ export default function ChessBoard({
   className,
 }: ChessBoardProps) {
   const {board} = useSelector((state:RootState)=>state.chess);
+  const {mainPlayer} = useSelector((state:RootState)=>state.players);
   function displayBoard(): JSX.Element[][] {
     return board.map((row, i) => {
       return row.map((cell, j) => {
@@ -34,7 +35,7 @@ export default function ChessBoard({
   return (
     <div
       className={twMerge(
-        'w-[var(--chessboard-size)] h-[var(--chessboard-size)] grid grid-cols-8 grid-rows-8 sm:w-[100%] sm:h-auto',
+        `w-[var(--chessboard-size)] h-[var(--chessboard-size)] grid grid-cols-8 grid-rows-8 sm:w-[100%] sm:h-auto ${mainPlayer==BLACK ? "rotate-180":""}`,
         className
       )}
     >

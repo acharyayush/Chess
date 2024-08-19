@@ -6,6 +6,10 @@ export const piecesPoints: Record<PieceSymbolExcludingKing, number> = {
   r: 5,
   q: 9,
 };
+export const JOIN_GAME = "join_game"
+export const INIT_GAME = "init_game"
+export const SEND_MOVE = "send_move"
+export const RECEIVE_MOVE = "receive_move"
     //library flags definition
     // const FLAGS: Record<string, string> = {
     //   NORMAL: 'n',
