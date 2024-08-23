@@ -7,17 +7,19 @@ import { TbArrowBigLeftFilled } from 'react-icons/tb';
 import { FaFlag } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
-import MoveHistory from '../components/MoveHistory';
+import MoveHistory from '../components/gameDetail/MoveHistory';
 import { setHasResigned } from '../state/gameStatus/gameStatusSlice';
 import { setShowLegalMoves, setUndo } from '../state/chess/chessSlice';
 import { useDispatch } from 'react-redux';
 import useChessGame from '../hooks/useChessGame';
 import { BLACK, WHITE } from 'chess.js';
+import GameDetailContainer from '../components/gameDetail/GameDetailContainer';
+import BoardSectionContainer from '../components/BoardSectionContainer';
 export default function Offline() {
   useChessGame();
 
   const dispatch = useDispatch();
-  const { showLegalMoves, moveHistory } = useSelector(
+  const { board, turn, showLegalMoves, moveHistory } = useSelector(
     (state: RootState) => state.chess
   );
   const {
@@ -32,37 +34,36 @@ export default function Offline() {
   return (
     <div className='bg-slate-700 min-h-screen p-5 xsm:p-2'>
       <div className='w-[90%] xl:w-[100%] mx-auto flex justify-evenly lg:flex-col lg:items-center'>
-        <div className='boardSectionContainer lg:mb-6'>
-          <div className='boardSection'>
-            {/* Logo, Name of player 1 */}
-            <PlayerInfo
-              className='mb-2'
-              color={BLACK}
-              name={player2}
-              rating={1200}
-              score={whiteNetScore}
-              capturedPieces={capturedPiecesByBlack}
-            />
-            {/* Chess Board */}
-            <div className='relative inline-block'>
-              {isGameOver && (
-                <GameOverPopUp className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' />
-              )}
-              <ChessBoard isDisable={isGameOver} />
-            </div>
-            {/* Logo, Name of player 2 */}
-            <PlayerInfo
-              className='mt-2'
-              color={WHITE}
-              name={player1}
-              rating={1200}
-              score={whiteNetScore}
-              capturedPieces={capturedPiecesByWhite}
-            />
+        <BoardSectionContainer>
+          {/* Logo, Name of player 1 */}
+          <PlayerInfo
+            className='mb-2'
+            color={BLACK}
+            name={player2}
+            rating={1200}
+            score={whiteNetScore}
+            capturedPieces={capturedPiecesByBlack}
+          />
+          {/* Chess Board */}
+          <div className='relative inline-block'>
+            {isGameOver && (
+              <GameOverPopUp className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' />
+            )}
+            <ChessBoard board={board} turn={turn} isDisable={isGameOver} />
           </div>
-        </div>
-        <div className='text-white gameDetailSection bg-[#465f83c9] shadow-md max-w-[480px] w-[100%] rounded-md lg:flex lg:flex-col-reverse'>
-          <MoveHistory />
+          {/* Logo, Name of player 2 */}
+          <PlayerInfo
+            className='mt-2'
+            color={WHITE}
+            name={player1}
+            rating={1200}
+            score={whiteNetScore}
+            capturedPieces={capturedPiecesByWhite}
+          />
+        </BoardSectionContainer>
+
+        <GameDetailContainer>
+          <MoveHistory moveHistory={moveHistory} />
           <div className='settings p-4 h-[132px]'>
             <div className='buttons flex'>
               <Button
@@ -97,7 +98,7 @@ export default function Offline() {
               </span>
             </div>
           </div>
-        </div>
+        </GameDetailContainer>
       </div>
     </div>
   );

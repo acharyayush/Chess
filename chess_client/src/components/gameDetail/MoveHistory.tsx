@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
-
-function MoveHistory() {
-  const { moveHistory } = useSelector((state: RootState) => state.chess);
+interface MoveHistoryProps {
+  moveHistory: string[];
+}
+function MoveHistory({ moveHistory }: MoveHistoryProps) {
   const historyDiv = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (historyDiv.current) {

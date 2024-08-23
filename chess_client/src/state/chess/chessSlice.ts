@@ -1,11 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getLegalMoves, isValidMove } from '../../utils/utils';
-import { Chess, Color, PAWN, PieceSymbol, Square, WHITE } from 'chess.js';
+import {
+  BLACK,
+  Chess,
+  Color,
+  PAWN,
+  PieceSymbol,
+  Square,
+  WHITE,
+} from 'chess.js';
 import { Move, updateMovePayload } from '../../types';
 import socket from '../../socket';
-import { SEND_MOVE } from '../../constants';
+import { SEND_MOVE } from '../../constants/events';
 export type ChessState = {
   chess: Chess;
+  fen: string;
   moveHistory: string[];
   board: ReturnType<Chess['board']>;
   turn: Color;
@@ -21,6 +30,7 @@ export type ChessState = {
 const initialState: ChessState = {
   chess: new Chess(),
   moveHistory: [],
+  fen: '',
   board: [],
   turn: WHITE,
   legalMoves: [],
@@ -44,8 +54,14 @@ const chessSlice = createSlice({
     setBoard: (state, action: PayloadAction<ReturnType<Chess['board']>>) => {
       state.board = action.payload;
     },
+    setFen: (state, action: PayloadAction<string>) => {
+      state.fen = action.payload;
+    },
     setTurn: (state, action: PayloadAction<Color>) => {
       state.turn = action.payload;
+    },
+    toggleTurn: (state) => {
+      state.turn = state.turn == WHITE ? BLACK : WHITE;
     },
     setLegalMoves: (state, action: PayloadAction<string[]>) => {
       state.legalMoves = action.payload;
@@ -58,6 +74,7 @@ const chessSlice = createSlice({
       if (state.showLegalMoves && state.move.from) {
         state.legalMoves = getLegalMoves(
           state.chess as Chess,
+          state.fen,
           state.move.from as Square,
           state.turn
         );
@@ -78,6 +95,7 @@ const chessSlice = createSlice({
           promotion: state.promotion,
         };
         state.move = moveToSet;
+        if (state.isOnline) socket.emit(SEND_MOVE, moveToSet);
         state.promotion = null;
         return;
       }
@@ -96,6 +114,7 @@ const chessSlice = createSlice({
         if (state.showLegalMoves) {
           state.legalMoves = getLegalMoves(
             state.chess as Chess,
+            state.fen,
             payload.position as Square,
             state.turn
           );
@@ -113,7 +132,7 @@ const chessSlice = createSlice({
         //validation check
         if (
           pieceToMove == PAWN &&
-          isValidMove(state.chess as Chess, moveToSet)
+          isValidMove(state.chess as Chess, state.fen, moveToSet)
         ) {
           state.showPromotionOption = {
             canShow: true,
@@ -142,7 +161,9 @@ export const {
   setChess,
   setMoveHistory,
   setBoard,
+  setFen,
   setTurn,
+  toggleTurn,
   setLegalMoves,
   setShowLegalMoves,
   setUndo,

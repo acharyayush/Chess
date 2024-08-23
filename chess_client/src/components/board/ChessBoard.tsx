@@ -1,16 +1,23 @@
-import { BLACK, Square } from 'chess.js';
+import { BLACK, Color, Square } from 'chess.js';
 import Cell from './Cell';
 import { twMerge } from 'tailwind-merge';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
+import { Board } from '../../types';
 
 interface ChessBoardProps {
+  board: Board;
   isDisable: boolean;
+  turn: Color;
   className?: string;
 }
 
-export default function ChessBoard({ isDisable, className }: ChessBoardProps) {
-  const { board } = useSelector((state: RootState) => state.chess);
+export default function ChessBoard({
+  board,
+  turn,
+  isDisable,
+  className,
+}: ChessBoardProps) {
   const { mainPlayer } = useSelector((state: RootState) => state.players);
   function displayBoard(): JSX.Element[][] {
     return board.map((row, i) => {
@@ -20,6 +27,7 @@ export default function ChessBoard({ isDisable, className }: ChessBoardProps) {
         return (
           <Cell
             key={position}
+            turn={turn}
             cellColor={cellColor}
             cell={cell}
             isDisable={isDisable}

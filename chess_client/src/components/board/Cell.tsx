@@ -14,17 +14,19 @@ interface CellProps {
     type: PieceSymbol;
     color: Color;
   } | null;
+  turn: Color;
   cellColor: string;
   position: string;
   isDisable: boolean;
 }
 export default function Cell({
   cell,
+  turn,
   cellColor,
   position,
   isDisable,
 }: CellProps) {
-  const { legalMoves, turn, showPromotionOption } = useSelector(
+  const { legalMoves, showPromotionOption } = useSelector(
     (state: RootState) => state.chess
   );
   const dispatch = useDispatch();
@@ -72,7 +74,7 @@ export default function Cell({
       indices.push(
         <span
           key={`letter-${position}`}
-          className={`${Number(position[1]) % 2 == compareWith ? 'text-blue-500' : 'text-white'} absolute  ${mainPlayer == BLACK ? 'rotate-180 bottom-0 right-1' : 'top-0 left-1'}`}
+          className={`${Number(position[1]) % 2 == compareWith ? 'text-blue-500' : 'text-white'} absolute sm:text-sm  ${mainPlayer == BLACK ? 'rotate-180 bottom-0 right-1' : 'top-0 left-1'}`}
         >
           {position[1]}
         </span>
@@ -84,7 +86,7 @@ export default function Cell({
       indices.push(
         <span
           key={`num-${position}`}
-          className={`${(position.charCodeAt(0) - 97) % 2 == compareWith ? 'text-white' : 'text-blue-500'} absolute ${mainPlayer == BLACK ? 'rotate-180 top-0 left-1' : 'bottom-0 right-1'}`}
+          className={`${(position.charCodeAt(0) - 97) % 2 == compareWith ? 'text-white' : 'text-blue-500'} absolute sm:text-sm ${mainPlayer == BLACK ? 'rotate-180 top-0 left-1' : 'bottom-0 right-1'}`}
         >
           {position[0]}
         </span>

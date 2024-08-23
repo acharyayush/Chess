@@ -1,4 +1,4 @@
-import { JOIN_GAME } from '../constants';
+import { JOIN_GAME } from '../constants/events';
 import socket from '../socket';
 import Button from './shared/Button';
 export default function App() {

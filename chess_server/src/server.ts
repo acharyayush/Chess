@@ -15,12 +15,19 @@ const io = new Server(server, {
   },
 });
 const gameManager = new GameManager(io);
+let playerCount = 0;
 import { instrument } from '@socket.io/admin-ui';
 
 io.on('connection', (socket) => {
-  socket.on(JOIN_GAME, () => {
+  socket.on(JOIN_GAME, (name: string) => {
     //TODO: search for the socket if exist in any game or waiting, if exist then fetch the data from there and emit to him/her else just add
-    gameManager.addPlayer(socket);
+    playerCount++;
+    const playerName = name || 'guest' + playerCount;
+    const player = {
+      name: playerName,
+      socket,
+    };
+    gameManager.addPlayer(player);
   });
 
   socket.on('rematch', () => {

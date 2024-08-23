@@ -1,5 +1,6 @@
-import { Color, PieceSymbol, Square } from 'chess.js';
+import { Chess, Color, PieceSymbol, Square } from 'chess.js';
 
+export type Board = ReturnType<Chess['board']>;
 export type Winner = Color | 'd'; //d stands for draw
 export type Move = {
   from: string;
