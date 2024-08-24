@@ -6,7 +6,7 @@ import { setRematch } from '../state/gameStatus/gameStatusSlice';
 import { RootState } from '../state/store';
 import { BLACK, WHITE } from 'chess.js';
 import socket from '../socket';
-import { REMATCH } from '../constants/events';
+import { REMATCH } from '../events';
 interface GameOverPopUp {
   className?: string;
 }

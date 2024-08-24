@@ -26,3 +26,8 @@ export type updateMovePayload = {
   cell: Cell;
   position: string;
 };
+export type CapturedDetails = {
+  whiteNetScore: number;
+  capturedPiecesByWhite: capturedPiecesAndNumberType;
+  capturedPiecesByBlack: capturedPiecesAndNumberType;
+};

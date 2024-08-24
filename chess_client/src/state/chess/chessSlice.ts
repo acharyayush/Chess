@@ -11,7 +11,7 @@ import {
 } from 'chess.js';
 import { Move, updateMovePayload } from '../../types';
 import socket from '../../socket';
-import { SEND_MOVE } from '../../constants/events';
+import { SEND_MOVE } from '../../events';
 export type ChessState = {
   chess: Chess;
   fen: string;

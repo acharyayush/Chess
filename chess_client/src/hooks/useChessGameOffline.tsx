@@ -95,6 +95,7 @@ export default function useChessGameOffline() {
   };
 
   const handleCapturedPiecesAndScores = (moveRes: Move, isUndo?: boolean) => {
+    //if piece is promoted then handle points incremenet/decrement based on the player
     if (moveRes.promotion) {
       const promotedPiece = moveRes.promotion as PieceSymbolExcludingKing;
       if (moveRes.color == WHITE) {
@@ -115,6 +116,7 @@ export default function useChessGameOffline() {
         );
       }
     }
+    //if the move captures a piece, update point and capturedPieces accordingly
     if (moveRes.captured) {
       const capturedPiece = moveRes.captured as PieceSymbolExcludingKing;
       const capturedPoint = piecesPoints[capturedPiece];

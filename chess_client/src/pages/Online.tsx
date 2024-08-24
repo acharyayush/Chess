@@ -56,7 +56,11 @@ export default function Online() {
                 name={mainPlayer == WHITE ? player2 : player1}
                 rating={1200}
                 score={whiteNetScore}
-                capturedPieces={capturedPiecesByBlack}
+                capturedPieces={
+                  mainPlayer == WHITE
+                    ? capturedPiecesByBlack
+                    : capturedPiecesByWhite
+                }
               />
               {/* Chess Board */}
               <div className='relative inline-block'>
@@ -76,7 +80,11 @@ export default function Online() {
                 name={mainPlayer == WHITE ? player1 : player2}
                 rating={1200}
                 score={whiteNetScore}
-                capturedPieces={capturedPiecesByWhite}
+                capturedPieces={
+                  mainPlayer == WHITE
+                    ? capturedPiecesByWhite
+                    : capturedPiecesByBlack
+                }
               />
             </BoardSectionContainer>
 

@@ -2,6 +2,7 @@ import { Server, Socket } from 'socket.io';
 import {
   GAMEOVER,
   INIT_GAME,
+  RECEIVE_CAPTURED_DETAILS,
   RECEIVE_FEN,
   RECEIVE_MOVE_HISTORY,
   RECEIVE_PLAYER_DETAILS,
@@ -21,24 +22,24 @@ export default class GameManager {
   private findGame(player: Socket) {
     return this.games.find(
       (game) =>
-        game.getPlayer1().socket.id === player.id ||
-        game.getPlayer2().socket.id === player.id
+        game.player1.socket.id === player.id ||
+        game.player2.socket.id === player.id
     );
   }
   private emitToInitiateGame(game: Game) {
-    this.io.to(game.getPlayer1().socket.id).emit(INIT_GAME, {
+    this.io.to(game.player1.socket.id).emit(INIT_GAME, {
       fen: game.getFen(),
       mainPlayer: WHITE,
     });
-    this.io.to(game.getPlayer2().socket.id).emit(INIT_GAME, {
+    this.io.to(game.player2.socket.id).emit(INIT_GAME, {
       fen: game.getFen(),
       mainPlayer: BLACK,
     });
     this.io
-      .to(game.getRoomId())
+      .to(game.roomId)
       .emit(RECEIVE_PLAYER_DETAILS, {
-        player1: game.getPlayer1().name,
-        player2: game.getPlayer2().name,
+        player1: game.player1.name,
+        player2: game.player2.name,
       });
   }
   private addMoveEventHandler(socket: Socket) {
@@ -50,13 +51,15 @@ export default class GameManager {
         //make the move in that game
         const moveRes = game.makeMove(socket, move);
         if (!moveRes) return;
+        const isCapturedOrPromoted = game.handleCapturedPiecesAndScores(moveRes)
         this.io
-          .to(game.getRoomId())
+          .to(game.roomId)
           .emit(RECEIVE_FEN, { fen: game.getFen(), flag: moveRes.flags });
         this.io
-          .to(game.getRoomId())
+          .to(game.roomId)
           .emit(RECEIVE_MOVE_HISTORY, game.getMoveHistory())
-          if(game.isGameOver()) this.io.to(game.getRoomId()).emit(GAMEOVER, game.getGameOverDetails())
+          if(game.isGameOver()) this.io.to(game.roomId).emit(GAMEOVER, game.gameOverDetails)
+          if(isCapturedOrPromoted) this.io.to(game.roomId).emit(RECEIVE_CAPTURED_DETAILS, game.capturedDetails)
       } catch (e) {
         //this is just an invalid move
       }

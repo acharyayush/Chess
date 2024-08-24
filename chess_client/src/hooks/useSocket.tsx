@@ -6,12 +6,16 @@ import {
   RECEIVE_FEN,
   RECEIVE_MOVE_HISTORY,
   RECEIVE_PLAYER_DETAILS,
-} from '../constants/events';
+  RECEIVE_CAPTURED_DETAILS,
+} from '../events';
 import { Chess, Color } from 'chess.js';
 import {
   resetPlayers,
+  setCapturedPiecesByBlack,
+  setCapturedPiecesByWhite,
   setMainPlayer,
   setPlayers,
+  setWhiteNetScore,
 } from '../state/players/playerSlice';
 import { useDispatch } from 'react-redux';
 import {
@@ -34,7 +38,7 @@ import {
   setIsGameOver,
   setWinner,
 } from '../state/gameStatus/gameStatusSlice';
-import { Winner } from '../types';
+import { CapturedDetails, Winner } from '../types';
 interface GameOverProps {
   gameOverDescription: string;
   winnerColor: Winner;
@@ -94,12 +98,19 @@ export default function useSocket() {
         dispatch(setGameOverDescription(gameOverDescription));
       }
     );
+    socket.on(RECEIVE_CAPTURED_DETAILS, (capturedDetails: CapturedDetails) => {
+      dispatch(setWhiteNetScore(capturedDetails.whiteNetScore));
+      dispatch(setCapturedPiecesByWhite(capturedDetails.capturedPiecesByWhite));
+      dispatch(setCapturedPiecesByBlack(capturedDetails.capturedPiecesByBlack));
+    });
+
     return () => {
       socket.off(INIT_GAME);
       socket.off(RECEIVE_FEN);
       socket.off(RECEIVE_MOVE_HISTORY);
       socket.off(RECEIVE_PLAYER_DETAILS);
       socket.off(GAMEOVER);
+      socket.off(RECEIVE_CAPTURED_DETAILS);
     };
   }, []);
   return { success };

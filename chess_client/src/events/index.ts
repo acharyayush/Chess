@@ -7,3 +7,4 @@ export const RECEIVE_PLAYER_DETAILS = 'receive_player_details';
 export const CHECK = 'check';
 export const GAMEOVER = 'gameover';
 export const REMATCH = 'rematch';
+export const RECEIVE_CAPTURED_DETAILS = 'receive_captured_details';
