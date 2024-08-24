@@ -1,4 +1,4 @@
-import { BLACK, Move, WHITE } from 'chess.js';
+import { BLACK, Color, Move, WHITE } from 'chess.js';
 import { useEffect } from 'react';
 import { PieceSymbolExcludingKing } from '../types';
 import { piecesPoints } from '../constants';
@@ -29,12 +29,13 @@ import {
   setCapturedPiecesByBlack,
   resetPlayers,
   setPlayers,
+  setMainPlayer,
 } from '../state/players/playerSlice';
 
 import { useDispatch } from 'react-redux';
 import useSound from './useSound';
 
-export default function useChessGame() {
+export default function useChessGameOffline() {
   const { chess, move, undo } = useSelector((state: RootState) => state.chess);
   const { hasResigned, rematch } = useSelector(
     (state: RootState) => state.gameStatus
@@ -45,11 +46,15 @@ export default function useChessGame() {
     whiteNetScore,
     capturedPiecesByWhite,
     capturedPiecesByBlack,
+    mainPlayer,
   } = useSelector((state: RootState) => state.players);
   const { handleSoundEffects } = useSound();
   const dispatch = useDispatch();
   const getWinner = () => {
     return chess.turn() == BLACK ? WHITE : BLACK;
+  };
+  const getOpponent = (player: Color) => {
+    return player === WHITE ? BLACK : WHITE;
   };
   //check if the game is over and update the status based on its result
   const gameOverChecks = () => {
@@ -180,6 +185,8 @@ export default function useChessGame() {
     dispatch(resetChess());
     dispatch(resetPlayers());
     dispatch(resetGameStatus());
+    dispatch(setMainPlayer(getOpponent(mainPlayer)));
+    //if player 1 or 2 name is either white or black then leave as it is, else set the name
     if (player1 == 'White' || player2 == 'Black') return;
     dispatch(setPlayers({ player1: player2, player2: player1 }));
   }, [rematch]);

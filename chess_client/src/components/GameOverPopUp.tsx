@@ -5,10 +5,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setRematch } from '../state/gameStatus/gameStatusSlice';
 import { RootState } from '../state/store';
 import { BLACK, WHITE } from 'chess.js';
+import socket from '../socket';
+import { REMATCH } from '../constants/events';
 interface GameOverPopUp {
   className?: string;
 }
 function GameOverPopUp({ className }: GameOverPopUp) {
+  const { isOnline } = useSelector((state: RootState) => state.chess);
   const { winner, gameOverDescription, isDraw } = useSelector(
     (state: RootState) => state.gameStatus
   );
@@ -22,6 +25,10 @@ function GameOverPopUp({ className }: GameOverPopUp) {
       heading = winner == WHITE ? `${player1} Won` : `${player2} Won`;
     }
     return heading;
+  };
+  const handleRematch = () => {
+    if (isOnline) socket.emit(REMATCH);
+    else dispatch(setRematch(true));
   };
   return (
     <div
@@ -53,7 +60,7 @@ function GameOverPopUp({ className }: GameOverPopUp) {
           <span className='mt-1'>{player2}</span>
         </div>
       </div>
-      <Button onClick={() => dispatch(setRematch(true))}>Rematch</Button>
+      <Button onClick={handleRematch}>Rematch</Button>
     </div>
   );
 }

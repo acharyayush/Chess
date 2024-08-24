@@ -17,7 +17,7 @@ export default class Game {
     this.player1 = player1;
     this.player2 = player2;
     //for testing rnbqkbnr/ppppp2p/8/5pp1/4PP2/8/PPPP2PP/RNBQKBNR w KQkq - 0 1
-    this.chess = new Chess();
+    this.chess = new Chess('rnbqkbnr/ppppp2p/8/5pp1/4PP2/8/PPPP2PP/RNBQKBNR w KQkq - 0 1');
     this.roomId = uuidv4();
     this.player1.socket.join(this.roomId);
     this.player2.socket.join(this.roomId);

@@ -11,12 +11,12 @@ import MoveHistory from '../components/gameDetail/MoveHistory';
 import { setHasResigned } from '../state/gameStatus/gameStatusSlice';
 import { setShowLegalMoves, setUndo } from '../state/chess/chessSlice';
 import { useDispatch } from 'react-redux';
-import useChessGame from '../hooks/useChessGame';
 import { BLACK, WHITE } from 'chess.js';
+import useChessGameOffline from '../hooks/useChessGameOffline';
 import GameDetailContainer from '../components/gameDetail/GameDetailContainer';
 import BoardSectionContainer from '../components/BoardSectionContainer';
 export default function Offline() {
-  useChessGame();
+  useChessGameOffline();
 
   const dispatch = useDispatch();
   const { board, turn, showLegalMoves, moveHistory } = useSelector(
@@ -28,6 +28,7 @@ export default function Offline() {
     whiteNetScore,
     capturedPiecesByWhite,
     capturedPiecesByBlack,
+    mainPlayer,
   } = useSelector((state: RootState) => state.players);
   const { isGameOver } = useSelector((state: RootState) => state.gameStatus);
 
@@ -38,8 +39,8 @@ export default function Offline() {
           {/* Logo, Name of player 1 */}
           <PlayerInfo
             className='mb-2'
-            color={BLACK}
-            name={player2}
+            color={mainPlayer == WHITE ? BLACK : WHITE}
+            name={mainPlayer == WHITE ? player2 : player1}
             rating={1200}
             score={whiteNetScore}
             capturedPieces={capturedPiecesByBlack}
@@ -54,8 +55,8 @@ export default function Offline() {
           {/* Logo, Name of player 2 */}
           <PlayerInfo
             className='mt-2'
-            color={WHITE}
-            name={player1}
+            color={mainPlayer}
+            name={mainPlayer == WHITE ? player1 : player2}
             rating={1200}
             score={whiteNetScore}
             capturedPieces={capturedPiecesByWhite}

@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import express from 'express';
 import GameManager from './GameManager';
-import { JOIN_GAME } from './events';
+import { JOIN_GAME, REMATCH } from './events';
 const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT || 3000;
@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
     gameManager.addPlayer(player);
   });
 
-  socket.on('rematch', () => {
+  socket.on(REMATCH, () => {
     gameManager.handleRematch(socket);
   });
 

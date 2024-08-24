@@ -72,9 +72,9 @@ const chessSlice = createSlice({
     setShowLegalMoves: (state, action: PayloadAction<boolean>) => {
       state.showLegalMoves = action.payload;
       if (state.showLegalMoves && state.move.from) {
+        if (state.fen) state.chess.load(state.fen);
         state.legalMoves = getLegalMoves(
           state.chess as Chess,
-          state.fen,
           state.move.from as Square,
           state.turn
         );
@@ -112,9 +112,9 @@ const chessSlice = createSlice({
       if (state.turn == payload.cell?.color) {
         state.move = { from: payload.cell.square, to: '' };
         if (state.showLegalMoves) {
+          if (state.fen) state.chess.load(state.fen);
           state.legalMoves = getLegalMoves(
             state.chess as Chess,
-            state.fen,
             payload.position as Square,
             state.turn
           );
@@ -128,6 +128,7 @@ const chessSlice = createSlice({
 
       //To show promotion Option if pawn is at last position
       if (payload.position[1] == '1' || payload.position[1] == '8') {
+        if (state.fen) state.chess.load(state.fen);
         const pieceToMove = state.chess.get(moveToSet.from as Square).type;
         //validation check
         if (

@@ -24,17 +24,8 @@ export const isValidMove = (chess: Chess, fen: string, move: Move) => {
     return false;
   }
 };
-export const getLegalMoves = (
-  chess: Chess,
-  fen: string,
-  position: Square,
-  turn: Color
-) => {
-  let tempChess: Chess;
-  if (fen) tempChess = new Chess(fen);
-  else tempChess = chess;
-
-  return tempChess
+export const getLegalMoves = (chess: Chess, position: Square, turn: Color) => {
+  return chess
     .moves({ square: position })
     .map((move) => extractPosition(move, turn));
 };

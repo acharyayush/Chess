@@ -8,7 +8,11 @@ import {
   RECEIVE_PLAYER_DETAILS,
 } from '../constants/events';
 import { Chess, Color } from 'chess.js';
-import { setMainPlayer, setPlayers } from '../state/players/playerSlice';
+import {
+  resetPlayers,
+  setMainPlayer,
+  setPlayers,
+} from '../state/players/playerSlice';
 import { useDispatch } from 'react-redux';
 import {
   setBoard,
@@ -17,11 +21,13 @@ import {
   setMoveHistory,
   toggleTurn,
   resetMove,
+  resetChess,
 } from '../state/chess/chessSlice';
 import useSound from './useSound';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import {
+  resetGameStatus,
   setGameOverDescription,
   setIsCheck,
   setIsDraw,
@@ -38,12 +44,19 @@ export default function useSocket() {
   const [success, setSuccess] = useState(false);
   const { isCheck } = useSelector((state: RootState) => state.gameStatus);
   const dispatch = useDispatch();
+  const resetGame = () => {
+    dispatch(resetChess());
+    dispatch(resetPlayers());
+    dispatch(resetGameStatus());
+  };
   useEffect(() => {
     dispatch(setIsOnline(true));
     socket.on(
       INIT_GAME,
       ({ mainPlayer, fen }: { mainPlayer: Color; fen: string }) => {
+        resetGame();
         const tempChess = new Chess(fen);
+        dispatch(setFen(fen));
         dispatch(setMainPlayer(mainPlayer));
         dispatch(setBoard(tempChess.board()));
         setSuccess(true);
@@ -60,10 +73,10 @@ export default function useSocket() {
       if (tempChess.isCheck()) dispatch(setIsCheck(true));
       else dispatch(setIsCheck(false));
       dispatch(setBoard(tempChess.board()));
-      handleSoundEffects(flag, isCheck);
       dispatch(setFen(fen));
       dispatch(toggleTurn());
       dispatch(resetMove());
+      handleSoundEffects(flag, isCheck);
       return;
     });
     socket.on(RECEIVE_MOVE_HISTORY, (MoveHistory) => {
