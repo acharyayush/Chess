@@ -8,3 +8,4 @@ export const CHECK = 'check';
 export const GAMEOVER = 'gameover';
 export const REMATCH = 'rematch';
 export const RECEIVE_CAPTURED_DETAILS = 'receive_captured_details';
+export const RECEIVE_TIME = 'receive_time';

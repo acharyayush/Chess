@@ -11,7 +11,7 @@ export default function GameDetailContainer({
   return (
     <div
       className={twMerge(
-        'text-white gameDetailSection bg-[#465f83c9] shadow-md max-w-[480px] w-[100%] rounded-md lg:flex lg:flex-col-reverse',
+        'text-white gameDetailSection bg-[#465f83c9] shadow-md max-w-[480px] w-[100%] rounded-md flex flex-col lg:flex-col-reverse h-[582px]',
         className
       )}
     >

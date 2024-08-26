@@ -1,6 +1,6 @@
 import ChessBoard from '../components/board/ChessBoard';
 import GameOverPopUp from '../components/GameOverPopUp';
-import PlayerInfo from '../components/PlayerInfo';
+import PlayerInfo from '../components/playerInfo/PlayerInfo';
 import Button from '../components/shared/Button';
 import SwitchToggle from '../components/shared/SwitchToggle';
 import { TbArrowBigLeftFilled } from 'react-icons/tb';
@@ -9,7 +9,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import MoveHistory from '../components/gameDetail/MoveHistory';
 import { setHasResigned } from '../state/gameStatus/gameStatusSlice';
-import { setShowLegalMoves, setUndo } from '../state/chess/chessSlice';
+import {
+  setEnableTimer,
+  setShowLegalMoves,
+  setUndo,
+} from '../state/chess/chessSlice';
 import { useDispatch } from 'react-redux';
 import { BLACK, WHITE } from 'chess.js';
 import useChessGameOffline from '../hooks/useChessGameOffline';
@@ -19,7 +23,7 @@ export default function Offline() {
   useChessGameOffline();
 
   const dispatch = useDispatch();
-  const { board, turn, showLegalMoves, moveHistory } = useSelector(
+  const { board, turn, showLegalMoves, moveHistory, enableTimer } = useSelector(
     (state: RootState) => state.chess
   );
   const {
@@ -72,8 +76,8 @@ export default function Offline() {
         </BoardSectionContainer>
 
         <GameDetailContainer>
-          <MoveHistory moveHistory={moveHistory} />
-          <div className='settings p-4 h-[132px]'>
+          <MoveHistory moveHistory={moveHistory} className='flex-grow' />
+          <div className='settings p-4'>
             <div className='buttons flex'>
               <Button
                 isDisable={isGameOver}
@@ -97,14 +101,27 @@ export default function Offline() {
                 <FaFlag className='scale-75' />
               </Button>
             </div>
-            <div className='additionalSettings text-lg text-white pl-2 pr-8 xsm:pr-2 flex items-center justify-between'>
-              <span className=''>Show Legal Moves</span>
-              <span className='flex items-center'>
-                <SwitchToggle
-                  status={showLegalMoves}
-                  onToggle={() => dispatch(setShowLegalMoves(!showLegalMoves))}
-                />
-              </span>
+            <div className='additionalSettings text-lg text-white pl-2 pr-8 xsm:pr-2'>
+              <div className='showLegalMoves flex items-center justify-between'>
+                <span className=''>Show Legal Moves</span>
+                <span className='flex items-center'>
+                  <SwitchToggle
+                    status={showLegalMoves}
+                    onToggle={() =>
+                      dispatch(setShowLegalMoves(!showLegalMoves))
+                    }
+                  />
+                </span>
+              </div>
+              <div className='enableTimer flex items-center justify-between mt-3'>
+                <span className=''>Enable Timer</span>
+                <span className='flex items-center'>
+                  <SwitchToggle
+                    status={enableTimer}
+                    onToggle={() => dispatch(setEnableTimer(!enableTimer))}
+                  />
+                </span>
+              </div>
             </div>
           </div>
         </GameDetailContainer>

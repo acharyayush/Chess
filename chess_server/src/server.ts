@@ -17,14 +17,17 @@ const io = new Server(server, {
 const gameManager = new GameManager(io);
 let playerCount = 0;
 import { instrument } from '@socket.io/admin-ui';
+import { Player } from './types';
+import Timer from './Timer';
 
 io.on('connection', (socket) => {
-  socket.on(JOIN_GAME, (name: string) => {
+  socket.on(JOIN_GAME, (name?: string, gameTimeInSec: number = 10*60) => {
     //TODO: search for the socket if exist in any game or waiting, if exist then fetch the data from there and emit to him/her else just add
     playerCount++;
     const playerName = name || 'guest' + playerCount;
-    const player = {
+    const player:Player = {
       name: playerName,
+      timer: new Timer(gameTimeInSec),
       socket,
     };
     gameManager.addPlayer(player);
@@ -39,7 +42,7 @@ io.on('connection', (socket) => {
     const wasWaiting = gameManager.removePlayerFromWaitingList(socket);
     if (wasWaiting) return;
 
-    //try to reconnect and if it fails, remove player from the game, declare another player as winner
+    //TODO: try to reconnect and if it fails, remove player from the game, declare another player as winner
   });
 });
 server.listen(PORT, () => {

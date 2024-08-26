@@ -21,6 +21,7 @@ export type ChessState = {
   legalMoves: string[];
   undo: boolean;
   showLegalMoves: boolean;
+  enableTimer: boolean;
   move: Move;
   showPromotionOption: { canShow: boolean; position?: string };
   promotion: PieceSymbol | null;
@@ -36,6 +37,7 @@ const initialState: ChessState = {
   legalMoves: [],
   undo: false,
   showLegalMoves: true,
+  enableTimer: true,
   move: { from: '', to: '' },
   showPromotionOption: { canShow: false },
   promotion: null,
@@ -79,6 +81,9 @@ const chessSlice = createSlice({
           state.turn
         );
       }
+    },
+    setEnableTimer: (state, action: PayloadAction<boolean>) => {
+      state.enableTimer = action.payload;
     },
     setShowPromotionOption: (
       state,
@@ -167,6 +172,7 @@ export const {
   toggleTurn,
   setLegalMoves,
   setShowLegalMoves,
+  setEnableTimer,
   setUndo,
   setPromotion,
   setShowPromotionOption,

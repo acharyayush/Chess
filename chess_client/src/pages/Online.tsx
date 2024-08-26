@@ -6,7 +6,7 @@ import { RootState } from '../state/store';
 import { useSelector } from 'react-redux';
 import useSocket from '../hooks/useSocket';
 import BoardSectionContainer from '../components/BoardSectionContainer';
-import PlayerInfo from '../components/PlayerInfo';
+import PlayerInfo from '../components/playerInfo/PlayerInfo';
 import { BLACK, WHITE } from 'chess.js';
 import GameDetailContainer from '../components/gameDetail/GameDetailContainer';
 import MoveHistory from '../components/gameDetail/MoveHistory';
@@ -89,8 +89,8 @@ export default function Online() {
             </BoardSectionContainer>
 
             <GameDetailContainer>
-              <MoveHistory moveHistory={moveHistory} />
-              <div className='settings p-4 h-[132px]'>
+              <MoveHistory className='flex-grow' moveHistory={moveHistory} />
+              <div className='settings p-4'>
                 <div className='buttons flex'>
                   <Button
                     isDisable={isGameOver}
@@ -103,16 +103,18 @@ export default function Online() {
                     <FaFlag className='scale-75' />
                   </Button>
                 </div>
-                <div className='additionalSettings text-lg text-white pl-2 pr-8 xsm:pr-2 flex items-center justify-between'>
-                  <span className=''>Show Legal Moves</span>
-                  <span className='flex items-center'>
-                    <SwitchToggle
-                      status={showLegalMoves}
-                      onToggle={() =>
-                        dispatch(setShowLegalMoves(!showLegalMoves))
-                      }
-                    />
-                  </span>
+                <div className='additionalSettings text-lg text-white pl-2 pr-8 xsm:pr-2'>
+                  <div className='showLegalMoves flex items-center justify-between'>
+                    <span className=''>Show Legal Moves</span>
+                    <span className='flex items-center'>
+                      <SwitchToggle
+                        status={showLegalMoves}
+                        onToggle={() =>
+                          dispatch(setShowLegalMoves(!showLegalMoves))
+                        }
+                      />
+                    </span>
+                  </div>
                 </div>
               </div>
             </GameDetailContainer>

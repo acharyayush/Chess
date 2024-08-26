@@ -1,4 +1,4 @@
-import { BLACK, Chess, Color, WHITE, Move as MoveRes } from 'chess.js';
+import { BLACK, Chess, Color, WHITE, Move as MoveRes, PAWN } from 'chess.js';
 import {
   CapturedDetails,
   Move,
@@ -9,6 +9,7 @@ import { Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { piecesPoints } from './constants';
 export default class Game {
+  // PLAYER 1 IS ALWAYS WHITE AND PLAYER 2 IS ALWAYS BLACK
   private chess: Chess;
   player1: Player;
   player2: Player;
@@ -24,7 +25,7 @@ export default class Game {
     capturedPiecesByWhite: { p: 0, n: 0, b: 0, r: 0, q: 0 },
     capturedPiecesByBlack: { p: 0, n: 0, b: 0, r: 0, q: 0 },
   };
-  // player 1 is always white amd player 2 is always black
+
   constructor(player1: Player, player2: Player) {
     this.player1 = player1;
     this.player2 = player2;
@@ -40,11 +41,15 @@ export default class Game {
     };
     this.capturedDetails = this.initialCapturedDetails;
   }
+  //methods
   private getPlayerColor(id: string) {
-    return id === this.player1.socket.id ? WHITE : BLACK; // player 1 is white and player 2 is black, always
+    return id === this.player1.socket.id ? WHITE : BLACK;
   }
   getMoveHistory() {
     return this.chess.history();
+  }
+  getTurn(): Player {
+    return this.chess.turn() === WHITE ? this.player1 : this.player2;
   }
   getFen() {
     return this.chess.fen();
@@ -108,15 +113,17 @@ export default class Game {
   }
   handleCapturedPiecesAndScores(moveRes: MoveRes) {
     //if piece is promoted then handle points incremenet/decrement based on the player
-    let isCapturedOrPromoted = false;
+    if (!moveRes.captured && !moveRes.promotion) return false;
     if (moveRes.promotion) {
       const promotedPiece = moveRes.promotion as PieceSymbolExcludingKing;
       if (moveRes.color == WHITE) {
         this.capturedDetails.whiteNetScore += piecesPoints[promotedPiece] - 1;
+        this.capturedDetails.capturedPiecesByBlack[PAWN] += 1;
       } else {
-        this.capturedDetails.whiteNetScore -= piecesPoints[promotedPiece] + 1;
+        this.capturedDetails.whiteNetScore =
+          this.capturedDetails.whiteNetScore - piecesPoints[promotedPiece] + 1;
+        this.capturedDetails.capturedPiecesByWhite[PAWN] += 1;
       }
-      isCapturedOrPromoted = true;
     }
     //if the move captures a piece, update point and capturedPieces accordingly
     if (moveRes.captured) {
@@ -129,8 +136,7 @@ export default class Game {
         this.capturedDetails.whiteNetScore -= capturedPoint;
         this.capturedDetails.capturedPiecesByBlack[capturedPiece] += 1;
       }
-      isCapturedOrPromoted = true;
     }
-    return isCapturedOrPromoted;
+    return true;
   }
 }

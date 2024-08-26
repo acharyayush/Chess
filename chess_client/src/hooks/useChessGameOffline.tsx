@@ -1,4 +1,4 @@
-import { BLACK, Color, Move, WHITE } from 'chess.js';
+import { BLACK, Color, Move, PAWN, WHITE } from 'chess.js';
 import { useEffect } from 'react';
 import { PieceSymbolExcludingKing } from '../types';
 import { piecesPoints } from '../constants';
@@ -30,14 +30,20 @@ import {
   resetPlayers,
   setPlayers,
   setMainPlayer,
+  setTotalTime,
+  setWhiteTime,
+  setBlackTime,
 } from '../state/players/playerSlice';
 
 import { useDispatch } from 'react-redux';
 import useSound from './useSound';
+import useTimer from './useTimer';
 
 export default function useChessGameOffline() {
-  const { chess, move, undo } = useSelector((state: RootState) => state.chess);
-  const { hasResigned, rematch } = useSelector(
+  const { chess, turn, move, undo, enableTimer } = useSelector(
+    (state: RootState) => state.chess
+  );
+  const { hasResigned, rematch, isGameOver } = useSelector(
     (state: RootState) => state.gameStatus
   );
   const {
@@ -47,14 +53,37 @@ export default function useChessGameOffline() {
     capturedPiecesByWhite,
     capturedPiecesByBlack,
     mainPlayer,
+    totalTime,
   } = useSelector((state: RootState) => state.players);
   const { handleSoundEffects } = useSound();
+  const {
+    time: whiteTimeInTimer,
+    startTimer: startWhiteTimer,
+    pauseTimer: pauseWhiteTimer,
+    resetTimer: resetWhiteTimer,
+  } = useTimer(totalTime);
+  const {
+    time: blackTimeInTimer,
+    startTimer: startBlackTimer,
+    pauseTimer: pauseBlackTimer,
+    resetTimer: resetBlackTimer,
+  } = useTimer(totalTime);
   const dispatch = useDispatch();
   const getWinner = () => {
     return chess.turn() == BLACK ? WHITE : BLACK;
   };
   const getOpponent = (player: Color) => {
     return player === WHITE ? BLACK : WHITE;
+  };
+  const toggleTimerBasedOnTurn = () => {
+    if (isGameOver) return;
+    if (chess.turn() == WHITE) {
+      pauseBlackTimer();
+      startWhiteTimer();
+    } else {
+      pauseWhiteTimer();
+      startBlackTimer();
+    }
   };
   //check if the game is over and update the status based on its result
   const gameOverChecks = () => {
@@ -96,24 +125,32 @@ export default function useChessGameOffline() {
 
   const handleCapturedPiecesAndScores = (moveRes: Move, isUndo?: boolean) => {
     //if piece is promoted then handle points incremenet/decrement based on the player
+    if (!moveRes.captured && !moveRes.promotion) return;
+    let netScore = whiteNetScore;
+    let capturedByWhite = capturedPiecesByWhite;
+    let capturedByBlack = capturedPiecesByBlack;
     if (moveRes.promotion) {
       const promotedPiece = moveRes.promotion as PieceSymbolExcludingKing;
       if (moveRes.color == WHITE) {
-        dispatch(
-          setWhiteNetScore(
-            !undo
-              ? whiteNetScore + piecesPoints[promotedPiece] - 1
-              : whiteNetScore - piecesPoints[promotedPiece] + 1
-          )
-        );
+        netScore = !undo
+          ? netScore + piecesPoints[promotedPiece] - 1
+          : netScore - piecesPoints[promotedPiece] + 1;
+        capturedByBlack = {
+          ...capturedByBlack,
+          [PAWN]: !isUndo
+            ? capturedPiecesByBlack[PAWN] + 1
+            : capturedPiecesByBlack[PAWN] - 1,
+        };
       } else {
-        dispatch(
-          setWhiteNetScore(
-            !undo
-              ? whiteNetScore - piecesPoints[promotedPiece] + 1
-              : whiteNetScore + piecesPoints[promotedPiece] - 1
-          )
-        );
+        netScore = !undo
+          ? netScore - piecesPoints[promotedPiece] + 1
+          : netScore + piecesPoints[promotedPiece] - 1;
+        capturedByWhite = {
+          ...capturedByWhite,
+          [PAWN]: !isUndo
+            ? capturedPiecesByWhite[PAWN] + 1
+            : capturedPiecesByWhite[PAWN] - 1,
+        };
       }
     }
     //if the move captures a piece, update point and capturedPieces accordingly
@@ -121,39 +158,34 @@ export default function useChessGameOffline() {
       const capturedPiece = moveRes.captured as PieceSymbolExcludingKing;
       const capturedPoint = piecesPoints[capturedPiece];
       if (moveRes.color == WHITE) {
-        dispatch(
-          setWhiteNetScore(
-            !isUndo
-              ? whiteNetScore + capturedPoint
-              : whiteNetScore - capturedPoint
-          )
-        );
-        dispatch(
-          setCapturedPiecesByWhite({
-            ...capturedPiecesByWhite,
-            [capturedPiece]: !isUndo
-              ? capturedPiecesByWhite[capturedPiece] + 1
-              : capturedPiecesByWhite[capturedPiece] - 1,
-          })
-        );
+        netScore = !isUndo
+          ? netScore + capturedPoint
+          : netScore - capturedPoint;
+        capturedByWhite = {
+          ...capturedByWhite,
+          [capturedPiece]: !isUndo
+            ? capturedPiecesByWhite[capturedPiece] + 1
+            : capturedPiecesByWhite[capturedPiece] - 1,
+        };
       } else {
-        dispatch(
-          setWhiteNetScore(
-            !isUndo
-              ? whiteNetScore - capturedPoint
-              : whiteNetScore + capturedPoint
-          )
-        );
-        dispatch(
-          setCapturedPiecesByBlack({
-            ...capturedPiecesByBlack,
-            [capturedPiece]: !isUndo
-              ? capturedPiecesByBlack[capturedPiece] + 1
-              : capturedPiecesByBlack[capturedPiece] - 1,
-          })
-        );
+        netScore = !isUndo
+          ? netScore - capturedPoint
+          : netScore + capturedPoint;
+        capturedByBlack = {
+          ...capturedByBlack,
+          [capturedPiece]: !isUndo
+            ? capturedPiecesByBlack[capturedPiece] + 1
+            : capturedPiecesByBlack[capturedPiece] - 1,
+        };
       }
     }
+    dispatch(setWhiteNetScore(netScore));
+    dispatch(
+      setCapturedPiecesByWhite({ ...capturedPiecesByWhite, ...capturedByWhite })
+    );
+    dispatch(
+      setCapturedPiecesByBlack({ ...capturedPiecesByBlack, ...capturedByBlack })
+    );
   };
   useEffect(() => {
     dispatch(setBoard(chess.board()));
@@ -167,6 +199,7 @@ export default function useChessGameOffline() {
     dispatch(setLegalMoves([]));
     dispatch(resetMove());
     dispatch(setUndo(false));
+    if (enableTimer) toggleTimerBasedOnTurn();
   }, [undo]);
   useEffect(() => {
     //if player has moved from one position to another, then attempt moving the move
@@ -175,6 +208,7 @@ export default function useChessGameOffline() {
         const moveRes = chess.move(move);
         handleCapturedPiecesAndScores(moveRes);
         handleBoardUpdateOnMove(moveRes);
+        if (enableTimer) toggleTimerBasedOnTurn();
       } catch (e) {
         console.log('Invalid Move');
       } finally {
@@ -197,4 +231,22 @@ export default function useChessGameOffline() {
     gameOverChecks();
     dispatch(setHasResigned(false));
   }, [hasResigned]);
+  //timer
+  useEffect(() => {
+    if (enableTimer && !isGameOver) {
+      if (turn == WHITE) startWhiteTimer();
+      else startBlackTimer();
+      dispatch(setTotalTime(totalTime));
+    }
+    return () => {
+      resetWhiteTimer();
+      resetBlackTimer();
+    };
+  }, [enableTimer]);
+  useEffect(() => {
+    dispatch(setWhiteTime(whiteTimeInTimer));
+  }, [whiteTimeInTimer]);
+  useEffect(() => {
+    dispatch(setBlackTime(blackTimeInTimer));
+  }, [blackTimeInTimer]);
 }

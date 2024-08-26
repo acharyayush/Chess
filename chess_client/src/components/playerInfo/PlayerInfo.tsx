@@ -1,8 +1,11 @@
 import { BLACK, Color, WHITE } from 'chess.js';
 import { v4 as uuidv4 } from 'uuid';
-import ProfileImg from './shared/ProfileImg';
-import { capturedPiecesAndNumberType } from '../types';
+import ProfileImg from '../shared/ProfileImg';
+import { capturedPiecesAndNumberType } from '../../types';
 import { twMerge } from 'tailwind-merge';
+import Timer from './Timer';
+import { RootState } from '../../state/store';
+import { useSelector } from 'react-redux';
 
 interface PlayerInfoProps {
   color: Color;
@@ -20,8 +23,11 @@ export default function PlayerInfo({
   score,
   className,
 }: PlayerInfoProps) {
+  const { turn, enableTimer } = useSelector((state: RootState) => state.chess);
+  const { whiteTime, blackTime } = useSelector(
+    (state: RootState) => state.players
+  );
   const pieceWidth = 24;
-
   const renderCapturedPieces = () => {
     //calculate the exact width of each group after overlapping parts of piece in each group,
     //then calculate the total width of groups, (render the pieces in the process)
@@ -95,6 +101,14 @@ export default function PlayerInfo({
           <div className='score ml-2 text-gray-100'>{renderScore()}</div>
         </div>
       </div>
+      {enableTimer && (
+        <Timer
+          timeLeft={color === WHITE ? whiteTime : blackTime}
+          color={color}
+          turn={turn}
+          className='ml-auto'
+        />
+      )}
     </div>
   );
 }

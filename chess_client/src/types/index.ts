@@ -31,3 +31,12 @@ export type CapturedDetails = {
   capturedPiecesByWhite: capturedPiecesAndNumberType;
   capturedPiecesByBlack: capturedPiecesAndNumberType;
 };
+export type Time = {
+  minutes: number;
+  seconds: number;
+};
+export type INIT_GAME_TYPE = {
+  mainPlayer: Color;
+  fen: string;
+  totalTime: number;
+};

@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
+import { twMerge } from 'tailwind-merge';
 interface MoveHistoryProps {
   moveHistory: string[];
+  className?: string;
 }
-function MoveHistory({ moveHistory }: MoveHistoryProps) {
+function MoveHistory({ moveHistory, className }: MoveHistoryProps) {
   const historyDiv = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (historyDiv.current) {
@@ -57,7 +59,10 @@ function MoveHistory({ moveHistory }: MoveHistoryProps) {
   };
   return (
     <div
-      className='history scrollbar-hide scrollbar-custom h-[460px] overflow-y-auto pt-8'
+      className={twMerge(
+        'history scrollbar-hide scrollbar-custom overflow-y-auto pt-8',
+        className
+      )}
       ref={historyDiv}
     >
       <h1 className='text-lg border-b-2 mb-3 pb-2 mx-4'>History</h1>

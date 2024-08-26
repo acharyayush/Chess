@@ -7,15 +7,19 @@ import {
   RECEIVE_MOVE_HISTORY,
   RECEIVE_PLAYER_DETAILS,
   RECEIVE_CAPTURED_DETAILS,
+  RECEIVE_TIME,
 } from '../events';
-import { Chess, Color } from 'chess.js';
+import { Chess } from 'chess.js';
 import {
   resetPlayers,
+  setBlackTime,
   setCapturedPiecesByBlack,
   setCapturedPiecesByWhite,
   setMainPlayer,
   setPlayers,
+  setTotalTime,
   setWhiteNetScore,
+  setWhiteTime,
 } from '../state/players/playerSlice';
 import { useDispatch } from 'react-redux';
 import {
@@ -38,7 +42,7 @@ import {
   setIsGameOver,
   setWinner,
 } from '../state/gameStatus/gameStatusSlice';
-import { CapturedDetails, Winner } from '../types';
+import { CapturedDetails, INIT_GAME_TYPE, Winner } from '../types';
 interface GameOverProps {
   gameOverDescription: string;
   winnerColor: Winner;
@@ -55,17 +59,15 @@ export default function useSocket() {
   };
   useEffect(() => {
     dispatch(setIsOnline(true));
-    socket.on(
-      INIT_GAME,
-      ({ mainPlayer, fen }: { mainPlayer: Color; fen: string }) => {
-        resetGame();
-        const tempChess = new Chess(fen);
-        dispatch(setFen(fen));
-        dispatch(setMainPlayer(mainPlayer));
-        dispatch(setBoard(tempChess.board()));
-        setSuccess(true);
-      }
-    );
+    socket.on(INIT_GAME, ({ mainPlayer, fen, totalTime }: INIT_GAME_TYPE) => {
+      resetGame();
+      const tempChess = new Chess(fen);
+      dispatch(setFen(fen));
+      dispatch(setMainPlayer(mainPlayer));
+      dispatch(setBoard(tempChess.board()));
+      dispatch(setTotalTime(totalTime));
+      setSuccess(true);
+    });
     socket.on(
       RECEIVE_PLAYER_DETAILS,
       ({ player1, player2 }: { player1: string; player2: string }) => {
@@ -103,7 +105,17 @@ export default function useSocket() {
       dispatch(setCapturedPiecesByWhite(capturedDetails.capturedPiecesByWhite));
       dispatch(setCapturedPiecesByBlack(capturedDetails.capturedPiecesByBlack));
     });
-
+    socket.on(
+      RECEIVE_TIME,
+      (timeLeft: { player1?: number; player2?: number }) => {
+        if (timeLeft.player1) {
+          dispatch(setWhiteTime(timeLeft.player1));
+        }
+        if (timeLeft.player2) {
+          dispatch(setBlackTime(timeLeft.player2));
+        }
+      }
+    );
     return () => {
       socket.off(INIT_GAME);
       socket.off(RECEIVE_FEN);
