@@ -21,7 +21,7 @@ import { Player } from './types';
 import Timer from './Timer';
 
 io.on('connection', (socket) => {
-  socket.on(JOIN_GAME, (name?: string, gameTimeInSec: number = 10*60) => {
+  socket.on(JOIN_GAME, (name?: string, gameTimeInSec: number = 15) => {
     //TODO: search for the socket if exist in any game or waiting, if exist then fetch the data from there and emit to him/her else just add
     playerCount++;
     const playerName = name || 'guest' + playerCount;

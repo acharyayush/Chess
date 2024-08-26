@@ -9,7 +9,7 @@ import {
   RECEIVE_CAPTURED_DETAILS,
   RECEIVE_TIME,
 } from '../events';
-import { Chess } from 'chess.js';
+import { Chess, Color, WHITE } from 'chess.js';
 import {
   resetPlayers,
   setBlackTime,
@@ -43,6 +43,7 @@ import {
   setWinner,
 } from '../state/gameStatus/gameStatusSlice';
 import { CapturedDetails, INIT_GAME_TYPE, Winner } from '../types';
+import useTimer from './useTimer';
 interface GameOverProps {
   gameOverDescription: string;
   winnerColor: Winner;
@@ -50,12 +51,45 @@ interface GameOverProps {
 export default function useSocket() {
   const { handleSoundEffects } = useSound();
   const [success, setSuccess] = useState(false);
-  const { isCheck } = useSelector((state: RootState) => state.gameStatus);
+  const { isCheck, isGameOver } = useSelector(
+    (state: RootState) => state.gameStatus
+  );
   const dispatch = useDispatch();
+
+  const {
+    time: whiteTimeInTimer,
+    startTimer: startWhiteTimer,
+    pauseTimer: pauseWhiteTimer,
+    resetTimer: resetWhiteTimer,
+  } = useTimer();
+  const {
+    time: blackTimeInTimer,
+    startTimer: startBlackTimer,
+    pauseTimer: pauseBlackTimer,
+    resetTimer: resetBlackTimer,
+  } = useTimer();
   const resetGame = () => {
     dispatch(resetChess());
     dispatch(resetPlayers());
     dispatch(resetGameStatus());
+  };
+  const resetTimers = () => {
+    resetWhiteTimer();
+    resetBlackTimer();
+  };
+  const pauseTimers = () => {
+    pauseWhiteTimer();
+    pauseBlackTimer();
+  };
+  const toggleTimerBasedOnTurn = (turn: Color) => {
+    if (isGameOver) return;
+    if (turn === WHITE) {
+      pauseBlackTimer();
+      startWhiteTimer();
+    } else {
+      pauseWhiteTimer();
+      startBlackTimer();
+    }
   };
   useEffect(() => {
     dispatch(setIsOnline(true));
@@ -66,6 +100,8 @@ export default function useSocket() {
       dispatch(setMainPlayer(mainPlayer));
       dispatch(setBoard(tempChess.board()));
       dispatch(setTotalTime(totalTime));
+      resetTimers();
+      // startWhiteTimer();
       setSuccess(true);
     });
     socket.on(
@@ -83,6 +119,7 @@ export default function useSocket() {
       dispatch(toggleTurn());
       dispatch(resetMove());
       handleSoundEffects(flag, isCheck);
+      toggleTimerBasedOnTurn(tempChess.turn());
       return;
     });
     socket.on(RECEIVE_MOVE_HISTORY, (MoveHistory) => {
@@ -98,6 +135,7 @@ export default function useSocket() {
         }
         dispatch(setWinner(winnerColor));
         dispatch(setGameOverDescription(gameOverDescription));
+        pauseTimers();
       }
     );
     socket.on(RECEIVE_CAPTURED_DETAILS, (capturedDetails: CapturedDetails) => {
@@ -125,5 +163,11 @@ export default function useSocket() {
       socket.off(RECEIVE_CAPTURED_DETAILS);
     };
   }, []);
+  useEffect(() => {
+    dispatch(setWhiteTime(whiteTimeInTimer));
+  }, [whiteTimeInTimer]);
+  useEffect(() => {
+    dispatch(setBlackTime(blackTimeInTimer));
+  }, [blackTimeInTimer]);
   return { success };
 }

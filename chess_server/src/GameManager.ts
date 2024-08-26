@@ -93,6 +93,7 @@ export default class GameManager {
         game.getTurn().timer.start()
       } catch (e) {
         //this is just an invalid move
+        console.log("Attempted an invalid move")
       }
     });
   }
@@ -102,7 +103,7 @@ export default class GameManager {
       this.waitingPlayer = player;
       return;
     }
-    const game = new Game(this.waitingPlayer, player);
+    const game = new Game(this.waitingPlayer, player, this.io);
     this.games.push(game);
     //send event to both sockets to start the game
     //socket 1 = WHITE and socket 2 = BLACK

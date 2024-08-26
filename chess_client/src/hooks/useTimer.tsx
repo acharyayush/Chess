@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../state/store';
 
-export default function useTimer(totalTime: number) {
+export default function useTimer() {
+  const { totalTime } = useSelector((state: RootState) => state.players);
   const [time, setTime] = useState(totalTime);
   const timer = useRef<NodeJS.Timeout | null>(null);
   const startTimer = () => {
@@ -22,6 +25,15 @@ export default function useTimer(totalTime: number) {
     pauseTimer();
     setTime(totalTime);
   };
+  useEffect(() => {
+    if (!timer.current) {
+      setTime(totalTime);
+      return;
+    }
+    pauseTimer();
+    setTime(totalTime);
+    startTimer();
+  }, [totalTime]);
   useEffect(() => {
     return () => {
       pauseTimer();

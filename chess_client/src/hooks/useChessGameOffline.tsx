@@ -1,5 +1,5 @@
 import { BLACK, Color, Move, PAWN, WHITE } from 'chess.js';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { PieceSymbolExcludingKing } from '../types';
 import { piecesPoints } from '../constants';
 import { useSelector } from 'react-redux';
@@ -53,27 +53,35 @@ export default function useChessGameOffline() {
     capturedPiecesByWhite,
     capturedPiecesByBlack,
     mainPlayer,
-    totalTime,
   } = useSelector((state: RootState) => state.players);
+  const [totalTimeOffline] = useState(1 * 60);
   const { handleSoundEffects } = useSound();
   const {
     time: whiteTimeInTimer,
     startTimer: startWhiteTimer,
     pauseTimer: pauseWhiteTimer,
     resetTimer: resetWhiteTimer,
-  } = useTimer(totalTime);
+  } = useTimer();
   const {
     time: blackTimeInTimer,
     startTimer: startBlackTimer,
     pauseTimer: pauseBlackTimer,
     resetTimer: resetBlackTimer,
-  } = useTimer(totalTime);
+  } = useTimer();
   const dispatch = useDispatch();
   const getWinner = () => {
     return chess.turn() == BLACK ? WHITE : BLACK;
   };
   const getOpponent = (player: Color) => {
     return player === WHITE ? BLACK : WHITE;
+  };
+  const pauseTimers = () => {
+    pauseWhiteTimer();
+    pauseBlackTimer();
+  };
+  const resetTimers = () => {
+    resetWhiteTimer();
+    resetBlackTimer();
   };
   const toggleTimerBasedOnTurn = () => {
     if (isGameOver) return;
@@ -221,7 +229,10 @@ export default function useChessGameOffline() {
     dispatch(resetChess());
     dispatch(resetPlayers());
     dispatch(resetGameStatus());
+    dispatch(setTotalTime(totalTimeOffline));
     dispatch(setMainPlayer(getOpponent(mainPlayer)));
+    resetTimers();
+    startWhiteTimer();
     //if player 1 or 2 name is either white or black then leave as it is, else set the name
     if (player1 == 'White' || player2 == 'Black') return;
     dispatch(setPlayers({ player1: player2, player2: player1 }));
@@ -231,12 +242,15 @@ export default function useChessGameOffline() {
     gameOverChecks();
     dispatch(setHasResigned(false));
   }, [hasResigned]);
+  useEffect(() => {
+    if (isGameOver) pauseTimers();
+  }, [isGameOver]);
   //timer
   useEffect(() => {
     if (enableTimer && !isGameOver) {
       if (turn == WHITE) startWhiteTimer();
       else startBlackTimer();
-      dispatch(setTotalTime(totalTime));
+      dispatch(setTotalTime(totalTimeOffline));
     }
     return () => {
       resetWhiteTimer();
@@ -245,8 +259,18 @@ export default function useChessGameOffline() {
   }, [enableTimer]);
   useEffect(() => {
     dispatch(setWhiteTime(whiteTimeInTimer));
+    if (whiteTimeInTimer <= 0) {
+      dispatch(setIsGameOver(true));
+      dispatch(setWinner(BLACK));
+      dispatch(setGameOverDescription('Timeout'));
+    }
   }, [whiteTimeInTimer]);
   useEffect(() => {
     dispatch(setBlackTime(blackTimeInTimer));
+    if (blackTimeInTimer <= 0) {
+      dispatch(setIsGameOver(true));
+      dispatch(setWinner(WHITE));
+      dispatch(setGameOverDescription('Timeout'));
+    }
   }, [blackTimeInTimer]);
 }
