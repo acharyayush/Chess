@@ -13,6 +13,8 @@ import {
   setUndo,
   resetMove,
   resetChess,
+  setPrevMove,
+  setIsOnline,
 } from '../state/chess/chessSlice';
 import {
   setWinner,
@@ -54,7 +56,7 @@ export default function useChessGameOffline() {
     capturedPiecesByBlack,
     mainPlayer,
   } = useSelector((state: RootState) => state.players);
-  const [totalTimeOffline] = useState(1 * 60);
+  const [totalTimeOffline] = useState(10 * 60);
   const { handleSoundEffects } = useSound();
   const {
     time: whiteTimeInTimer,
@@ -79,9 +81,9 @@ export default function useChessGameOffline() {
     pauseWhiteTimer();
     pauseBlackTimer();
   };
-  const resetTimers = () => {
-    resetWhiteTimer();
-    resetBlackTimer();
+  const resetTimers = (time: number) => {
+    resetWhiteTimer(time);
+    resetBlackTimer(time);
   };
   const toggleTimerBasedOnTurn = () => {
     if (isGameOver) return;
@@ -119,10 +121,14 @@ export default function useChessGameOffline() {
   };
 
   const handleBoardUpdateOnMove = (moveRes: Move) => {
+    const history = chess.history({ verbose: true });
+    const latestMove =
+      history.length == 0 ? { from: '', to: '' } : history[history.length - 1];
+    dispatch(setPrevMove({ from: latestMove.from, to: latestMove.to }));
     dispatch(setMoveHistory(chess.history()));
     dispatch(setBoard(chess.board()));
     dispatch(setTurn(chess.turn()));
-    handleSoundEffects(moveRes.flags, chess.inCheck());
+    handleSoundEffects(moveRes.flags, chess.inCheck(), chess.isGameOver());
     if (chess.inCheck()) {
       dispatch(setIsCheck(true));
     } else {
@@ -197,6 +203,7 @@ export default function useChessGameOffline() {
   };
   useEffect(() => {
     dispatch(setBoard(chess.board()));
+    dispatch(setIsOnline(false));
   }, []);
   useEffect(() => {
     if (!undo) return;
@@ -231,7 +238,7 @@ export default function useChessGameOffline() {
     dispatch(resetGameStatus());
     dispatch(setTotalTime(totalTimeOffline));
     dispatch(setMainPlayer(getOpponent(mainPlayer)));
-    resetTimers();
+    resetTimers(totalTimeOffline);
     startWhiteTimer();
     //if player 1 or 2 name is either white or black then leave as it is, else set the name
     if (player1 == 'White' || player2 == 'Black') return;
@@ -253,8 +260,7 @@ export default function useChessGameOffline() {
       dispatch(setTotalTime(totalTimeOffline));
     }
     return () => {
-      resetWhiteTimer();
-      resetBlackTimer();
+      resetTimers(totalTimeOffline);
     };
   }, [enableTimer]);
   useEffect(() => {

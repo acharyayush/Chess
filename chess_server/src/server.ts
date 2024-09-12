@@ -8,9 +8,10 @@ import { JOIN_GAME, REMATCH } from './events';
 const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT || 3000;
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173"
 const io = new Server(server, {
   cors: {
-    origin: ['https://admin.socket.io', `${process.env.CLIENT_URL}`],
+    origin: ['https://admin.socket.io', `${CLIENT_URL}`],
     credentials: true,
   },
 });
@@ -21,7 +22,7 @@ import { Player } from './types';
 import Timer from './Timer';
 
 io.on('connection', (socket) => {
-  socket.on(JOIN_GAME, (name?: string, gameTimeInSec: number = 15) => {
+  socket.on(JOIN_GAME, (name?: string, gameTimeInSec: number = 10*60) => {
     //TODO: search for the socket if exist in any game or waiting, if exist then fetch the data from there and emit to him/her else just add
     playerCount++;
     const playerName = name || 'guest' + playerCount;

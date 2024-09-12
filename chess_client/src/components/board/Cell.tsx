@@ -30,7 +30,7 @@ export default function Cell({
     (state: RootState) => state.chess
   );
   const dispatch = useDispatch();
-  const { showLegalMoves, move } = useSelector(
+  const { showLegalMoves, move, prevMove } = useSelector(
     (state: RootState) => state.chess
   );
   const { isCheck } = useSelector((state: RootState) => state.gameStatus);
@@ -47,6 +47,8 @@ export default function Cell({
     if (isCheck && turn == cell?.color && cell?.type == KING) {
       classes = twMerge(classes, '!bg-red-300');
     }
+    if (prevMove.from == position) classes = twMerge(classes, 'bg-green-100');
+    if (prevMove.to == position) classes = twMerge(classes, 'bg-green-200');
     if (activeSquare === position) {
       classes = twMerge(classes, '!bg-blue-300');
     }

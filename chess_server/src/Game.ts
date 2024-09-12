@@ -8,7 +8,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { piecesPoints } from './constants';
-import { GAMEOVER, TIMEUP } from './events';
+import { GAMEOVER, RECEIVE_TIME, TIMEUP } from './events';
 export default class Game {
   // PLAYER 1 IS ALWAYS WHITE AND PLAYER 2 IS ALWAYS BLACK
   private chess: Chess;
@@ -61,6 +61,10 @@ export default class Game {
   private getPlayerColor(id: string) {
     return id === this.player1.socket.id ? WHITE : BLACK;
   }
+  private pauseTimers(){
+    this.player1.timer.pause();
+    this.player2.timer.pause();
+  }
   private handleTimeUp(){
     if(this.player1.timer.getTime()<=0){
       this.gameOverDetails.winnerColor = BLACK;
@@ -70,6 +74,11 @@ export default class Game {
     }
     this.gameOverDetails.gameOverDescription = "Timeout";
     this.io.to(this.roomId).emit(GAMEOVER, this.gameOverDetails)
+    this.pauseTimers()
+    this.io.to(this.roomId).emit(RECEIVE_TIME, {
+      player1: this.player1.timer.getTime(),
+      player2: this.player2.timer.getTime(),
+    });
   }
   getMoveHistory() {
     return this.chess.history();

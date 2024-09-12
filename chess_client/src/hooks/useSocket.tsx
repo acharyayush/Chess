@@ -8,6 +8,7 @@ import {
   RECEIVE_PLAYER_DETAILS,
   RECEIVE_CAPTURED_DETAILS,
   RECEIVE_TIME,
+  RECEIVE_LATEST_MOVE,
 } from '../events';
 import { Chess, Color, WHITE } from 'chess.js';
 import {
@@ -30,6 +31,7 @@ import {
   toggleTurn,
   resetMove,
   resetChess,
+  setPrevMove,
 } from '../state/chess/chessSlice';
 import useSound from './useSound';
 import { useSelector } from 'react-redux';
@@ -42,7 +44,7 @@ import {
   setIsGameOver,
   setWinner,
 } from '../state/gameStatus/gameStatusSlice';
-import { CapturedDetails, INIT_GAME_TYPE, Winner } from '../types';
+import { CapturedDetails, INIT_GAME_TYPE, Move, Winner } from '../types';
 import useTimer from './useTimer';
 interface GameOverProps {
   gameOverDescription: string;
@@ -73,9 +75,9 @@ export default function useSocket() {
     dispatch(resetPlayers());
     dispatch(resetGameStatus());
   };
-  const resetTimers = () => {
-    resetWhiteTimer();
-    resetBlackTimer();
+  const resetTimers = (time: number) => {
+    resetWhiteTimer(time);
+    resetBlackTimer(time);
   };
   const pauseTimers = () => {
     pauseWhiteTimer();
@@ -100,9 +102,9 @@ export default function useSocket() {
       dispatch(setMainPlayer(mainPlayer));
       dispatch(setBoard(tempChess.board()));
       dispatch(setTotalTime(totalTime));
-      resetTimers();
-      // startWhiteTimer();
       setSuccess(true);
+      resetTimers(totalTime);
+      startWhiteTimer();
     });
     socket.on(
       RECEIVE_PLAYER_DETAILS,
@@ -118,9 +120,12 @@ export default function useSocket() {
       dispatch(setFen(fen));
       dispatch(toggleTurn());
       dispatch(resetMove());
-      handleSoundEffects(flag, isCheck);
+      handleSoundEffects(flag, isCheck, isGameOver);
       toggleTimerBasedOnTurn(tempChess.turn());
       return;
+    });
+    socket.on(RECEIVE_LATEST_MOVE, (move: Move) => {
+      dispatch(setPrevMove(move));
     });
     socket.on(RECEIVE_MOVE_HISTORY, (MoveHistory) => {
       dispatch(setMoveHistory(MoveHistory));
@@ -146,10 +151,10 @@ export default function useSocket() {
     socket.on(
       RECEIVE_TIME,
       (timeLeft: { player1?: number; player2?: number }) => {
-        if (timeLeft.player1) {
+        if (timeLeft.player1 != undefined) {
           dispatch(setWhiteTime(timeLeft.player1));
         }
-        if (timeLeft.player2) {
+        if (timeLeft.player2 != undefined) {
           dispatch(setBlackTime(timeLeft.player2));
         }
       }
@@ -161,6 +166,8 @@ export default function useSocket() {
       socket.off(RECEIVE_PLAYER_DETAILS);
       socket.off(GAMEOVER);
       socket.off(RECEIVE_CAPTURED_DETAILS);
+      socket.off(RECEIVE_TIME);
+      socket.off(RECEIVE_LATEST_MOVE);
     };
   }, []);
   useEffect(() => {

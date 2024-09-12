@@ -21,7 +21,7 @@ export default function useTimer() {
     clearInterval(timer.current);
     timer.current = null;
   };
-  const resetTimer = () => {
+  const resetTimer = (totalTime: number) => {
     pauseTimer();
     setTime(totalTime);
   };
@@ -30,8 +30,7 @@ export default function useTimer() {
       setTime(totalTime);
       return;
     }
-    pauseTimer();
-    setTime(totalTime);
+    resetTimer(totalTime);
     startTimer();
   }, [totalTime]);
   useEffect(() => {

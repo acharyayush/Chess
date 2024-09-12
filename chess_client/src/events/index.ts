@@ -9,3 +9,4 @@ export const GAMEOVER = 'gameover';
 export const REMATCH = 'rematch';
 export const RECEIVE_CAPTURED_DETAILS = 'receive_captured_details';
 export const RECEIVE_TIME = 'receive_time';
+export const RECEIVE_LATEST_MOVE = 'receive_latest_move';

@@ -4,6 +4,7 @@ import {
   INIT_GAME,
   RECEIVE_CAPTURED_DETAILS,
   RECEIVE_FEN,
+  RECEIVE_LATEST_MOVE,
   RECEIVE_MOVE_HISTORY,
   RECEIVE_PLAYER_DETAILS,
   RECEIVE_TIME,
@@ -64,7 +65,7 @@ export default class GameManager {
           fen: game.getFen(),
           flag: moveRes.flags,
         });
-
+        this.emitToBothPlayers(game.roomId, RECEIVE_LATEST_MOVE, move)
         this.emitToBothPlayers(
           game.roomId,
           RECEIVE_MOVE_HISTORY,

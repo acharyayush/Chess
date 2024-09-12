@@ -26,6 +26,7 @@ export type ChessState = {
   showPromotionOption: { canShow: boolean; position?: string };
   promotion: PieceSymbol | null;
   isOnline: boolean;
+  prevMove: Move;
 };
 
 const initialState: ChessState = {
@@ -42,6 +43,7 @@ const initialState: ChessState = {
   showPromotionOption: { canShow: false },
   promotion: null,
   isOnline: false,
+  prevMove: { from: '', to: '' },
 };
 const chessSlice = createSlice({
   name: 'chess',
@@ -100,13 +102,17 @@ const chessSlice = createSlice({
           promotion: state.promotion,
         };
         state.move = moveToSet;
-        if (state.isOnline) socket.emit(SEND_MOVE, moveToSet);
+        if (state.isOnline && moveToSet.from && moveToSet.to)
+          socket.emit(SEND_MOVE, moveToSet);
         state.promotion = null;
         return;
       }
     },
     setMove: (state, action: PayloadAction<Move>) => {
       state.move = action.payload;
+    },
+    setPrevMove: (state, action: PayloadAction<Move>) => {
+      state.prevMove = action.payload;
     },
     resetMove: (state) => {
       state.move = { from: '', to: '' };
@@ -149,7 +155,9 @@ const chessSlice = createSlice({
       }
       //Normal game move
       state.move = moveToSet;
-      if (state.isOnline) socket.emit(SEND_MOVE, moveToSet);
+      if (moveToSet.from && moveToSet.to) {
+        if (state.isOnline) socket.emit(SEND_MOVE, moveToSet);
+      }
     },
     setIsOnline: (state, action: PayloadAction<boolean>) => {
       state.isOnline = action.payload;
@@ -178,6 +186,7 @@ export const {
   setShowPromotionOption,
   updateMove,
   setMove,
+  setPrevMove,
   resetMove,
   setIsOnline,
   resetChess,
