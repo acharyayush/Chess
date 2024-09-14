@@ -122,7 +122,7 @@ export default function Cell({
   return (
     <div
       onClick={handleDrop}
-      className={`${classes} relative flex items-center justify-center select-none sm:w-auto sm:h-auto`}
+      className={`${classes} relative flex items-center justify-center select-none`}
       onDragOver={(e) => {
         handleDragOver(e);
       }}

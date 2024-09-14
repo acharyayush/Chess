@@ -32,7 +32,7 @@ export default function Online() {
   const { success } = useSocket();
   const renderPage = () => {
     return (
-      <div className='bg-slate-700 min-h-screen'>
+      <div className='bg-slate-700 min-h-screen p-5 xsm:p-2 grid items-center'>
         {!success && (
           <LoaderContainer className='h-screen flex items-center justify-center'>
             <>
@@ -47,8 +47,12 @@ export default function Online() {
           </LoaderContainer>
         )}
         {success && (
-          <div className='w-[90%] xl:w-[100%] mx-auto flex justify-evenly lg:flex-col lg:items-center p-5 xsm:p-2'>
-            <BoardSectionContainer>
+          <div className='w-[90%] h-fit xl:w-[100%] mx-auto flex justify-evenly lg:flex-col lg:items-center gap-4'>
+            {/* container height is 80vh. BoardSectionContainer width should be equal to board width and board should be square. So boardWidth = boardHeight = 80vh - 2*50px (playerInfo height) - 2*16px (gap) */}
+            <BoardSectionContainer
+              style={{ width: `calc(90vh - 100px - 32px)` }}
+              className='h-[90vh] md:h-auto sm:h-screen gap-4 md:!w-auto'
+            >
               {/* Logo, Name of player 1 */}
               <PlayerInfo
                 className='mb-2'
@@ -88,7 +92,7 @@ export default function Online() {
               />
             </BoardSectionContainer>
 
-            <GameDetailContainer>
+            <GameDetailContainer className='GameDetailContainer sm:max-w-full h-[90vh] lg:h-[600px]'>
               <MoveHistory className='flex-grow' moveHistory={moveHistory} />
               <div className='settings p-4'>
                 <div className='buttons flex'>

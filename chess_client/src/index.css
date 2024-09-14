@@ -11,3 +11,8 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+@media (max-width: 1023px) {
+  .GameDetailContainer{
+    max-width: calc(90vh - 100px - 32px)
+  }
+}

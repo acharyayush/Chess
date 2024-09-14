@@ -37,10 +37,11 @@ export default function ChessBoard({
       });
     });
   }
+  //w-[var(--chessboard-size)] h-[var(--chessboard-size)]
   return (
     <div
       className={twMerge(
-        `w-[var(--chessboard-size)] h-[var(--chessboard-size)] grid grid-cols-8 grid-rows-8 sm:w-[100%] sm:h-auto ${mainPlayer == BLACK ? 'rotate-180' : ''}`,
+        `ChessBoard grid grid-cols-8 grid-rows-8 sm:w-[100%] sm:h-auto ${mainPlayer == BLACK ? 'rotate-180' : ''}`,
         className
       )}
     >

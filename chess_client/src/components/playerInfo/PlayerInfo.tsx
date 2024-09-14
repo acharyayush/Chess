@@ -87,7 +87,7 @@ export default function PlayerInfo({
     }
   };
   return (
-    <div className={twMerge('flex text-white', className)}>
+    <div className={twMerge('flex text-white h-[50px]', className)}>
       <div className='profileImg'>
         <ProfileImg color={color} />
       </div>

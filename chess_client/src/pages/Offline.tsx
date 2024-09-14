@@ -37,12 +37,16 @@ export default function Offline() {
   const { isGameOver } = useSelector((state: RootState) => state.gameStatus);
 
   return (
-    <div className='bg-slate-700 min-h-screen p-5 xsm:p-2'>
-      <div className='w-[90%] xl:w-[100%] mx-auto flex justify-evenly lg:flex-col lg:items-center'>
-        <BoardSectionContainer>
+    <div className='bg-slate-700 min-h-screen p-5 xsm:p-2 grid items-center'>
+      <div className='w-[90%] h-fit xl:w-[100%] mx-auto flex justify-evenly lg:flex-col lg:items-center gap-4'>
+        {/* container height is 80vh. BoardSectionContainer width should be equal to board width and board should be square. So boardWidth = boardHeight = 80vh - 2*50px (playerInfo height) - 2*16px (gap) */}
+        <BoardSectionContainer
+          style={{ width: `calc(90vh - 100px - 32px)` }}
+          className='h-[90vh] md:h-auto sm:h-screen gap-4 md:!w-auto'
+        >
           {/* Logo, Name of player 1 */}
           <PlayerInfo
-            className='mb-2'
+            className='h-[50px]'
             color={mainPlayer == WHITE ? BLACK : WHITE}
             name={mainPlayer == WHITE ? player2 : player1}
             rating={1200}
@@ -54,15 +58,20 @@ export default function Offline() {
             }
           />
           {/* Chess Board */}
-          <div className='relative inline-block'>
+          <div className='relative grow sm:grow-0'>
             {isGameOver && (
               <GameOverPopUp className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' />
             )}
-            <ChessBoard board={board} turn={turn} isDisable={isGameOver} />
+            <ChessBoard
+              className='h-full aspect-square'
+              board={board}
+              turn={turn}
+              isDisable={isGameOver}
+            />
           </div>
           {/* Logo, Name of player 2 */}
           <PlayerInfo
-            className='mt-2'
+            className='h-[50px]'
             color={mainPlayer}
             name={mainPlayer == WHITE ? player1 : player2}
             rating={1200}
@@ -74,8 +83,8 @@ export default function Offline() {
             }
           />
         </BoardSectionContainer>
-
-        <GameDetailContainer>
+        {/* has some external css for GameDetailContainer in index.css */}
+        <GameDetailContainer className='GameDetailContainer sm:max-w-full h-[90vh] lg:h-[600px]'>
           <MoveHistory moveHistory={moveHistory} className='flex-grow' />
           <div className='settings p-4'>
             <div className='buttons flex'>
