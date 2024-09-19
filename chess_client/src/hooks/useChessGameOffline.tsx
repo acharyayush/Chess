@@ -1,7 +1,5 @@
-import { BLACK, Color, Move, PAWN, WHITE } from 'chess.js';
+import { BLACK, Color, Move, WHITE } from 'chess.js';
 import { useEffect, useState } from 'react';
-import { PieceSymbolExcludingKing } from '../types';
-import { piecesPoints } from '../constants';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 
@@ -26,9 +24,6 @@ import {
   setIsCheck,
 } from '../state/gameStatus/gameStatusSlice';
 import {
-  setWhiteNetScore,
-  setCapturedPiecesByWhite,
-  setCapturedPiecesByBlack,
   resetPlayers,
   setPlayers,
   setMainPlayer,
@@ -40,6 +35,7 @@ import {
 import { useDispatch } from 'react-redux';
 import useSound from './useSound';
 import useTimer from './useTimer';
+import useCapturedPiecesAndScores from './useCapturedPiecesAndScores';
 
 export default function useChessGameOffline() {
   const { chess, turn, move, undo, enableTimer } = useSelector(
@@ -48,16 +44,12 @@ export default function useChessGameOffline() {
   const { hasResigned, rematch, isGameOver } = useSelector(
     (state: RootState) => state.gameStatus
   );
-  const {
-    player1,
-    player2,
-    whiteNetScore,
-    capturedPiecesByWhite,
-    capturedPiecesByBlack,
-    mainPlayer,
-  } = useSelector((state: RootState) => state.players);
+  const { player1, player2, mainPlayer } = useSelector(
+    (state: RootState) => state.players
+  );
   const [totalTimeOffline] = useState(10 * 60);
   const { handleSoundEffects } = useSound();
+  const handleCapturedPiecesAndScores = useCapturedPiecesAndScores();
   const {
     time: whiteTimeInTimer,
     startTimer: startWhiteTimer,
@@ -135,71 +127,6 @@ export default function useChessGameOffline() {
       dispatch(setIsCheck(false));
     }
     gameOverChecks();
-  };
-
-  const handleCapturedPiecesAndScores = (moveRes: Move, isUndo?: boolean) => {
-    //if piece is promoted then handle points incremenet/decrement based on the player
-    if (!moveRes.captured && !moveRes.promotion) return;
-    let netScore = whiteNetScore;
-    let capturedByWhite = capturedPiecesByWhite;
-    let capturedByBlack = capturedPiecesByBlack;
-    if (moveRes.promotion) {
-      const promotedPiece = moveRes.promotion as PieceSymbolExcludingKing;
-      if (moveRes.color == WHITE) {
-        netScore = !undo
-          ? netScore + piecesPoints[promotedPiece] - 1
-          : netScore - piecesPoints[promotedPiece] + 1;
-        capturedByBlack = {
-          ...capturedByBlack,
-          [PAWN]: !isUndo
-            ? capturedPiecesByBlack[PAWN] + 1
-            : capturedPiecesByBlack[PAWN] - 1,
-        };
-      } else {
-        netScore = !undo
-          ? netScore - piecesPoints[promotedPiece] + 1
-          : netScore + piecesPoints[promotedPiece] - 1;
-        capturedByWhite = {
-          ...capturedByWhite,
-          [PAWN]: !isUndo
-            ? capturedPiecesByWhite[PAWN] + 1
-            : capturedPiecesByWhite[PAWN] - 1,
-        };
-      }
-    }
-    //if the move captures a piece, update point and capturedPieces accordingly
-    if (moveRes.captured) {
-      const capturedPiece = moveRes.captured as PieceSymbolExcludingKing;
-      const capturedPoint = piecesPoints[capturedPiece];
-      if (moveRes.color == WHITE) {
-        netScore = !isUndo
-          ? netScore + capturedPoint
-          : netScore - capturedPoint;
-        capturedByWhite = {
-          ...capturedByWhite,
-          [capturedPiece]: !isUndo
-            ? capturedPiecesByWhite[capturedPiece] + 1
-            : capturedPiecesByWhite[capturedPiece] - 1,
-        };
-      } else {
-        netScore = !isUndo
-          ? netScore - capturedPoint
-          : netScore + capturedPoint;
-        capturedByBlack = {
-          ...capturedByBlack,
-          [capturedPiece]: !isUndo
-            ? capturedPiecesByBlack[capturedPiece] + 1
-            : capturedPiecesByBlack[capturedPiece] - 1,
-        };
-      }
-    }
-    dispatch(setWhiteNetScore(netScore));
-    dispatch(
-      setCapturedPiecesByWhite({ ...capturedPiecesByWhite, ...capturedByWhite })
-    );
-    dispatch(
-      setCapturedPiecesByBlack({ ...capturedPiecesByBlack, ...capturedByBlack })
-    );
   };
   useEffect(() => {
     dispatch(setBoard(chess.board()));

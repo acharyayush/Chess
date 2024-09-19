@@ -10,7 +10,7 @@ import {
   RECEIVE_TIME,
   RECEIVE_LATEST_MOVE,
 } from '../events';
-import { Chess, Color, WHITE } from 'chess.js';
+import { Color, WHITE } from 'chess.js';
 import {
   resetPlayers,
   setBlackTime,
@@ -32,6 +32,7 @@ import {
   resetMove,
   resetChess,
   setPrevMove,
+  setFlag,
 } from '../state/chess/chessSlice';
 import useSound from './useSound';
 import { useSelector } from 'react-redux';
@@ -46,6 +47,7 @@ import {
 } from '../state/gameStatus/gameStatusSlice';
 import { CapturedDetails, INIT_GAME_TYPE, Move, Winner } from '../types';
 import useTimer from './useTimer';
+import useCapturedPiecesAndScores from './useCapturedPiecesAndScores';
 interface GameOverProps {
   gameOverDescription: string;
   winnerColor: Winner;
@@ -53,9 +55,16 @@ interface GameOverProps {
 export default function useSocket() {
   const { handleSoundEffects } = useSound();
   const [success, setSuccess] = useState(false);
+  const { chess, move, fen, flag } = useSelector(
+    (state: RootState) => state.chess
+  );
   const { isCheck, isGameOver } = useSelector(
     (state: RootState) => state.gameStatus
   );
+  const { whiteTime, blackTime } = useSelector(
+    (state: RootState) => state.players
+  );
+  const handleCapturedPiecesAndScores = useCapturedPiecesAndScores();
   const dispatch = useDispatch();
 
   const {
@@ -87,20 +96,20 @@ export default function useSocket() {
     if (isGameOver) return;
     if (turn === WHITE) {
       pauseBlackTimer();
-      startWhiteTimer();
+      startWhiteTimer(whiteTime);
     } else {
       pauseWhiteTimer();
-      startBlackTimer();
+      startBlackTimer(blackTime);
     }
   };
   useEffect(() => {
     dispatch(setIsOnline(true));
     socket.on(INIT_GAME, ({ mainPlayer, fen, totalTime }: INIT_GAME_TYPE) => {
       resetGame();
-      const tempChess = new Chess(fen);
+      chess.load(fen);
       dispatch(setFen(fen));
       dispatch(setMainPlayer(mainPlayer));
-      dispatch(setBoard(tempChess.board()));
+      dispatch(setBoard(chess.board()));
       dispatch(setTotalTime(totalTime));
       setSuccess(true);
       resetTimers(totalTime);
@@ -113,15 +122,8 @@ export default function useSocket() {
       }
     );
     socket.on(RECEIVE_FEN, ({ fen, flag }: { fen: string; flag: string }) => {
-      const tempChess = new Chess(fen);
-      if (tempChess.isCheck()) dispatch(setIsCheck(true));
-      else dispatch(setIsCheck(false));
-      dispatch(setBoard(tempChess.board()));
       dispatch(setFen(fen));
-      dispatch(toggleTurn());
-      dispatch(resetMove());
-      handleSoundEffects(flag, isCheck, isGameOver);
-      toggleTimerBasedOnTurn(tempChess.turn());
+      dispatch(setFlag(flag));
       return;
     });
     socket.on(RECEIVE_LATEST_MOVE, (move: Move) => {
@@ -170,6 +172,33 @@ export default function useSocket() {
       socket.off(RECEIVE_LATEST_MOVE);
     };
   }, []);
+  useEffect(() => {
+    if (move.from && move.to) {
+      try {
+        const moveRes = chess.move(move);
+        handleCapturedPiecesAndScores(moveRes);
+        dispatch(setFen(chess.fen()));
+        dispatch(setFlag(moveRes.flags));
+        dispatch(setPrevMove({ from: moveRes.from, to: moveRes.to }));
+      } catch (e) {
+        console.log('Invalid Move');
+      } finally {
+        dispatch(resetMove());
+      }
+    }
+  }, [move]);
+  useEffect(() => {
+    if (!flag) return;
+    chess.load(fen);
+    if (chess.isCheck()) dispatch(setIsCheck(true));
+    else dispatch(setIsCheck(false));
+    dispatch(setBoard(chess.board()));
+    dispatch(toggleTurn());
+    dispatch(resetMove());
+    handleSoundEffects(flag, isCheck, isGameOver);
+    toggleTimerBasedOnTurn(chess.turn());
+    dispatch(setFlag(flag));
+  }, [fen, flag]);
   useEffect(() => {
     dispatch(setWhiteTime(whiteTimeInTimer));
   }, [whiteTimeInTimer]);

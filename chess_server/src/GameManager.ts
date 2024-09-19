@@ -61,11 +61,11 @@ export default class GameManager {
         const isCapturedOrPromoted =
           game.handleCapturedPiecesAndScores(moveRes);
 
-        this.emitToBothPlayers(game.roomId, RECEIVE_FEN, {
+        this.io.to(game.getTurn().socket.id).emit(RECEIVE_FEN, {
           fen: game.getFen(),
           flag: moveRes.flags,
         });
-        this.emitToBothPlayers(game.roomId, RECEIVE_LATEST_MOVE, move)
+        this.io.to(game.getTurn().socket.id).emit(RECEIVE_LATEST_MOVE, move)
         this.emitToBothPlayers(
           game.roomId,
           RECEIVE_MOVE_HISTORY,

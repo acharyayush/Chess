@@ -34,7 +34,7 @@ export default function Online() {
     return (
       <div className='bg-slate-700 min-h-screen p-5 xsm:p-2 grid items-center'>
         {!success && (
-          <LoaderContainer className='h-screen flex items-center justify-center'>
+          <LoaderContainer className='h-full flex items-center justify-center'>
             <>
               <div
                 style={{ WebkitTextStroke: '1px #4172b9' }}

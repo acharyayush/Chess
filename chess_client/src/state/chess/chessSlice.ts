@@ -15,6 +15,7 @@ import { SEND_MOVE } from '../../events';
 export type ChessState = {
   chess: Chess;
   fen: string;
+  flag: string;
   moveHistory: string[];
   board: ReturnType<Chess['board']>;
   turn: Color;
@@ -33,6 +34,7 @@ const initialState: ChessState = {
   chess: new Chess(),
   moveHistory: [],
   fen: '',
+  flag: '',
   board: [],
   turn: WHITE,
   legalMoves: [],
@@ -60,6 +62,9 @@ const chessSlice = createSlice({
     },
     setFen: (state, action: PayloadAction<string>) => {
       state.fen = action.payload;
+    },
+    setFlag: (state, action: PayloadAction<string>) => {
+      state.flag = action.payload;
     },
     setTurn: (state, action: PayloadAction<Color>) => {
       state.turn = action.payload;
@@ -176,6 +181,7 @@ export const {
   setMoveHistory,
   setBoard,
   setFen,
+  setFlag,
   setTurn,
   toggleTurn,
   setLegalMoves,

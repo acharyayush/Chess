@@ -6,7 +6,8 @@ export default function useTimer() {
   const { totalTime } = useSelector((state: RootState) => state.players);
   const [time, setTime] = useState(totalTime);
   const timer = useRef<NodeJS.Timeout | null>(null);
-  const startTimer = () => {
+  const startTimer = (time?: number) => {
+    if (time) setTime(time);
     if (timer.current) return;
     timer.current = setInterval(() => {
       setTime((prevTime) => {
