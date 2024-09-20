@@ -14,6 +14,7 @@ export default class Game {
   private chess: Chess;
   player1: Player;
   player2: Player;
+  isPaused: boolean;
   io: Server;
   roomId: string;
   rematchStatus: { player1: boolean; player2: boolean };
@@ -31,6 +32,7 @@ export default class Game {
   constructor(player1: Player, player2: Player, io:Server) {
     this.player1 = player1;
     this.player2 = player2;
+    this.isPaused = false;
     this.io = io;
     //for testing rnbqkbnr/ppppp2p/8/5pp1/4PP2/8/PPPP2PP/RNBQKBNR w KQkq - 0 1
     this.chess = new Chess();
@@ -57,13 +59,14 @@ export default class Game {
     this.capturedDetails = this.initialCapturedDetails;
     this.player1.timer.resetTimer()
     this.player2.timer.resetTimer()
+    this.isPaused = false;
+  }
+  pauseTimers(){
+    this.player1.timer.pause();
+    this.player2.timer.pause();
   }
   private getPlayerColor(id: string) {
     return id === this.player1.socket.id ? WHITE : BLACK;
-  }
-  private pauseTimers(){
-    this.player1.timer.pause();
-    this.player2.timer.pause();
   }
   private handleTimeUp(){
     if(this.player1.timer.getTime()<=0){

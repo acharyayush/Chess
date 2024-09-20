@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import express from 'express';
 import GameManager from './GameManager';
-import { JOIN_GAME, REMATCH } from './events';
+import { JOIN_GAME, REMATCH, RESIGN } from './events';
 const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT || 3000;
@@ -37,7 +37,9 @@ io.on('connection', (socket) => {
   socket.on(REMATCH, () => {
     gameManager.handleRematch(socket);
   });
-
+  socket.on(RESIGN, ()=>{
+    gameManager.handleResign(socket);
+  })
   socket.on('disconnect', () => {
     //remove player if he was in waiting list
     const wasWaiting = gameManager.removePlayerFromWaitingList(socket);

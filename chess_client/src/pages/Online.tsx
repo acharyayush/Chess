@@ -15,6 +15,8 @@ import { FaFlag } from 'react-icons/fa';
 import SwitchToggle from '../components/shared/SwitchToggle';
 import { useDispatch } from 'react-redux';
 import { setShowLegalMoves } from '../state/chess/chessSlice';
+import socket from '../socket';
+import { RESIGN } from '../events';
 export default function Online() {
   const { board, moveHistory, turn, showLegalMoves } = useSelector(
     (state: RootState) => state.chess
@@ -102,7 +104,9 @@ export default function Online() {
                     modalTitle='Are you sure you want to resign?'
                     noShadow
                     className='resign hover:bg-[rgba(0,0,0,0.3)] px-8 py-3 ml-0 mr-2 bg-[rgba(0,0,0,0.2)]'
-                    onClick={() => {}}
+                    onClick={() => {
+                      socket.emit(RESIGN);
+                    }}
                   >
                     <FaFlag className='scale-75' />
                   </Button>

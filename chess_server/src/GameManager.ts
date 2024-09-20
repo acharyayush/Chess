@@ -53,7 +53,7 @@ export default class GameManager {
     socket.on(SEND_MOVE, (move: Move) => {
       //get the game that belongs to the socket getting move
       const game = this.findGame(socket);
-      if (!game) return;
+      if (!game || game.isPaused) return;
       try {
         //make the move in that game
         const moveRes = game.makeMove(socket, move);
@@ -71,10 +71,6 @@ export default class GameManager {
           RECEIVE_MOVE_HISTORY,
           game.getMoveHistory()
         );
-
-        if (game.isGameOver())
-          this.emitToBothPlayers(game.roomId, GAMEOVER, game.gameOverDetails);
-
         if (isCapturedOrPromoted)
           this.emitToBothPlayers(
             game.roomId,
@@ -87,11 +83,15 @@ export default class GameManager {
         //emit timeleft of the timer to both players
         this.emitToBothPlayers(game.roomId, RECEIVE_TIME, {
           //if player 1 had previous turn send time information of player1 else player 2
-          player1: previousTurn.socket.id==game.player1.socket.id ? game.player1.timer.getTime(): undefined,
-          player2: previousTurn.socket.id==game.player2.socket.id ? game.player2.timer.getTime(): undefined,
+          player1: previousTurn.socket.id == game.player1.socket.id ? game.player1.timer.getTime() : undefined,
+          player2: previousTurn.socket.id == game.player2.socket.id ? game.player2.timer.getTime() : undefined,
         });
         // start the timer of another player
         game.getTurn().timer.start()
+        if (game.isGameOver()) {
+          this.emitToBothPlayers(game.roomId, GAMEOVER, game.gameOverDetails);
+          game.pauseTimers()
+        }
       } catch (e) {
         //this is just an invalid move
         console.log("Attempted an invalid move")
@@ -117,6 +117,20 @@ export default class GameManager {
       return true;
     }
     return false;
+  }
+  handleResign(socket: Socket) {
+    const game = this.findGame(socket);
+    if (!game || game.isPaused) return;
+    game.isPaused = true;
+    game.pauseTimers()
+    //get color of opponent of resigned player
+    const winnerColor = socket.id === game.player1.socket.id ? BLACK : WHITE;
+    game.gameOverDetails = {
+      gameOverDescription: "Resignation",
+      winnerColor: winnerColor
+    }
+    this.emitToBothPlayers(game.roomId, GAMEOVER, game.gameOverDetails);
+
   }
   handleRematch(socket: Socket) {
     const game = this.findGame(socket);
