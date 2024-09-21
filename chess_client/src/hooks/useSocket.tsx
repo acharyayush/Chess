@@ -9,6 +9,8 @@ import {
   RECEIVE_CAPTURED_DETAILS,
   RECEIVE_TIME,
   RECEIVE_LATEST_MOVE,
+  REQUEST_REMATCH,
+  REJECT_REMATCH,
 } from '../events';
 import { Color, WHITE } from 'chess.js';
 import {
@@ -40,14 +42,17 @@ import { RootState } from '../state/store';
 import {
   resetGameStatus,
   setGameOverDescription,
+  setHasRejectedRematch,
   setIsCheck,
   setIsDraw,
   setIsGameOver,
+  setShowRematchRequest,
   setWinner,
 } from '../state/gameStatus/gameStatusSlice';
 import { CapturedDetails, INIT_GAME_TYPE, Move, Winner } from '../types';
 import useTimer from './useTimer';
 import useCapturedPiecesAndScores from './useCapturedPiecesAndScores';
+import showToast from '../utils/toast';
 interface GameOverProps {
   gameOverDescription: string;
   winnerColor: Winner;
@@ -58,10 +63,10 @@ export default function useSocket() {
   const { chess, move, fen, flag } = useSelector(
     (state: RootState) => state.chess
   );
-  const { isCheck, isGameOver } = useSelector(
+  const { isCheck, isGameOver, hasRejectedRematch } = useSelector(
     (state: RootState) => state.gameStatus
   );
-  const { whiteTime, blackTime } = useSelector(
+  const { whiteTime, blackTime, player1, player2, mainPlayer } = useSelector(
     (state: RootState) => state.players
   );
   const handleCapturedPiecesAndScores = useCapturedPiecesAndScores();
@@ -161,6 +166,12 @@ export default function useSocket() {
         }
       }
     );
+    socket.on(REQUEST_REMATCH, () => {
+      dispatch(setShowRematchRequest(true));
+    });
+    socket.on(REJECT_REMATCH, () => {
+      dispatch(setHasRejectedRematch(true));
+    });
     return () => {
       socket.off(INIT_GAME);
       socket.off(RECEIVE_FEN);
@@ -170,6 +181,7 @@ export default function useSocket() {
       socket.off(RECEIVE_CAPTURED_DETAILS);
       socket.off(RECEIVE_TIME);
       socket.off(RECEIVE_LATEST_MOVE);
+      socket.off(REQUEST_REMATCH);
     };
   }, []);
   useEffect(() => {
@@ -199,6 +211,15 @@ export default function useSocket() {
     toggleTimerBasedOnTurn(chess.turn());
     dispatch(setFlag(flag));
   }, [fen, flag]);
+  useEffect(() => {
+    if (hasRejectedRematch === true) {
+      showToast(
+        'error',
+        `${mainPlayer === WHITE ? player2 : player1} rejected your rematch request!`
+      );
+      dispatch(setHasRejectedRematch(false));
+    }
+  }, [player1, player2, hasRejectedRematch]);
   useEffect(() => {
     dispatch(setWhiteTime(whiteTimeInTimer));
   }, [whiteTimeInTimer]);

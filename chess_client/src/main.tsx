@@ -6,8 +6,11 @@ import './index.css';
 import Offline from './pages/Offline';
 import Online from './pages/Online';
 import { Provider } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { store } from './state/store';
 import AskNameForTwoPlayer from './components/AskNameForTwoPlayer';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
@@ -22,6 +25,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path='/play/online' element={<Online />}></Route>
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
     </Provider>
   </React.StrictMode>
 );

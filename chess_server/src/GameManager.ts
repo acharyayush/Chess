@@ -8,6 +8,8 @@ import {
   RECEIVE_MOVE_HISTORY,
   RECEIVE_PLAYER_DETAILS,
   RECEIVE_TIME,
+  REJECT_REMATCH,
+  REQUEST_REMATCH,
   SEND_MOVE,
 } from './events';
 import Game from './Game';
@@ -61,11 +63,11 @@ export default class GameManager {
         const isCapturedOrPromoted =
           game.handleCapturedPiecesAndScores(moveRes);
 
-        this.io.to(game.getTurn().socket.id).emit(RECEIVE_FEN, {
+        socket.to(game.roomId).emit(RECEIVE_FEN, {
           fen: game.getFen(),
           flag: moveRes.flags,
         });
-        this.io.to(game.getTurn().socket.id).emit(RECEIVE_LATEST_MOVE, move)
+        socket.to(game.roomId).emit(RECEIVE_LATEST_MOVE, move)
         this.emitToBothPlayers(
           game.roomId,
           RECEIVE_MOVE_HISTORY,
@@ -138,6 +140,18 @@ export default class GameManager {
     const isReady = game.handleResetForRematch(socket);
     if (isReady) {
       this.emitToInitiateGame(game);
+      return;
     }
+    if(game.hasRejectedRematch==="pending") return;
+    if (!isReady) {
+      socket.to(game.roomId).emit(REQUEST_REMATCH)
+      game.hasRejectedRematch = "pending";
+    }
+  }
+  handleRematchRejection(socket: Socket) {
+    const game = this.findGame(socket);
+    if (!game) return;
+    socket.to(game.roomId).emit(REJECT_REMATCH)
+    game.resetRematchStatus();
   }
 }

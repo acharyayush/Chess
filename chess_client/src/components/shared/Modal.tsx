@@ -5,7 +5,9 @@ import Button from './Button';
 interface ModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  onSubmit: () => void;
+  onSubmit: (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+  ) => void;
   submitVal: ReactNode;
   className?: string;
   submitClass?: string;
@@ -52,8 +54,8 @@ const Modal = ({
                   'submitBtn ml-3 rounded-md border-2 border-red-500 bg-red-500 px-5 py-[7px] font-medium duration-200 hover:border-red-500 hover:bg-red-600 sm:text-sm text-lg',
                   submitClass
                 )}
-                onClick={() => {
-                  onSubmit();
+                onClick={(e) => {
+                  onSubmit(e);
                   closeModal();
                 }}
               >

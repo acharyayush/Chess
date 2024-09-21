@@ -16,12 +16,16 @@ import SwitchToggle from '../components/shared/SwitchToggle';
 import { useDispatch } from 'react-redux';
 import { setShowLegalMoves } from '../state/chess/chessSlice';
 import socket from '../socket';
-import { RESIGN } from '../events';
+import { REJECT_REMATCH, REMATCH, RESIGN } from '../events';
+import RequestModal from '../components/shared/RequestModal';
+import { setShowRematchRequest } from '../state/gameStatus/gameStatusSlice';
 export default function Online() {
   const { board, moveHistory, turn, showLegalMoves } = useSelector(
     (state: RootState) => state.chess
   );
-  const { isGameOver } = useSelector((state: RootState) => state.gameStatus);
+  const { isGameOver, showRematchRequest } = useSelector(
+    (state: RootState) => state.gameStatus
+  );
   const {
     mainPlayer,
     player1,
@@ -127,6 +131,18 @@ export default function Online() {
               </div>
             </GameDetailContainer>
           </div>
+        )}
+        {showRematchRequest && (
+          <RequestModal
+            onAccept={() => {
+              socket.emit(REMATCH);
+            }}
+            onReject={() => {
+              socket.emit(REJECT_REMATCH);
+            }}
+            onRemove={() => dispatch(setShowRematchRequest(false))}
+            requestText={`${mainPlayer === WHITE ? player2 : player1} requests a rematch. Do you accept?`}
+          />
         )}
       </div>
     );

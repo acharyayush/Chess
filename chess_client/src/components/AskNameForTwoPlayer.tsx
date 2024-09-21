@@ -2,8 +2,11 @@ import { useState } from 'react';
 import Button from './shared/Button';
 import { useDispatch } from 'react-redux';
 import { setPlayers } from '../state/players/playerSlice';
+import showToast from '../utils/toast';
+import { useNavigate } from 'react-router-dom';
 export default function AskNameForTwoPlayer() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const initialDetail = {
     player1: '',
     player2: '',
@@ -12,9 +15,18 @@ export default function AskNameForTwoPlayer() {
   const handleDetailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDetail((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const handleSubmit = () => {
-    if (!detail.player1 || !detail.player2) return;
-    dispatch(setPlayers(detail));
+  const handleSubmit = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+  ) => {
+    e.preventDefault();
+    if (!detail.player1 || !detail.player2) {
+      showToast('error', 'Please, enter name of both players!');
+    } else if (detail.player1 === detail.player2) {
+      showToast('error', 'Names of both players must not be same!');
+    } else {
+      dispatch(setPlayers(detail));
+      navigate('/play/offline');
+    }
   };
   return (
     <div className='menuContainer grid place-content-center h-screen'>
@@ -52,11 +64,7 @@ export default function AskNameForTwoPlayer() {
           />
         </div>
         <div className='text-center'>
-          <Button
-            navigateTo={detail.player1 && detail.player2 && '/play/offline'}
-            className='text-xl py-3 px-8'
-            onClick={handleSubmit}
-          >
+          <Button className='text-xl py-3 px-8' onClick={handleSubmit}>
             Let's go
           </Button>
         </div>

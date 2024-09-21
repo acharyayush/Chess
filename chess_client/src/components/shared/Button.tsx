@@ -7,7 +7,9 @@ interface ButtonProps {
   isDisable?: boolean;
   className?: string;
   navigateTo?: string;
-  onClick?: () => void;
+  onClick?: (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+  ) => void;
   noShadow?: boolean;
   allowModal?: boolean;
   modalTitle?: string;
@@ -24,9 +26,11 @@ export default function Button({
   modalTitle,
 }: ButtonProps) {
   const [openModal, setOpenModal] = useState(false);
-  const handleButtonClick = () => {
+  const handleButtonClick = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+  ) => {
     if (allowModal) setOpenModal(true);
-    else onClick?.();
+    else onClick?.(e);
   };
   const renderButton = () => {
     if (!navigateTo) {
@@ -74,8 +78,10 @@ export default function Button({
             setOpenModal(false);
           }}
           submitVal={'Resign'}
-          onSubmit={() => {
-            onClick?.();
+          onSubmit={(
+            e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+          ) => {
+            onClick?.(e);
           }}
         >
           <h1 className='mt-4 text-center text-2xl font-bold sm:text-[1.35rem] sm:leading-[1.85rem] xsm:text-xl'>

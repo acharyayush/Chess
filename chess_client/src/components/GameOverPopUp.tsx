@@ -2,19 +2,22 @@ import ProfileImg from './shared/ProfileImg';
 import Button from './shared/Button';
 import { twMerge } from 'tailwind-merge';
 import { useSelector, useDispatch } from 'react-redux';
-import { setRematch } from '../state/gameStatus/gameStatusSlice';
+import {
+  setHasRejectedRematch,
+  setRematch,
+} from '../state/gameStatus/gameStatusSlice';
 import { RootState } from '../state/store';
 import { BLACK, WHITE } from 'chess.js';
 import socket from '../socket';
 import { REMATCH } from '../events';
+import showToast from '../utils/toast';
 interface GameOverPopUp {
   className?: string;
 }
 function GameOverPopUp({ className }: GameOverPopUp) {
   const { isOnline } = useSelector((state: RootState) => state.chess);
-  const { winner, gameOverDescription, isDraw } = useSelector(
-    (state: RootState) => state.gameStatus
-  );
+  const { winner, gameOverDescription, isDraw, hasRejectedRematch } =
+    useSelector((state: RootState) => state.gameStatus);
   const { player1, player2 } = useSelector((state: RootState) => state.players);
   const dispatch = useDispatch();
   const getHeading = () => {
@@ -27,8 +30,12 @@ function GameOverPopUp({ className }: GameOverPopUp) {
     return heading;
   };
   const handleRematch = () => {
-    if (isOnline) socket.emit(REMATCH);
-    else dispatch(setRematch(true));
+    if (isOnline) {
+      if (hasRejectedRematch == 'pending') return;
+      socket.emit(REMATCH);
+      dispatch(setHasRejectedRematch('pending'));
+      showToast('info', 'Rematch request sent successfully!');
+    } else dispatch(setRematch(true));
   };
   return (
     <div
@@ -60,7 +67,12 @@ function GameOverPopUp({ className }: GameOverPopUp) {
           <span className='mt-1'>{player2}</span>
         </div>
       </div>
-      <Button onClick={handleRematch}>Rematch</Button>
+      <Button
+        className={`${isOnline && hasRejectedRematch === 'pending' ? 'cursor-default bg-blue-300' : ''}`}
+        onClick={handleRematch}
+      >
+        Rematch
+      </Button>
     </div>
   );
 }

@@ -18,8 +18,22 @@ export default {
         'dark-lg': '0 10px 10px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.5)',
       },
       variables: {
-        '--yTranslate': 'calc(100%*3 + 30px)',
+        '--yTranslate': 'calc(100% - (100% - 30px)/4)',
         '--legalCircle': 'calc(100%*0.29 + 0px)'
+      },
+      keyframes: {
+        slideIn: {
+          '0%': { transform: 'translateX(100%)'},
+          '100%': { transform: 'translateX(0%)' },
+        },
+        fillToFull: {
+          '0%': {width: '0%'},
+          '100%': {width: '100%'}
+        }
+      },
+      animation: {
+        slideIn: 'slideIn 0.5s ease-out',
+        fillToFull: 'fillToFull 5s linear forwards',
       },
     },
   },

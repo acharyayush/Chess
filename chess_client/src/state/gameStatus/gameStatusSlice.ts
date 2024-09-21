@@ -9,6 +9,8 @@ export interface gameStatusState {
   isDraw: boolean;
   isCheck: boolean;
   rematch: boolean;
+  showRematchRequest: boolean;
+  hasRejectedRematch: boolean | 'pending';
 }
 const initialState: gameStatusState = {
   winner: 'd',
@@ -18,6 +20,8 @@ const initialState: gameStatusState = {
   isDraw: false,
   isCheck: false,
   rematch: false,
+  showRematchRequest: false,
+  hasRejectedRematch: false,
 };
 const gameStatusSlice = createSlice({
   name: 'gameStatus',
@@ -44,6 +48,15 @@ const gameStatusSlice = createSlice({
     setRematch: (state, action: PayloadAction<boolean>) => {
       state.rematch = action.payload;
     },
+    setShowRematchRequest: (state, action: PayloadAction<boolean>) => {
+      state.showRematchRequest = action.payload;
+    },
+    setHasRejectedRematch: (
+      state,
+      action: PayloadAction<boolean | 'pending'>
+    ) => {
+      state.hasRejectedRematch = action.payload;
+    },
     resetGameStatus: (state) => {
       Object.assign(state, initialState);
     },
@@ -57,6 +70,8 @@ export const {
   setIsDraw,
   setIsCheck,
   setRematch,
+  setShowRematchRequest,
+  setHasRejectedRematch,
   resetGameStatus,
 } = gameStatusSlice.actions;
 export default gameStatusSlice.reducer;

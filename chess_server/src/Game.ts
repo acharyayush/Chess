@@ -15,6 +15,7 @@ export default class Game {
   player1: Player;
   player2: Player;
   isPaused: boolean;
+  hasRejectedRematch: boolean | "pending";
   io: Server;
   roomId: string;
   rematchStatus: { player1: boolean; player2: boolean };
@@ -33,6 +34,7 @@ export default class Game {
     this.player1 = player1;
     this.player2 = player2;
     this.isPaused = false;
+    this.hasRejectedRematch = false;
     this.io = io;
     //for testing rnbqkbnr/ppppp2p/8/5pp1/4PP2/8/PPPP2PP/RNBQKBNR w KQkq - 0 1
     this.chess = new Chess();
@@ -42,16 +44,21 @@ export default class Game {
     this.rematchStatus = { player1: false, player2: false };
     this.gameOverDetails = {
       gameOverDescription: '',
+
       winnerColor: 'd',
     };
     this.capturedDetails = this.initialCapturedDetails;
     this.player1.timer.on(TIMEUP, this.handleTimeUp.bind(this))
     this.player2.timer.on(TIMEUP, this.handleTimeUp.bind(this))
   }
-  //methods
+  //methods\
+  resetRematchStatus(){
+    this.rematchStatus = { player1: false, player2: false };
+    this.hasRejectedRematch = false;
+  }
   resetToInitialDatas(){
     this.chess = new Chess();
-    this.rematchStatus = { player1: false, player2: false };
+    this.resetRematchStatus();
     this.gameOverDetails = {
       gameOverDescription: '',
       winnerColor: 'd',
