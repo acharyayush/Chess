@@ -7,13 +7,13 @@ export default function useSound() {
   const [capture] = useState(new Audio('/sounds/capture.mp3'));
   const [castle] = useState(new Audio('/sounds/castle.mp3'));
   const [check] = useState(new Audio('/sounds/move-check.mp3'));
-  const [game_end] = useState(new Audio('/sounds/game-end.mp3'));
+  const [gameEnd] = useState(new Audio('/sounds/game-end.mp3'));
   const handleSoundEffects = (
     flag: string,
     inCheck: boolean,
     isGameOver: boolean
   ) => {
-    if (isGameOver) game_end.play();
+    if (isGameOver) gameEnd.play();
     if (inCheck) check.play();
     else if (flag.includes('p')) promote.play();
     else if (flag == 'n' || flag == 'e' || flag == 'b') normalMove.play();

@@ -63,7 +63,7 @@ export default function useSocket() {
   const { chess, move, fen, flag } = useSelector(
     (state: RootState) => state.chess
   );
-  const { isCheck, isGameOver, hasRejectedRematch } = useSelector(
+  const { isGameOver, hasRejectedRematch } = useSelector(
     (state: RootState) => state.gameStatus
   );
   const { whiteTime, blackTime, player1, player2, mainPlayer } = useSelector(
@@ -207,7 +207,7 @@ export default function useSocket() {
     dispatch(setBoard(chess.board()));
     dispatch(toggleTurn());
     dispatch(resetMove());
-    handleSoundEffects(flag, isCheck, isGameOver);
+    handleSoundEffects(flag, chess.inCheck(), chess.isGameOver());
     toggleTimerBasedOnTurn(chess.turn());
     dispatch(setFlag(flag));
   }, [fen, flag]);
