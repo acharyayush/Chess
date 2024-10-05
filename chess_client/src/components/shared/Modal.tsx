@@ -27,7 +27,9 @@ const Modal = ({
     isOpen && (
       <div
         ref={nodeRef}
-        className={'Modal fixed left-0 top-0 h-screen w-screen text-gray-900'}
+        className={
+          'Modal fixed z-99 left-0 top-0 h-screen w-screen text-gray-900'
+        }
       >
         <div className='modalOverlay  absolute left-0 top-0 h-full w-full bg-black opacity-80'></div>
         <div

@@ -1,13 +1,16 @@
-//TODO: Make a dragging feature
-
 import { BLACK, Color, KING, PieceSymbol, Square, WHITE } from 'chess.js';
 import PromotionOptions from './PromotionOptions';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 import { updateMove } from '../../state/chess/chessSlice';
 import { useDispatch } from 'react-redux';
+const emptyImg = new Image();
+//1x1 pixel transparent GIF image. Doesn't display anything visually because it is completely transparent, meaning it has no color or detail.
+emptyImg.src =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+console.log(emptyImg);
 interface CellProps {
   cell: {
     square: Square;
@@ -18,6 +21,7 @@ interface CellProps {
   cellColor: string;
   position: string;
   isDisable: boolean;
+  boardRef: React.RefObject<HTMLDivElement>;
 }
 export default function Cell({
   cell,
@@ -25,24 +29,39 @@ export default function Cell({
   cellColor,
   position,
   isDisable,
+  boardRef,
 }: CellProps) {
   const { legalMoves, showPromotionOption } = useSelector(
     (state: RootState) => state.chess
   );
   const dispatch = useDispatch();
-  const { showLegalMoves, move, prevMove } = useSelector(
+  const { showLegalMoves, move, prevMove, isOnline } = useSelector(
     (state: RootState) => state.chess
   );
   const { isCheck } = useSelector((state: RootState) => state.gameStatus);
   const { mainPlayer } = useSelector((state: RootState) => state.players);
-  const [pieceImg, setPieceImg] = useState<HTMLImageElement>();
-  // const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const targetImg = useRef<HTMLImageElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const clampToBoardSize = (value: number, direction: 'x' | 'y') => {
+    const board = boardRef.current;
+    if (!board) return value;
+    if (direction == 'x')
+      return Math.max(
+        board.getBoundingClientRect().left,
+        Math.min(value, board?.getBoundingClientRect().right)
+      );
+    return Math.max(
+      board.getBoundingClientRect().top,
+      Math.min(value, board?.getBoundingClientRect().bottom)
+    );
+  };
   const stylesforCell = () => {
     const activeSquare = move.from;
     let classes = cellColor;
 
     if (cell) {
-      classes = twMerge(classes, 'cursor-pointer');
+      classes = twMerge(classes, 'cursor-grab');
     }
     if (isCheck && turn == cell?.color && cell?.type == KING) {
       classes = twMerge(classes, '!bg-red-300');
@@ -76,7 +95,7 @@ export default function Cell({
       indices.push(
         <span
           key={`letter-${position}`}
-          className={`${Number(position[1]) % 2 == compareWith ? 'text-blue-500' : 'text-white'} absolute sm:text-sm  ${mainPlayer == BLACK ? 'rotate-180 bottom-0 right-1' : 'top-0 left-1'}`}
+          className={`${Number(position[1]) % 2 == compareWith ? 'text-blue-500' : 'text-white'} absolute sm:text-sm  top-0 left-1`}
         >
           {position[1]}
         </span>
@@ -88,7 +107,7 @@ export default function Cell({
       indices.push(
         <span
           key={`num-${position}`}
-          className={`${(position.charCodeAt(0) - 97) % 2 == compareWith ? 'text-white' : 'text-blue-500'} absolute sm:text-sm ${mainPlayer == BLACK ? 'rotate-180 top-0 left-1' : 'bottom-0 right-1'}`}
+          className={`${(position.charCodeAt(0) - 97) % 2 == compareWith ? 'text-white' : 'text-blue-500'} absolute sm:text-sm bottom-0 right-1`}
         >
           {position[0]}
         </span>
@@ -99,20 +118,25 @@ export default function Cell({
   //dragging feature
   const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
     if (isDisable) return;
-    setPieceImg(e.target as HTMLImageElement);
-    // setStartPos({ x: e.clientX, y: e.clientY });
+    setIsDragging(true);
+    e.dataTransfer.setDragImage(emptyImg, 50, 50);
+    const imgElement = e.target as HTMLImageElement;
+    setPos({
+      x: imgElement.getBoundingClientRect().left,
+      y: imgElement.getBoundingClientRect().top,
+    });
     dispatch(updateMove({ cell, position }));
   };
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
-  const handleDrag = () => {
-    if (!pieceImg) return;
-    pieceImg.style.opacity = '0';
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!targetImg.current) return;
+    targetImg.current.style.left = `calc(${clampToBoardSize(e.clientX, 'x') - pos.x}px - 50%)`;
+    targetImg.current.style.top = `calc(${clampToBoardSize(e.clientY, 'y') - pos.y}px - 50%)`;
   };
   const handleDragEnd = () => {
-    if (!pieceImg) return;
-    pieceImg.style.opacity = '1';
+    setIsDragging(false);
   };
   const handleDrop = () => {
     if (isDisable) return;
@@ -122,23 +146,28 @@ export default function Cell({
   return (
     <div
       onClick={handleDrop}
-      className={`${classes} relative flex items-center justify-center select-none`}
-      onDragOver={(e) => {
-        handleDragOver(e);
-      }}
+      className={`${classes} relative flex items-center justify-center select-none aspect-square`}
+      onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
       {cell && (
-        <img
-          src={`/pieces/${cell.color}${cell.type}.svg`}
-          draggable
-          onDragStart={(e) => {
-            handleDragStart(e);
-          }}
-          onDrag={handleDrag}
-          onDragEnd={handleDragEnd}
-          className={`w-[95%] left-28 ${cell.color == BLACK && 'rotate-180'}`}
-        />
+        <>
+          <img
+            src={`/pieces/${cell.color}${cell.type}.svg`}
+            draggable
+            onDragStart={handleDragStart}
+            onDrag={handleDrag}
+            onDragEnd={handleDragEnd}
+            className={`w-[95%] absolute z-40 ${isDragging ? 'opacity-0' : 'z-30'} ${mainPlayer != cell.color && !isOnline ? 'rotate-180' : ''}`}
+          />
+          {isDragging && (
+            <img
+              ref={targetImg}
+              src={`/pieces/${cell.color}${cell.type}.svg`}
+              className={` pointer-events-none cursor-grabbing relative z-50 DraggableCopyOfPiece w-[95%] ${mainPlayer != cell.color && !isOnline ? 'rotate-180' : ''}`}
+            />
+          )}
+        </>
       )}
       {/* show possible legal moves */}
       {showLegalMoves && legalMoves.includes(position) && (

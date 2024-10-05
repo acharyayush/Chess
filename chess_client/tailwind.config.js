@@ -14,6 +14,9 @@ export default {
       'xsm': {'max': '374px'}
     },
     extend: {
+      zIndex:{
+        '99':'99'
+      },
       boxShadow: {
         'dark-lg': '0 10px 10px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.5)',
       },

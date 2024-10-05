@@ -40,7 +40,7 @@ function GameOverPopUp({ className }: GameOverPopUp) {
   return (
     <div
       className={twMerge(
-        `bg-zinc-900 text-white text-center py-5 rounded-lg shadow-lg w-[300px] z-50`,
+        `bg-zinc-900 text-white text-center py-5 rounded-lg shadow-lg w-[300px] z-99`,
         className
       )}
     >
