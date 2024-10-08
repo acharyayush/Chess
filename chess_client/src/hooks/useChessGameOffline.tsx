@@ -111,7 +111,11 @@ export default function useChessGameOffline() {
       return;
     }
   };
-
+  const resetGame = () => {
+    dispatch(resetChess());
+    dispatch(resetPlayers());
+    dispatch(resetGameStatus());
+  };
   const handleBoardUpdateOnMove = (moveRes: Move) => {
     const history = chess.history({ verbose: true });
     const latestMove =
@@ -129,7 +133,7 @@ export default function useChessGameOffline() {
     gameOverChecks();
   };
   useEffect(() => {
-    dispatch(setBoard(chess.board()));
+    resetGame();
     dispatch(setIsOnline(false));
   }, []);
   useEffect(() => {
@@ -160,9 +164,7 @@ export default function useChessGameOffline() {
   }, [move]);
   useEffect(() => {
     if (!rematch) return;
-    dispatch(resetChess());
-    dispatch(resetPlayers());
-    dispatch(resetGameStatus());
+    resetGame();
     dispatch(setTotalTime(totalTimeOffline));
     dispatch(setMainPlayer(getOpponent(mainPlayer)));
     resetTimers(totalTimeOffline);

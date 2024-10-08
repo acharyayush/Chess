@@ -18,7 +18,6 @@ function RequestModal({
   const handleRejection = () => {
     onReject();
     onRemove();
-    console.log('running');
   };
   useEffect(() => {
     const timer = setTimeout(handleRejection, 5000);

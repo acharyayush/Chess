@@ -18,14 +18,17 @@ function GameOverPopUp({ className }: GameOverPopUp) {
   const { isOnline } = useSelector((state: RootState) => state.chess);
   const { winner, gameOverDescription, isDraw, hasRejectedRematch } =
     useSelector((state: RootState) => state.gameStatus);
-  const { player1, player2 } = useSelector((state: RootState) => state.players);
+  const { player1, player2, mainPlayer } = useSelector(
+    (state: RootState) => state.players
+  );
   const dispatch = useDispatch();
   const getHeading = () => {
     let heading: string;
     if (isDraw) {
       heading = 'Draw';
     } else {
-      heading = winner == WHITE ? `${player1} Won` : `${player2} Won`;
+      if (winner === mainPlayer && isOnline) heading = 'You Won';
+      else heading = winner == WHITE ? `${player1} Won` : `${player2} Won`;
     }
     return heading;
   };

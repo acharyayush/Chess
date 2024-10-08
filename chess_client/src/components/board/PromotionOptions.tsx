@@ -1,4 +1,4 @@
-import { BLACK, Color, PieceSymbol, WHITE } from 'chess.js';
+import { Color, PieceSymbol } from 'chess.js';
 import { useDispatch } from 'react-redux';
 import {
   setPromotion,
@@ -11,15 +11,20 @@ interface PromotionOptionsProps {
 }
 function PromotionOptions({ player }: PromotionOptionsProps) {
   const { turn } = useSelector((state: RootState) => state.chess);
+  const { mainPlayer } = useSelector((state: RootState) => state.players);
   const dispatch = useDispatch();
   const handlePromotionOnClick = (promoteTo: PieceSymbol) => {
     dispatch(setPromotion(promoteTo));
     dispatch(setShowPromotionOption({ canShow: false }));
   };
+  const handleClose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+    dispatch(setShowPromotionOption({ canShow: false }));
+  };
   return (
     //height = 290 = (260 + 30), 260/4 for each piece and 30 for cross symbol
     <div
-      className={`${turn == WHITE ? 'flex-col' : 'flex-col-reverse -translate-y-[var(--yTranslate)]'} flex w-[var(--cell-size)] h-[calc(var(--cell-size) * 10 + 30px)] absolute top-0 left-0 bg-white z-10 shadow-dark-lg`}
+      className={`${turn == mainPlayer ? 'flex-col' : 'flex-col-reverse -translate-y-[var(--yTranslate)]'} flex absolute top-0 left-0 bg-white z-75 shadow-dark-lg`}
     >
       <div
         className='cursor-pointer'
@@ -30,7 +35,7 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
       >
         <img
           src={`/pieces/${player}q.svg`}
-          className={`${player == BLACK && 'rotate-180'}`}
+          className={`${player != mainPlayer && 'rotate-180'}`}
           alt=''
         />
       </div>
@@ -43,7 +48,7 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
       >
         <img
           src={`/pieces/${player}r.svg`}
-          className={`${player == BLACK && 'rotate-180'}`}
+          className={`${player != mainPlayer && 'rotate-180'}`}
           alt=''
         />
       </div>
@@ -56,7 +61,7 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
       >
         <img
           src={`/pieces/${player}n.svg`}
-          className={`${player == BLACK && 'rotate-180'}`}
+          className={`${player != mainPlayer && 'rotate-180'}`}
           alt=''
         />
       </div>
@@ -69,11 +74,14 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
       >
         <img
           src={`/pieces/${player}b.svg`}
-          className={`${player == BLACK && 'rotate-180'}`}
+          className={`${player != mainPlayer && 'rotate-180'}`}
           alt=''
         />
       </div>
-      <div className='h-[30px] bg-gray-300 text-gray-800 grid place-content-center font-bold'>
+      <div
+        onClick={handleClose}
+        className='h-[30px] bg-gray-300 text-gray-800 grid place-content-center font-bold'
+      >
         <span>X</span>
       </div>
     </div>

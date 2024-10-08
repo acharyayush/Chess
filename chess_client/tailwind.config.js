@@ -15,6 +15,7 @@ export default {
     },
     extend: {
       zIndex:{
+        '75':'75',
         '99':'99'
       },
       boxShadow: {

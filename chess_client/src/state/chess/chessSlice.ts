@@ -123,6 +123,10 @@ const chessSlice = createSlice({
       state.move = { from: '', to: '' };
     },
     updateMove: (state, { payload }: PayloadAction<updateMovePayload>) => {
+      //if promotion option is showing and user has clicked somewhere else in the board, then close it.
+      if (state.showPromotionOption.canShow) {
+        state.showPromotionOption.canShow = false;
+      }
       //to update the key 'from', the selected piece must belong to active player
       //UPDATE FROM
       if (state.turn == payload.cell?.color) {

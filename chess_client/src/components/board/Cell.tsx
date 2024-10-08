@@ -10,7 +10,6 @@ const emptyImg = new Image();
 //1x1 pixel transparent GIF image. Doesn't display anything visually because it is completely transparent, meaning it has no color or detail.
 emptyImg.src =
   'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-console.log(emptyImg);
 interface CellProps {
   cell: {
     square: Square;
@@ -72,16 +71,28 @@ export default function Cell({
       classes = twMerge(classes, '!bg-blue-300');
     }
     if (position == 'a1') {
-      classes = twMerge(classes, 'rounded-bl-md');
+      classes = twMerge(
+        classes,
+        `rounded-${mainPlayer === BLACK ? 'tr' : 'bl'}-md`
+      );
     }
     if (position == 'a8') {
-      classes = twMerge(classes, 'rounded-tl-md');
+      classes = twMerge(
+        classes,
+        `rounded-${mainPlayer === BLACK ? 'br' : 'tl'}-md`
+      );
     }
     if (position == 'h1') {
-      classes = twMerge(classes, 'rounded-br-md');
+      classes = twMerge(
+        classes,
+        `rounded-${mainPlayer === BLACK ? 'tl' : 'br'}-md`
+      );
     }
     if (position == 'h8') {
-      classes = twMerge(classes, 'rounded-tr-md');
+      classes = twMerge(
+        classes,
+        `rounded-${mainPlayer === BLACK ? 'bl' : 'tr'}-md`
+      );
     }
     return classes;
   };
