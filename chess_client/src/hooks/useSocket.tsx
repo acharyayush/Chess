@@ -53,6 +53,7 @@ import { CapturedDetails, INIT_GAME_TYPE, Move, Winner } from '../types';
 import useTimer from './useTimer';
 import useCapturedPiecesAndScores from './useCapturedPiecesAndScores';
 import showToast from '../utils/toast';
+import { resetAnalysis } from '../state/analysis/analysisSlice';
 interface GameOverProps {
   gameOverDescription: string;
   winnerColor: Winner;
@@ -88,6 +89,7 @@ export default function useSocket() {
     dispatch(resetChess());
     dispatch(resetPlayers());
     dispatch(resetGameStatus());
+    dispatch(resetAnalysis());
   };
   const resetTimers = (time: number) => {
     resetWhiteTimer(time);
@@ -129,6 +131,7 @@ export default function useSocket() {
     socket.on(RECEIVE_FEN, ({ fen, flag }: { fen: string; flag: string }) => {
       dispatch(setFen(fen));
       dispatch(setFlag(flag));
+      dispatch(resetAnalysis());
       return;
     });
     socket.on(RECEIVE_LATEST_MOVE, (move: Move) => {

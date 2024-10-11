@@ -40,3 +40,7 @@ export type INIT_GAME_TYPE = {
   fen: string;
   totalTime: number;
 };
+export type ArrowType = {
+  start: HTMLDivElement;
+  end: HTMLDivElement;
+};

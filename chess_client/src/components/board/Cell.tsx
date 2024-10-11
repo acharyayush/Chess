@@ -1,11 +1,16 @@
 import { BLACK, Color, KING, PieceSymbol, Square, WHITE } from 'chess.js';
 import PromotionOptions from './PromotionOptions';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 import { updateMove } from '../../state/chess/chessSlice';
 import { useDispatch } from 'react-redux';
+import {
+  resetAnalysis,
+  setRemoveAnalysisStyle,
+} from '../../state/analysis/analysisSlice';
+import { ArrowType } from '../../types';
 const emptyImg = new Image();
 //1x1 pixel transparent GIF image. Doesn't display anything visually because it is completely transparent, meaning it has no color or detail.
 emptyImg.src =
@@ -20,6 +25,11 @@ interface CellProps {
   cellColor: string;
   position: string;
   isDisable: boolean;
+  arrowStartCell: React.RefObject<HTMLDivElement> | null;
+  setArrowStartCell: React.Dispatch<
+    React.SetStateAction<React.RefObject<HTMLDivElement> | null>
+  >;
+  addArrow: (arrow: ArrowType) => void;
   boardRef: React.RefObject<HTMLDivElement>;
 }
 export default function Cell({
@@ -28,6 +38,9 @@ export default function Cell({
   cellColor,
   position,
   isDisable,
+  arrowStartCell,
+  setArrowStartCell,
+  addArrow,
   boardRef,
 }: CellProps) {
   const { legalMoves, showPromotionOption } = useSelector(
@@ -39,9 +52,20 @@ export default function Cell({
   );
   const { isCheck } = useSelector((state: RootState) => state.gameStatus);
   const { mainPlayer } = useSelector((state: RootState) => state.players);
+  const { removeAnalysisStyle } = useSelector(
+    (state: RootState) => state.analysis
+  );
   const targetImg = useRef<HTMLImageElement>(null);
+  const cellDiv = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [hasRedOverlay, setHasRedOverlay] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    if (removeAnalysisStyle && cellDiv.current) {
+      setHasRedOverlay(false);
+    }
+  }, [removeAnalysisStyle]);
+
   const clampToBoardSize = (value: number, direction: 'x' | 'y') => {
     const board = boardRef.current;
     if (!board) return value;
@@ -125,10 +149,37 @@ export default function Cell({
       );
     return indices;
   };
-
+  const handleRightClickDown = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (e.button == 2) {
+      setArrowStartCell(cellDiv);
+    }
+  };
+  const handleRightClickUp = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (e.button == 2) {
+      if (arrowStartCell?.current == cellDiv.current) {
+        //if drag started and ended in same cell then show red overlays
+        setHasRedOverlay((prevState) => !prevState);
+        dispatch(setRemoveAnalysisStyle(false));
+      } else {
+        //if drag started and ended in different cell then show arrows
+        if (!arrowStartCell) return;
+        const arrow = {
+          start: arrowStartCell.current as HTMLDivElement,
+          end: cellDiv.current as HTMLDivElement,
+        };
+        addArrow(arrow);
+      }
+      setArrowStartCell(null);
+    }
+  };
   //dragging feature
   const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
     if (isDisable) return;
+    dispatch(resetAnalysis());
     setIsDragging(true);
     e.dataTransfer.setDragImage(emptyImg, 50, 50);
     const imgElement = e.target as HTMLImageElement;
@@ -151,15 +202,21 @@ export default function Cell({
   };
   const handleDrop = () => {
     if (isDisable) return;
+    dispatch(resetAnalysis());
     dispatch(updateMove({ cell, position }));
   };
   const classes = stylesforCell();
   return (
     <div
+      onContextMenu={(e) => e.preventDefault()}
+      onMouseDown={handleRightClickDown}
+      onMouseUp={handleRightClickUp}
       onClick={handleDrop}
       className={`${classes} relative flex items-center justify-center select-none aspect-square`}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      data-position={position}
+      ref={cellDiv}
     >
       {cell && (
         <>
@@ -197,6 +254,9 @@ export default function Cell({
         showPromotionOption.position == position && (
           <PromotionOptions player={turn} />
         )}
+      {hasRedOverlay && (
+        <div className='absolute top-0 left-0 w-full h-full bg-[rgba(255,100,100,0.87)]'></div>
+      )}
     </div>
   );
 }

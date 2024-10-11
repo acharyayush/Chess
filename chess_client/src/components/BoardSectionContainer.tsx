@@ -11,10 +11,10 @@ export default function BoardSectionContainer({
   className,
 }: BoardSectionContainerProps) {
   return (
-    <div className={'boardSectionContainer lg:mb-6'}>
+    <div className={'boardSectionContainer w-full lg:mb-6'}>
       <div
         className={twMerge(
-          'boardSection h-full w-full sm:h-[98vh] flex justify-center flex-col',
+          'boardSection h-full w-full sm:h-[98vh] flex justify-center flex-col mx-auto',
           className
         )}
         style={style}

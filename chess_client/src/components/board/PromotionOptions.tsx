@@ -80,7 +80,7 @@ function PromotionOptions({ player }: PromotionOptionsProps) {
       </div>
       <div
         onClick={handleClose}
-        className='h-[30px] bg-gray-300 text-gray-800 grid place-content-center font-bold'
+        className='h-[30px] bg-gray-300 text-gray-800 grid place-content-center font-bold cursor-default'
       >
         <span>X</span>
       </div>
