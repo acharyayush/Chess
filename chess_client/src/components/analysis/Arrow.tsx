@@ -24,7 +24,7 @@ interface KnightArrowProps {
 export default function Arrow({ startCell, endCell, boardPos }: ArrowProps) {
   const [angleInDeg, setAngleInDeg] = useState(0);
   const [tailHeight, setTailHeight] = useState(0);
-  const [startPos] = useState({
+  const [startPos, setStartPos] = useState({
     x: startCell.getBoundingClientRect().left,
     y: startCell.getBoundingClientRect().top,
   });
@@ -43,9 +43,13 @@ export default function Arrow({ startCell, endCell, boardPos }: ArrowProps) {
     setLength(Math.sqrt(dx ** 2 + dy ** 2));
     setAngleInDeg(angle);
     setCellWidth(startCell.clientWidth);
+    setStartPos({
+      x: startCell.getBoundingClientRect().left,
+      y: startCell.getBoundingClientRect().top,
+    });
   }, [startCell, endCell, boardPos]);
   useEffect(() => {
-    setTailHeight(cellWidth * 0.26);
+    setTailHeight(cellWidth * 0.22);
   }, [cellWidth]);
   const isKnightArrow = () => {
     const startSquare = startCell.dataset.position;
@@ -158,11 +162,15 @@ function KnightArrow({
     if (Math.abs(xLength) > Math.abs(yLength)) {
       newTailPos.x = tailPos.x + xLength;
       newTailPos.y =
-        yLength > 0 ? tailPos.y + tailHeight / 2 : tailPos.y - tailHeight / 2;
+        yLength > 0
+          ? tailPos.y + tailHeight / 2 - 0.5
+          : tailPos.y - tailHeight / 2 + 0.5;
     } else {
       newTailPos.y = tailPos.y + yLength;
       newTailPos.x =
-        xLength > 0 ? tailPos.x + tailHeight / 2 : tailPos.x - tailHeight / 2;
+        xLength > 0
+          ? tailPos.x + tailHeight / 2 - 0.5
+          : tailPos.x - tailHeight / 2 + 0.5;
     }
     return newTailPos;
   };

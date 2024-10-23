@@ -30,6 +30,7 @@ export default function ChessBoard({
   );
   //arrow contains start and end cell which are of type react ref. so this cannot be placed in redux as they are non serializable. So arrow is used as local state
   const [arrows, setArrows] = useState<ArrowType[]>([]);
+  const [arrowElements, setArrowElements] = useState<JSX.Element[]>([]);
   const [boardPos, setBoardPos] = useState({ x: 0, y: 0 });
   const [arrowStartCell, setArrowStartCell] =
     useState<React.RefObject<HTMLDivElement> | null>(null);
@@ -49,6 +50,33 @@ export default function ChessBoard({
       }
     });
   };
+  const handleArrowRerender = () => {
+    setArrows((latestArrows) => {
+      setBoardPos((latestBoardPos) => {
+        setArrowElements(
+          latestArrows.map((arrow, index) => (
+            <Arrow
+            key={`arrow-${index}`}
+            boardPos={latestBoardPos}
+            startCell={arrow.start}
+            endCell={arrow.end}
+            />
+          ))
+        );
+        return latestBoardPos;
+      });
+      return latestArrows;
+    });
+  };
+  const handleResize = () =>{
+    if (boardRef.current) {
+      setBoardPos({
+        x: boardRef.current?.getBoundingClientRect().left,
+        y: boardRef.current?.getBoundingClientRect().top,
+      });
+    }
+    handleArrowRerender();
+  }
   useEffect(() => {
     if (boardRef.current) {
       setBoardPos({
@@ -57,6 +85,13 @@ export default function ChessBoard({
       });
     }
   }, [boardRef.current]);
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  useEffect(handleArrowRerender, [arrows]);
   useEffect(() => {
     if (removeAnalysisStyle) setArrows([]);
   }, [removeAnalysisStyle]);
@@ -101,14 +136,7 @@ export default function ChessBoard({
       >
         {displayBoard()}
       </div>
-      {arrows.map((arrow, index) => (
-        <Arrow
-          key={`arrow-${index}`}
-          boardPos={boardPos}
-          startCell={arrow.start}
-          endCell={arrow.end}
-        />
-      ))}
+      {arrowElements}
     </>
   );
 }

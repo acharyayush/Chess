@@ -8,7 +8,7 @@ import { JOIN_GAME, REJECT_REMATCH, REMATCH, RESIGN } from './events';
 const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT || 3000;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173"
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 const io = new Server(server, {
   cors: {
     origin: ['https://admin.socket.io', `${CLIENT_URL}`],
@@ -22,11 +22,11 @@ import { Player } from './types';
 import Timer from './Timer';
 
 io.on('connection', (socket) => {
-  socket.on(JOIN_GAME, (name?: string, gameTimeInSec: number = 10*60) => {
+  socket.on(JOIN_GAME, (name?: string, gameTimeInSec: number = 10 * 60) => {
     //TODO: search for the socket if exist in any game or waiting, if exist then fetch the data from there and emit to him/her else just add
     playerCount++;
     const playerName = name || 'guest' + playerCount;
-    const player:Player = {
+    const player: Player = {
       name: playerName,
       timer: new Timer(gameTimeInSec),
       socket,
@@ -37,13 +37,17 @@ io.on('connection', (socket) => {
   socket.on(REMATCH, () => {
     gameManager.handleRematch(socket);
   });
-  socket.on(REJECT_REMATCH, ()=>{
+  socket.on(REJECT_REMATCH, () => {
     gameManager.handleRematchRejection(socket);
-  })
-  socket.on(RESIGN, ()=>{
+  });
+  socket.on(RESIGN, () => {
     gameManager.handleResign(socket);
-  })
+  });
+  socket.on('reconnect', (attemptNumber) => {
+    console.log(`Reconnected to the server after ${attemptNumber} attempts`);
+  });
   socket.on('disconnect', () => {
+    console.log('disconnected', socket.id);
     //remove player if he was in waiting list
     const wasWaiting = gameManager.removePlayerFromWaitingList(socket);
     if (wasWaiting) return;
