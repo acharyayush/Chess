@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { store } from './state/store';
 import AskNameForTwoPlayer from './components/AskNameForTwoPlayer';
+import AI from './pages/AI';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           ></Route>
           <Route path='/play/offline' element={<Offline />}></Route>
           <Route path='/play/online' element={<Online />}></Route>
+          <Route path='/play/ai' element={<AI />}></Route>
         </Routes>
       </BrowserRouter>
       <ToastContainer />

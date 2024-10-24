@@ -43,11 +43,7 @@ io.on('connection', (socket) => {
   socket.on(RESIGN, () => {
     gameManager.handleResign(socket);
   });
-  socket.on('reconnect', (attemptNumber) => {
-    console.log(`Reconnected to the server after ${attemptNumber} attempts`);
-  });
   socket.on('disconnect', () => {
-    console.log('disconnected', socket.id);
     //remove player if he was in waiting list
     const wasWaiting = gameManager.removePlayerFromWaitingList(socket);
     if (wasWaiting) return;

@@ -2,13 +2,13 @@ import { Chess, Color, Square, WHITE } from 'chess.js';
 import { Move } from '../types';
 
 export function extractPosition(move: string, turn: Color) {
-  if (move.includes('O-O')) {
-    if (turn == WHITE) return 'g1';
-    return 'g8';
-  }
   if (move.includes('O-O-O')) {
     if (turn == WHITE) return 'c1';
     return 'c8';
+  }
+  if (move.includes('O-O')) {
+    if (turn == WHITE) return 'g1';
+    return 'g8';
   }
   const regex = /[a-h][1-9]/;
   return move.match(regex)?.[0] as Square;

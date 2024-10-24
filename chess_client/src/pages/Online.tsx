@@ -12,15 +12,14 @@ import GameDetailContainer from '../components/gameDetail/GameDetailContainer';
 import MoveHistory from '../components/gameDetail/MoveHistory';
 import Button from '../components/shared/Button';
 import { FaFlag } from 'react-icons/fa';
-import SwitchToggle from '../components/shared/SwitchToggle';
 import { useDispatch } from 'react-redux';
-import { setShowLegalMoves } from '../state/chess/chessSlice';
 import socket from '../socket';
 import { REJECT_REMATCH, REMATCH, RESIGN } from '../events';
 import RequestModal from '../components/shared/RequestModal';
 import { setShowRematchRequest } from '../state/gameStatus/gameStatusSlice';
+import LocalSettings from '../components/settings/LocalSettings';
 export default function Online() {
-  const { board, moveHistory, turn, showLegalMoves } = useSelector(
+  const { board, moveHistory, turn } = useSelector(
     (state: RootState) => state.chess
   );
   const { isGameOver, showRematchRequest } = useSelector(
@@ -115,19 +114,7 @@ export default function Online() {
                     <FaFlag className='scale-75' />
                   </Button>
                 </div>
-                <div className='additionalSettings text-lg text-white pl-2 pr-8 xsm:pr-2'>
-                  <div className='showLegalMoves flex items-center justify-between'>
-                    <span className=''>Show Legal Moves</span>
-                    <span className='flex items-center'>
-                      <SwitchToggle
-                        status={showLegalMoves}
-                        onToggle={() =>
-                          dispatch(setShowLegalMoves(!showLegalMoves))
-                        }
-                      />
-                    </span>
-                  </div>
-                </div>
+                <LocalSettings />
               </div>
             </GameDetailContainer>
           </div>

@@ -47,7 +47,7 @@ export default function Cell({
     (state: RootState) => state.chess
   );
   const dispatch = useDispatch();
-  const { showLegalMoves, move, prevMove, isOnline } = useSelector(
+  const { showLegalMoves, move, prevMove, mode } = useSelector(
     (state: RootState) => state.chess
   );
   const { isCheck } = useSelector((state: RootState) => state.gameStatus);
@@ -226,13 +226,13 @@ export default function Cell({
             onDragStart={handleDragStart}
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
-            className={`w-[95%] absolute z-40 ${isDragging ? 'opacity-0' : 'z-30'} ${mainPlayer != cell.color && !isOnline ? 'rotate-180' : ''}`}
+            className={`w-[95%] absolute z-40 ${isDragging ? 'opacity-0' : 'z-30'} ${mainPlayer != cell.color && mode === 'offline' ? 'rotate-180' : ''}`}
           />
           {isDragging && (
             <img
               ref={targetImg}
               src={`/pieces/${cell.color}${cell.type}.svg`}
-              className={` pointer-events-none cursor-grabbing relative z-50 DraggableCopyOfPiece w-[95%] ${mainPlayer != cell.color && !isOnline ? 'rotate-180' : ''}`}
+              className={` pointer-events-none cursor-grabbing relative z-50 DraggableCopyOfPiece w-[95%] ${mainPlayer != cell.color && mode === 'offline' ? 'rotate-180' : ''}`}
             />
           )}
         </>

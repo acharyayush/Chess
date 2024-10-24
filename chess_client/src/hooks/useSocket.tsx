@@ -28,7 +28,7 @@ import { useDispatch } from 'react-redux';
 import {
   setBoard,
   setFen,
-  setIsOnline,
+  setMode,
   setMoveHistory,
   toggleTurn,
   resetMove,
@@ -110,7 +110,7 @@ export default function useSocket() {
     }
   };
   useEffect(() => {
-    dispatch(setIsOnline(true));
+    dispatch(setMode('online'));
     socket.on(INIT_GAME, ({ mainPlayer, fen, totalTime }: INIT_GAME_TYPE) => {
       resetGame();
       chess.load(fen);

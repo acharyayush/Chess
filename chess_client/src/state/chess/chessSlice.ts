@@ -12,6 +12,7 @@ import {
 import { Move, updateMovePayload } from '../../types';
 import socket from '../../socket';
 import { SEND_MOVE } from '../../events';
+import { Mode } from 'fs';
 export type ChessState = {
   chess: Chess;
   fen: string;
@@ -24,9 +25,10 @@ export type ChessState = {
   showLegalMoves: boolean;
   enableTimer: boolean;
   move: Move;
+  aiMove: string;
   showPromotionOption: { canShow: boolean; position?: string };
   promotion: PieceSymbol | null;
-  isOnline: boolean;
+  mode: Mode;
   prevMove: Move;
 };
 
@@ -42,9 +44,10 @@ const initialState: ChessState = {
   showLegalMoves: true,
   enableTimer: true,
   move: { from: '', to: '' },
+  aiMove: '',
   showPromotionOption: { canShow: false },
   promotion: null,
-  isOnline: false,
+  mode: 'offline',
   prevMove: { from: '', to: '' },
 };
 const chessSlice = createSlice({
@@ -107,7 +110,7 @@ const chessSlice = createSlice({
           promotion: state.promotion,
         };
         state.move = moveToSet;
-        if (state.isOnline && moveToSet.from && moveToSet.to)
+        if (state.mode === 'online' && moveToSet.from && moveToSet.to)
           socket.emit(SEND_MOVE, moveToSet);
         state.promotion = null;
         return;
@@ -119,8 +122,14 @@ const chessSlice = createSlice({
     setPrevMove: (state, action: PayloadAction<Move>) => {
       state.prevMove = action.payload;
     },
+    resetAIMove: (state) => {
+      state.aiMove = '';
+    },
     resetMove: (state) => {
       state.move = { from: '', to: '' };
+    },
+    updateAIMove: (state, { payload }: PayloadAction<string>) => {
+      state.aiMove = payload;
     },
     updateMove: (state, { payload }: PayloadAction<updateMovePayload>) => {
       //if promotion option is showing and user has clicked somewhere else in the board, then close it.
@@ -165,18 +174,18 @@ const chessSlice = createSlice({
       //Normal game move
       state.move = moveToSet;
       if (moveToSet.from && moveToSet.to) {
-        if (state.isOnline) socket.emit(SEND_MOVE, moveToSet);
+        if (state.mode === 'online') socket.emit(SEND_MOVE, moveToSet);
       }
     },
-    setIsOnline: (state, action: PayloadAction<boolean>) => {
-      state.isOnline = action.payload;
+    setMode: (state, action: PayloadAction<Mode>) => {
+      state.mode = action.payload;
     },
     resetChess: (state) => {
-      const isOnline = state.isOnline;
+      const mode = state.mode;
       Object.assign(state, initialState);
       state.chess = new Chess();
       state.board = state.chess.board();
-      state.isOnline = isOnline;
+      state.mode = mode;
     },
   },
 });
@@ -195,10 +204,12 @@ export const {
   setPromotion,
   setShowPromotionOption,
   updateMove,
+  updateAIMove,
   setMove,
   setPrevMove,
   resetMove,
-  setIsOnline,
+  resetAIMove,
+  setMode,
   resetChess,
 } = chessSlice.actions;
 export default chessSlice.reducer;

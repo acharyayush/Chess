@@ -31,7 +31,7 @@ export default function ChessBoard({
   //arrow contains start and end cell which are of type react ref. so this cannot be placed in redux as they are non serializable. So arrow is used as local state
   const [arrows, setArrows] = useState<ArrowType[]>([]);
   const [arrowElements, setArrowElements] = useState<JSX.Element[]>([]);
-  const [boardPos, setBoardPos] = useState({ x: 0, y: 0 });
+  const [, setBoardPos] = useState({ x: 0, y: 0 });
   const [arrowStartCell, setArrowStartCell] =
     useState<React.RefObject<HTMLDivElement> | null>(null);
   const addArrow = (arrow: ArrowType) => {
@@ -56,10 +56,10 @@ export default function ChessBoard({
         setArrowElements(
           latestArrows.map((arrow, index) => (
             <Arrow
-            key={`arrow-${index}`}
-            boardPos={latestBoardPos}
-            startCell={arrow.start}
-            endCell={arrow.end}
+              key={`arrow-${index}`}
+              boardPos={latestBoardPos}
+              startCell={arrow.start}
+              endCell={arrow.end}
             />
           ))
         );
@@ -68,7 +68,7 @@ export default function ChessBoard({
       return latestArrows;
     });
   };
-  const handleResize = () =>{
+  const handleResize = () => {
     if (boardRef.current) {
       setBoardPos({
         x: boardRef.current?.getBoundingClientRect().left,
@@ -76,7 +76,7 @@ export default function ChessBoard({
       });
     }
     handleArrowRerender();
-  }
+  };
   useEffect(() => {
     if (boardRef.current) {
       setBoardPos({

@@ -2,25 +2,23 @@ import ChessBoard from '../components/board/ChessBoard';
 import GameOverPopUp from '../components/GameOverPopUp';
 import PlayerInfo from '../components/playerInfo/PlayerInfo';
 import Button from '../components/shared/Button';
-import SwitchToggle from '../components/shared/SwitchToggle';
 import { TbArrowBigLeftFilled } from 'react-icons/tb';
 import { FaFlag } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import MoveHistory from '../components/gameDetail/MoveHistory';
 import { setHasResigned } from '../state/gameStatus/gameStatusSlice';
-import { setEnableTimer, setUndo } from '../state/chess/chessSlice';
+import { setUndo } from '../state/chess/chessSlice';
 import { useDispatch } from 'react-redux';
 import { BLACK, WHITE } from 'chess.js';
-import useChessGameOffline from '../hooks/useChessGameOffline';
 import GameDetailContainer from '../components/gameDetail/GameDetailContainer';
 import BoardSectionContainer from '../components/BoardSectionContainer';
 import LocalSettings from '../components/settings/LocalSettings';
-export default function Offline() {
-  useChessGameOffline();
-
+import useAI from '../hooks/useAI';
+export default function AI() {
+  useAI();
   const dispatch = useDispatch();
-  const { board, turn, moveHistory, enableTimer } = useSelector(
+  const { board, turn, moveHistory } = useSelector(
     (state: RootState) => state.chess
   );
   const {
@@ -32,7 +30,6 @@ export default function Offline() {
     mainPlayer,
   } = useSelector((state: RootState) => state.players);
   const { isGameOver } = useSelector((state: RootState) => state.gameStatus);
-
   return (
     <div className='bg-slate-700 min-h-screen p-5 xsm:p-2 grid items-center'>
       <div className='w-[90%] h-fit xl:w-[100%] mx-auto flex justify-evenly lg:flex-col lg:items-center gap-4'>
@@ -63,7 +60,7 @@ export default function Offline() {
               className='h-full aspect-square'
               board={board}
               turn={turn}
-              isDisable={isGameOver}
+              isDisable={isGameOver || turn != mainPlayer}
             />
           </div>
           {/* Logo, Name of player 2 */}
@@ -107,17 +104,7 @@ export default function Offline() {
                 <FaFlag className='scale-75' />
               </Button>
             </div>
-            <LocalSettings>
-              <div className='enableTimer flex items-center justify-between mt-3'>
-                <span className=''>Enable Timer</span>
-                <span className='flex items-center'>
-                  <SwitchToggle
-                    status={enableTimer}
-                    onToggle={() => dispatch(setEnableTimer(!enableTimer))}
-                  />
-                </span>
-              </div>
-            </LocalSettings>
+            <LocalSettings />
           </div>
         </GameDetailContainer>
       </div>

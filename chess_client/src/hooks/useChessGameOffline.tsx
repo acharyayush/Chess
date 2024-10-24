@@ -12,7 +12,8 @@ import {
   resetMove,
   resetChess,
   setPrevMove,
-  setIsOnline,
+  setMode,
+  setEnableTimer,
 } from '../state/chess/chessSlice';
 import {
   setWinner,
@@ -134,7 +135,8 @@ export default function useChessGameOffline() {
   };
   useEffect(() => {
     resetGame();
-    dispatch(setIsOnline(false));
+    dispatch(setMode('offline'));
+    dispatch(setEnableTimer(false));
   }, []);
   useEffect(() => {
     if (!undo) return;
@@ -208,4 +210,5 @@ export default function useChessGameOffline() {
       dispatch(setGameOverDescription('Timeout'));
     }
   }, [blackTimeInTimer]);
+  return { handleBoardUpdateOnMove };
 }

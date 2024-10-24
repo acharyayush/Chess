@@ -15,7 +15,7 @@ interface GameOverPopUp {
   className?: string;
 }
 function GameOverPopUp({ className }: GameOverPopUp) {
-  const { isOnline } = useSelector((state: RootState) => state.chess);
+  const { mode } = useSelector((state: RootState) => state.chess);
   const { winner, gameOverDescription, isDraw, hasRejectedRematch } =
     useSelector((state: RootState) => state.gameStatus);
   const { player1, player2, mainPlayer } = useSelector(
@@ -27,13 +27,13 @@ function GameOverPopUp({ className }: GameOverPopUp) {
     if (isDraw) {
       heading = 'Draw';
     } else {
-      if (winner === mainPlayer && isOnline) heading = 'You Won';
+      if (winner === mainPlayer && mode === 'online') heading = 'You Won';
       else heading = winner == WHITE ? `${player1} Won` : `${player2} Won`;
     }
     return heading;
   };
   const handleRematch = () => {
-    if (isOnline) {
+    if (mode === 'online') {
       if (hasRejectedRematch == 'pending') return;
       socket.emit(REMATCH);
       dispatch(setHasRejectedRematch('pending'));
@@ -71,7 +71,7 @@ function GameOverPopUp({ className }: GameOverPopUp) {
         </div>
       </div>
       <Button
-        className={`${isOnline && hasRejectedRematch === 'pending' ? 'cursor-default bg-blue-300' : ''}`}
+        className={`${mode === 'online' && hasRejectedRematch === 'pending' ? 'cursor-default bg-blue-300' : ''}`}
         onClick={handleRematch}
       >
         Rematch
