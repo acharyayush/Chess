@@ -1,20 +1,51 @@
-import { Chess, WHITE } from 'chess.js';
-import { PieceSymbolExcludingKing } from '../types';
-import { piecesPoints } from '../constants';
+import { Chess, Color, PieceSymbol, WHITE } from 'chess.js';
+import { PieceTableKey } from '../pieceTables';
+import pieceTables from '../pieceTables';
+const piecesPoints: Record<PieceSymbol, number> = {
+  p: 100,
+  n: 320,
+  b: 330,
+  r: 500,
+  q: 900,
+  k: 20000,
+};
 //simple evaluation function based on netscore
+const getPieceSquareScore = (
+  type: PieceSymbol,
+  color: Color,
+  isEndGame: boolean,
+  i: number,
+  j: number
+) => {
+  let pieceTableKey = type as PieceTableKey;
+  if (type == 'k' && isEndGame) {
+    pieceTableKey = 'ke';
+  }
+  const pieceTable = pieceTables[pieceTableKey];
+  if (color == WHITE) {
+    return pieceTable[i][j];
+  }
+  return pieceTable[7 - i][7 - j];
+};
 const evaluate = (board: ReturnType<Chess['board']>) => {
-  let totalEvaluation = 0;
+  let totalScore = 0,
+    materialScore = 0,
+    pieceSquareScore = 0;
   for (let i = 0; i < 8; ++i) {
     for (let j = 0; j < 8; ++j) {
       if (!board[i][j] || board[i][j]?.type === 'k') continue;
       const { type, color } = board[i][j]!;
-      totalEvaluation +=
-        color === WHITE
-          ? piecesPoints[type as PieceSymbolExcludingKing]
-          : -piecesPoints[type as PieceSymbolExcludingKing];
+      if (color === WHITE) {
+        materialScore += piecesPoints[type];
+        pieceSquareScore += getPieceSquareScore(type, color, false, i, j);
+      } else {
+        materialScore -= piecesPoints[type];
+        pieceSquareScore -= getPieceSquareScore(type, color, false, i, j);
+      }
     }
   }
-  return totalEvaluation;
+  totalScore = materialScore + pieceSquareScore;
+  return totalScore;
 };
 const minimax = (
   chess: Chess,
@@ -61,6 +92,9 @@ const minimax = (
 };
 const getBestMove = (fen: string, depth: number) => {
   const tempChess = new Chess(fen);
+  //if there is only move then there is no need to search deeper inside that move
+  if (tempChess.moves().length === 1) return tempChess.moves()[0];
+
   const maximizingPlayer = tempChess.turn() === WHITE;
   let bestMove = '';
   let bestScore = maximizingPlayer ? -Infinity : Infinity;
