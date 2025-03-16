@@ -11,7 +11,7 @@ export default function useAI() {
   const { handleBoardUpdateOnMove } = useChessGameOffline();
   const handleCapturedPiecesAndScores = useCapturedPiecesAndScores();
   const workerRef = useRef<Worker | null>(null);
-  const { chess, aiMove, turn } = useSelector(
+  const { chess, aiMove, turn, botDepth } = useSelector(
     (state: RootState) => state.chess
   );
   const { isGameOver } = useSelector((state: RootState) => state.gameStatus);
@@ -55,8 +55,8 @@ export default function useAI() {
       workerRef.current?.postMessage({
         task: 'getBestMove',
         fen: chess.fen(),
-        depth: 3,
+        depth: botDepth,
       });
     }
-  }, [turn, mainPlayer]);
+  }, [turn, mainPlayer, botDepth]);
 }

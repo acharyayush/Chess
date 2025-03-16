@@ -4,6 +4,8 @@ import { Color, WHITE } from 'chess.js';
 export interface PlayerState {
   player1: string;
   player2: string;
+  player1LogoUrl: string;
+  player2LogoUrl: string;
   mainPlayer: Color;
   whiteNetScore: number;
   totalTime: number;
@@ -15,6 +17,8 @@ export interface PlayerState {
 const initialState: PlayerState = {
   player1: 'White', //name of player, initially the color
   player2: 'Black',
+  player1LogoUrl: '',
+  player2LogoUrl: '',
   mainPlayer: WHITE,
   whiteNetScore: 0,
   totalTime: 10 * 60, //10 min
@@ -34,6 +38,13 @@ const playerSlice = createSlice({
       if (!action.payload.player1 || !action.payload.player2) return;
       state.player1 = action.payload.player1;
       state.player2 = action.payload.player2;
+    },
+    setPlayersLogoUrl: (
+      state,
+      action: PayloadAction<{ player1LogoUrl: string; player2LogoUrl: string }>
+    ) => {
+      state.player1LogoUrl = action.payload.player1LogoUrl;
+      state.player2LogoUrl = action.payload.player2LogoUrl;
     },
     setTotalTime: (state, action: PayloadAction<number>) => {
       state.totalTime = action.payload;
@@ -71,12 +82,14 @@ const playerSlice = createSlice({
       state.mainPlayer = action.payload;
     },
     resetPlayers: (state) => {
-      Object.assign(state, initialState);
+      const constantStates = {player1: state.player1, player2: state.player2, player1LogoUrl: state.player1LogoUrl, player2LogoUrl: state.player2LogoUrl,}
+      Object.assign(state, {...initialState, ...constantStates});
     },
   },
 });
 export const {
   setPlayers,
+  setPlayersLogoUrl,
   setWhiteNetScore,
   setCapturedPiecesByWhite,
   setCapturedPiecesByBlack,

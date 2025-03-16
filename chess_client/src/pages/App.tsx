@@ -1,6 +1,6 @@
 import { JOIN_GAME } from '../events';
 import socket from '../socket';
-import Button from './shared/Button';
+import Button from '../components/shared/Button';
 export default function App() {
   return (
     <div className='bg-slate-400 flex min-w-screen min-h-screen justify-evenly items-center'>
@@ -50,7 +50,7 @@ export default function App() {
         </div>
         <div className='offlinePlayBtn'>
           <Button
-            navigateTo='/play/ai'
+            navigateTo='/play/ai/select'
             className='bg-gray-500 text-md w-[350px] xsm:w-[270px]  xsm:py-6 lg:w-[320px] md:w-[350px]'
           >
             <h1 className='text-3xl lg:text-2xl'>Play AI</h1>

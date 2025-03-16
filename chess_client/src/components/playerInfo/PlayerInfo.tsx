@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 interface PlayerInfoProps {
   color: Color;
   name: string;
+  logoUrl?: string;
   rating: number;
   capturedPieces: capturedPiecesAndNumberType;
   score: number;
@@ -18,6 +19,7 @@ interface PlayerInfoProps {
 export default function PlayerInfo({
   color,
   name,
+  logoUrl,
   rating,
   capturedPieces,
   score,
@@ -89,7 +91,7 @@ export default function PlayerInfo({
   return (
     <div className={twMerge('flex text-white h-[50px]', className)}>
       <div className='profileImg'>
-        <ProfileImg color={color} />
+        <ProfileImg color={color} logoUrl={logoUrl}/>
       </div>
       <div className='details px-2'>
         <div className='name font-bold'>

@@ -24,6 +24,7 @@ export default function AI() {
   const {
     player1,
     player2,
+    player2LogoUrl,
     whiteNetScore,
     capturedPiecesByWhite,
     capturedPiecesByBlack,
@@ -41,8 +42,9 @@ export default function AI() {
           {/* Logo, Name of player 1 */}
           <PlayerInfo
             className='h-[50px]'
+            logoUrl={player2LogoUrl}
             color={mainPlayer == WHITE ? BLACK : WHITE}
-            name={mainPlayer == WHITE ? player2 : player1}
+            name={player2}
             rating={1200}
             score={whiteNetScore}
             capturedPieces={
@@ -67,7 +69,7 @@ export default function AI() {
           <PlayerInfo
             className='h-[50px]'
             color={mainPlayer}
-            name={mainPlayer == WHITE ? player1 : player2}
+            name={player1}
             rating={1200}
             score={whiteNetScore}
             capturedPieces={

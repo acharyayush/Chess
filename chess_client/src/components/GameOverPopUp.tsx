@@ -18,9 +18,8 @@ function GameOverPopUp({ className }: GameOverPopUp) {
   const { mode } = useSelector((state: RootState) => state.chess);
   const { winner, gameOverDescription, isDraw, hasRejectedRematch } =
     useSelector((state: RootState) => state.gameStatus);
-  const { player1, player2, mainPlayer } = useSelector(
-    (state: RootState) => state.players
-  );
+  const { player1, player2, mainPlayer, player1LogoUrl, player2LogoUrl } =
+    useSelector((state: RootState) => state.players);
   const dispatch = useDispatch();
   const getHeading = () => {
     let heading: string;
@@ -54,18 +53,20 @@ function GameOverPopUp({ className }: GameOverPopUp) {
       <div className='flex justify-between my-8  px-9'>
         <div className='flex flex-col font-bold'>
           <ProfileImg
+            logoUrl={player1LogoUrl}
             color={WHITE}
             ringColorClass={`${winner == WHITE ? 'ring-blue-500' : 'ring-white'}`}
-            className='w-[70px]'
+            className='w-[70px] h-[70px]'
           />
           <span className='mt-1'>{player1}</span>
         </div>
         <span className='text-2xl mt-auto mb-6'>vs</span>
         <div className='flex flex-col font-bold'>
           <ProfileImg
+            logoUrl={player2LogoUrl}
             color={BLACK}
             ringColorClass={`${winner == BLACK ? 'ring-blue-500' : 'ring-white'}`}
-            className='w-[70px]'
+            className='w-[70px] h-[70px]'
           />
           <span className='mt-1'>{player2}</span>
         </div>

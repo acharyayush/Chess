@@ -30,6 +30,7 @@ export type ChessState = {
   promotion: PieceSymbol | null;
   mode: Mode;
   prevMove: Move;
+  botDepth: number;
 };
 
 const initialState: ChessState = {
@@ -49,6 +50,7 @@ const initialState: ChessState = {
   promotion: null,
   mode: 'offline',
   prevMove: { from: '', to: '' },
+  botDepth: 1,
 };
 const chessSlice = createSlice({
   name: 'chess',
@@ -56,6 +58,9 @@ const chessSlice = createSlice({
   reducers: {
     setChess: (state, action: PayloadAction<Chess>) => {
       state.chess = action.payload;
+    },
+    setBotDepth: (state, action: PayloadAction<number>) => {
+      state.botDepth = action.payload;
     },
     setMoveHistory: (state, action: PayloadAction<string[]>) => {
       state.moveHistory = action.payload;
@@ -182,10 +187,12 @@ const chessSlice = createSlice({
     },
     resetChess: (state) => {
       const mode = state.mode;
+      const depth = state.botDepth;
       Object.assign(state, initialState);
       state.chess = new Chess();
       state.board = state.chess.board();
       state.mode = mode;
+      state.botDepth = depth;
     },
   },
 });
@@ -193,6 +200,7 @@ export const {
   setChess,
   setMoveHistory,
   setBoard,
+  setBotDepth,
   setFen,
   setFlag,
   setTurn,

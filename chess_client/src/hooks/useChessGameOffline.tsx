@@ -31,6 +31,7 @@ import {
   setTotalTime,
   setWhiteTime,
   setBlackTime,
+  setPlayersLogoUrl,
 } from '../state/players/playerSlice';
 
 import { useDispatch } from 'react-redux';
@@ -45,7 +46,7 @@ export default function useChessGameOffline() {
   const { hasResigned, rematch, isGameOver } = useSelector(
     (state: RootState) => state.gameStatus
   );
-  const { player1, player2, mainPlayer } = useSelector(
+  const { player1, player2, player1LogoUrl, player2LogoUrl, mainPlayer } = useSelector(
     (state: RootState) => state.players
   );
   const [totalTimeOffline] = useState(10 * 60);
@@ -174,7 +175,9 @@ export default function useChessGameOffline() {
     //if player 1 or 2 name is either white or black then leave as it is, else set the name
     if (player1 == 'White' || player2 == 'Black') return;
     dispatch(setPlayers({ player1: player2, player2: player1 }));
-  }, [rematch]);
+    dispatch(setPlayersLogoUrl({ player1LogoUrl: player2LogoUrl, player2LogoUrl: player1LogoUrl }));
+    console.log(player1, player2)
+  }, [rematch, player1, player2, player1LogoUrl, player2LogoUrl]);
   useEffect(() => {
     if (!hasResigned) return;
     gameOverChecks();
