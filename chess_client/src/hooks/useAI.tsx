@@ -1,6 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import useChessGameOffline from './useChessGameOffline';
-import { resetAIMove, setMode, updateAIMove } from '../state/chess/chessSlice';
+import {
+  resetAIMove,
+  setMode,
+  setWorker,
+  updateAIMove,
+} from '../state/chess/chessSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import useCapturedPiecesAndScores from './useCapturedPiecesAndScores';
@@ -10,25 +15,25 @@ export default function useAI() {
   const dispatch = useDispatch();
   const { handleBoardUpdateOnMove } = useChessGameOffline();
   const handleCapturedPiecesAndScores = useCapturedPiecesAndScores();
-  const workerRef = useRef<Worker | null>(null);
-  const { chess, aiMove, turn, botDepth } = useSelector(
+  const { chess, aiMove, turn, botDepth, worker } = useSelector(
     (state: RootState) => state.chess
   );
   const { isGameOver } = useSelector((state: RootState) => state.gameStatus);
   const { mainPlayer } = useSelector((state: RootState) => state.players);
   useEffect(() => {
-    workerRef.current = new Worker(
+    const firstWorker = new Worker(
       new URL('../worker/calculateBestMove.ts', import.meta.url),
-      { type: 'module' }
+      {
+        type: 'module',
+      }
     );
-    dispatch(setMode('ai'));
-    workerRef.current.onmessage = (e: MessageEvent<string>) => {
+    firstWorker.onmessage = (e: MessageEvent<string>) => {
       dispatch(updateAIMove(e.data));
     };
+    dispatch(setMode('ai'));
+    dispatch(setWorker(firstWorker));
     return () => {
-      if (workerRef.current) {
-        workerRef.current.terminate();
-      }
+      if (worker) worker.terminate();
     };
   }, []);
   useEffect(() => {
@@ -50,9 +55,9 @@ export default function useAI() {
     }
   }, [aiMove, isGameOver]);
   useEffect(() => {
-    if (!workerRef.current) return;
+    if (!worker) return;
     if (turn !== mainPlayer) {
-      workerRef.current?.postMessage({
+      worker?.postMessage({
         task: 'getBestMove',
         fen: chess.fen(),
         depth: botDepth,

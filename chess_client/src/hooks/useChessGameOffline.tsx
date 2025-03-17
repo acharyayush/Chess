@@ -14,6 +14,8 @@ import {
   setPrevMove,
   setMode,
   setEnableTimer,
+  setWorker,
+  updateAIMove,
 } from '../state/chess/chessSlice';
 import {
   setWinner,
@@ -40,15 +42,14 @@ import useTimer from './useTimer';
 import useCapturedPiecesAndScores from './useCapturedPiecesAndScores';
 
 export default function useChessGameOffline() {
-  const { chess, turn, move, undo, enableTimer } = useSelector(
+  const { chess, turn, move, undo, enableTimer, mode, worker } = useSelector(
     (state: RootState) => state.chess
   );
   const { hasResigned, rematch, isGameOver } = useSelector(
     (state: RootState) => state.gameStatus
   );
-  const { player1, player2, player1LogoUrl, player2LogoUrl, mainPlayer } = useSelector(
-    (state: RootState) => state.players
-  );
+  const { player1, player2, player1LogoUrl, player2LogoUrl, mainPlayer } =
+    useSelector((state: RootState) => state.players);
   const [totalTimeOffline] = useState(10 * 60);
   const { handleSoundEffects } = useSound();
   const handleCapturedPiecesAndScores = useCapturedPiecesAndScores();
@@ -140,16 +141,43 @@ export default function useChessGameOffline() {
     dispatch(setEnableTimer(false));
   }, []);
   useEffect(() => {
+    const performUndo = () => {
+      const moveRes = chess.undo();
+      if (!moveRes) return;
+      handleCapturedPiecesAndScores(moveRes, true);
+      handleBoardUpdateOnMove(moveRes);
+      dispatch(setLegalMoves([]));
+      dispatch(resetMove());
+      dispatch(setUndo(false));
+      if (enableTimer) toggleTimerBasedOnTurn();
+    };
     if (!undo) return;
-    const moveRes = chess.undo();
-    if (!moveRes) return;
-    handleCapturedPiecesAndScores(moveRes, true);
-    handleBoardUpdateOnMove(moveRes);
-    dispatch(setLegalMoves([]));
-    dispatch(resetMove());
-    dispatch(setUndo(false));
-    if (enableTimer) toggleTimerBasedOnTurn();
-  }, [undo]);
+    if (mode == 'ai') {
+      //if ai is still calculating and user perform undo, then undo once, else undo twice
+      if (turn == BLACK) {
+        performUndo();
+        //terminate the worker (pause calculating best move and free up the worker) and create new worker
+        if (worker) {
+          worker.terminate();
+          const newWorker = new Worker(
+            new URL('../worker/calculateBestMove.ts', import.meta.url),
+            {
+              type: 'module',
+            }
+          );
+          newWorker.onmessage = (e: MessageEvent<string>) => {
+            dispatch(updateAIMove(e.data));
+          };
+          dispatch(setWorker(newWorker));
+        }
+      } else {
+        performUndo();
+        performUndo();
+      }
+    } else {
+      performUndo();
+    }
+  }, [undo, enableTimer, turn, mode, worker]);
   useEffect(() => {
     //if player has moved from one position to another, then attempt moving the move
     if (move.from && move.to) {
@@ -175,8 +203,13 @@ export default function useChessGameOffline() {
     //if player 1 or 2 name is either white or black then leave as it is, else set the name
     if (player1 == 'White' || player2 == 'Black') return;
     dispatch(setPlayers({ player1: player2, player2: player1 }));
-    dispatch(setPlayersLogoUrl({ player1LogoUrl: player2LogoUrl, player2LogoUrl: player1LogoUrl }));
-    console.log(player1, player2)
+    dispatch(
+      setPlayersLogoUrl({
+        player1LogoUrl: player2LogoUrl,
+        player2LogoUrl: player1LogoUrl,
+      })
+    );
+    console.log(player1, player2);
   }, [rematch, player1, player2, player1LogoUrl, player2LogoUrl]);
   useEffect(() => {
     if (!hasResigned) return;

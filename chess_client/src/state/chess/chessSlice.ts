@@ -9,10 +9,10 @@ import {
   Square,
   WHITE,
 } from 'chess.js';
-import { Move, updateMovePayload } from '../../types';
+import React from 'react';
+import { Mode, Move, updateMovePayload } from '../../types';
 import socket from '../../socket';
 import { SEND_MOVE } from '../../events';
-import { Mode } from 'fs';
 export type ChessState = {
   chess: Chess;
   fen: string;
@@ -31,6 +31,7 @@ export type ChessState = {
   mode: Mode;
   prevMove: Move;
   botDepth: number;
+  worker: Worker | null;
 };
 
 const initialState: ChessState = {
@@ -51,6 +52,7 @@ const initialState: ChessState = {
   mode: 'offline',
   prevMove: { from: '', to: '' },
   botDepth: 1,
+  worker: null,
 };
 const chessSlice = createSlice({
   name: 'chess',
@@ -194,6 +196,9 @@ const chessSlice = createSlice({
       state.mode = mode;
       state.botDepth = depth;
     },
+    setWorker: (state, action: PayloadAction<Worker | null>) => {
+      state.worker = action.payload;
+    },
   },
 });
 export const {
@@ -219,5 +224,6 @@ export const {
   resetAIMove,
   setMode,
   resetChess,
+  setWorker
 } = chessSlice.actions;
 export default chessSlice.reducer;

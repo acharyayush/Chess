@@ -44,4 +44,4 @@ export type ArrowType = {
   start: HTMLDivElement;
   end: HTMLDivElement;
 };
-export type MOde = 'online' | 'offline' | 'ai';
+export type Mode = 'online' | 'offline' | 'ai';
