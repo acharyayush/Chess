@@ -82,8 +82,13 @@ const playerSlice = createSlice({
       state.mainPlayer = action.payload;
     },
     resetPlayers: (state) => {
-      const constantStates = {player1: state.player1, player2: state.player2, player1LogoUrl: state.player1LogoUrl, player2LogoUrl: state.player2LogoUrl,}
-      Object.assign(state, {...initialState, ...constantStates});
+      const constantStates = {
+        player1: state.player1,
+        player2: state.player2,
+        player1LogoUrl: state.player1LogoUrl,
+        player2LogoUrl: state.player2LogoUrl,
+      };
+      Object.assign(state, { ...initialState, ...constantStates });
     },
   },
 });

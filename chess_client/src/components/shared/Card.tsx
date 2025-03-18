@@ -20,11 +20,7 @@ export default function Card({
         onClick={onClick}
         className='Image group relative w-full rounded-lg cursor-pointer p-6'
       >
-        <img
-          src={imgUrl}
-          alt='Card Image'
-          className='rounded-lg w-full'
-        />
+        <img src={imgUrl} alt='Card Image' className='rounded-lg w-full' />
         {textOnImg && (
           <>
             <div className='overlay hidden group-hover:block absolute top-0 left-0 bottom-0 right-0 bg-gray-700/50 rounded-lg'></div>

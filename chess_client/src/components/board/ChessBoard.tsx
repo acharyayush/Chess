@@ -84,7 +84,7 @@ export default function ChessBoard({
         y: boardRef.current?.getBoundingClientRect().top,
       });
     }
-  }, [boardRef.current]);
+  }, []);
   useEffect(() => {
     window.addEventListener('resize', handleResize);
     return () => {

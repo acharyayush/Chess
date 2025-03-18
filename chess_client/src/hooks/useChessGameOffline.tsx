@@ -13,7 +13,6 @@ import {
   resetChess,
   setPrevMove,
   setMode,
-  setEnableTimer,
   setWorker,
   updateAIMove,
 } from '../state/chess/chessSlice';
@@ -198,7 +197,7 @@ export default function useChessGameOffline() {
     dispatch(setTotalTime(totalTimeOffline));
     resetTimers(totalTimeOffline);
     startWhiteTimer();
-    if(mode=="ai") return;
+    if (mode == 'ai') return;
     dispatch(setMainPlayer(getOpponent(mainPlayer)));
     //if player 1 or 2 name is either white or black then leave as it is, else set the name
     if (player1 == 'White' || player2 == 'Black') return;

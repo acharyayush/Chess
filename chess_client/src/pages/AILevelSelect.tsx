@@ -6,7 +6,7 @@ import { setBotDepth } from '../state/chess/chessSlice';
 
 export default function AILevelSelect() {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   return (
     <div className='bg-slate-400 min-h-screen flex justify-center items-center'>
       <div className='container select-none'>
@@ -23,9 +23,14 @@ export default function AILevelSelect() {
             textOnImg='Bob'
             title='Beginner'
             onClick={() => {
-              dispatch(setPlayers({player1: "White", player2: "Bob"}))
-              dispatch(setPlayersLogoUrl({player1LogoUrl: "", player2LogoUrl: "/images/bots/bob.svg"}))
-              dispatch(setBotDepth(1))
+              dispatch(setPlayers({ player1: 'White', player2: 'Bob' }));
+              dispatch(
+                setPlayersLogoUrl({
+                  player1LogoUrl: '',
+                  player2LogoUrl: '/images/bots/bob.svg',
+                })
+              );
+              dispatch(setBotDepth(1));
               navigate('/play/ai');
             }}
           />
@@ -35,9 +40,14 @@ export default function AILevelSelect() {
             textOnImg='Kukudo'
             title='Intermediate'
             onClick={() => {
-              dispatch(setPlayers({player1: "White", player2: "Kukudo"}))
-              dispatch(setPlayersLogoUrl({player1LogoUrl: "", player2LogoUrl: "/images/bots/kukudo.svg"}))
-              dispatch(setBotDepth(2))
+              dispatch(setPlayers({ player1: 'White', player2: 'Kukudo' }));
+              dispatch(
+                setPlayersLogoUrl({
+                  player1LogoUrl: '',
+                  player2LogoUrl: '/images/bots/kukudo.svg',
+                })
+              );
+              dispatch(setBotDepth(2));
               navigate('/play/ai');
             }}
           />
@@ -47,9 +57,14 @@ export default function AILevelSelect() {
             textOnImg='Professor'
             title='Advanced'
             onClick={() => {
-              dispatch(setPlayers({player1: "White", player2: "Professor"}))
-              dispatch(setPlayersLogoUrl({player1LogoUrl: "", player2LogoUrl: "/images/bots/professor.svg"}))
-              dispatch(setBotDepth(4))
+              dispatch(setPlayers({ player1: 'White', player2: 'Professor' }));
+              dispatch(
+                setPlayersLogoUrl({
+                  player1LogoUrl: '',
+                  player2LogoUrl: '/images/bots/professor.svg',
+                })
+              );
+              dispatch(setBotDepth(4));
               navigate('/play/ai');
             }}
           />

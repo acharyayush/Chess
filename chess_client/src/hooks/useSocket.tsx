@@ -222,7 +222,7 @@ export default function useSocket() {
       );
       dispatch(setHasRejectedRematch(false));
     }
-  }, [player1, player2, hasRejectedRematch]);
+  }, [player1, player2, hasRejectedRematch, mainPlayer]);
   useEffect(() => {
     dispatch(setWhiteTime(whiteTimeInTimer));
   }, [whiteTimeInTimer]);

@@ -25,7 +25,9 @@ export default function PlayerInfo({
   score,
   className,
 }: PlayerInfoProps) {
-  const { turn, enableTimer, mode } = useSelector((state: RootState) => state.chess);
+  const { turn, enableTimer, mode } = useSelector(
+    (state: RootState) => state.chess
+  );
   const { whiteTime, blackTime } = useSelector(
     (state: RootState) => state.players
   );
@@ -91,7 +93,7 @@ export default function PlayerInfo({
   return (
     <div className={twMerge('flex text-white h-[50px]', className)}>
       <div className='profileImg'>
-        <ProfileImg color={color} logoUrl={logoUrl}/>
+        <ProfileImg color={color} logoUrl={logoUrl} />
       </div>
       <div className='details px-2'>
         <div className='name font-bold'>
@@ -103,7 +105,7 @@ export default function PlayerInfo({
           <div className='score ml-2 text-gray-100'>{renderScore()}</div>
         </div>
       </div>
-      {(enableTimer || mode=="online") && (
+      {(enableTimer || mode == 'online') && (
         <Timer
           timeLeft={color === WHITE ? whiteTime : blackTime}
           color={color}

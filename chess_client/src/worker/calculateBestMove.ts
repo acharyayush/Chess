@@ -94,7 +94,7 @@ const orderMoves = (moves: string[]): string[] => {
     ...nonCapture,
   ];
 };
-let moveSearch = 0; 
+let moveSearch = 0;
 const minimax = (
   chess: Chess,
   depth: number,
@@ -177,7 +177,7 @@ const getBestMove = (fen: string, depth: number) => {
       bestMove = move;
     }
   }
-  console.log("Move Search Count: ", moveSearch)
+  console.log('Move Search Count: ', moveSearch);
   return bestMove;
 };
 onmessage = (e: MessageEvent<{ task: string; fen: string; depth: number }>) => {
