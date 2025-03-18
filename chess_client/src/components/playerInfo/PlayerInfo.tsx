@@ -25,7 +25,7 @@ export default function PlayerInfo({
   score,
   className,
 }: PlayerInfoProps) {
-  const { turn, enableTimer } = useSelector((state: RootState) => state.chess);
+  const { turn, enableTimer, mode } = useSelector((state: RootState) => state.chess);
   const { whiteTime, blackTime } = useSelector(
     (state: RootState) => state.players
   );
@@ -103,7 +103,7 @@ export default function PlayerInfo({
           <div className='score ml-2 text-gray-100'>{renderScore()}</div>
         </div>
       </div>
-      {enableTimer && (
+      {(enableTimer || mode=="online") && (
         <Timer
           timeLeft={color === WHITE ? whiteTime : blackTime}
           color={color}

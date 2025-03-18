@@ -138,9 +138,9 @@ export default function useChessGameOffline() {
   useEffect(() => {
     resetGame();
     dispatch(setMode('offline'));
-    dispatch(setEnableTimer(false));
   }, []);
   useEffect(() => {
+    if (!undo) return;
     const performUndo = () => {
       const moveRes = chess.undo();
       if (!moveRes) return;
@@ -151,7 +151,6 @@ export default function useChessGameOffline() {
       dispatch(setUndo(false));
       if (enableTimer) toggleTimerBasedOnTurn();
     };
-    if (!undo) return;
     if (mode == 'ai') {
       //if ai is still calculating and user perform undo, then undo once, else undo twice
       if (turn == BLACK) {
@@ -197,9 +196,10 @@ export default function useChessGameOffline() {
     if (!rematch) return;
     resetGame();
     dispatch(setTotalTime(totalTimeOffline));
-    dispatch(setMainPlayer(getOpponent(mainPlayer)));
     resetTimers(totalTimeOffline);
     startWhiteTimer();
+    if(mode=="ai") return;
+    dispatch(setMainPlayer(getOpponent(mainPlayer)));
     //if player 1 or 2 name is either white or black then leave as it is, else set the name
     if (player1 == 'White' || player2 == 'Black') return;
     dispatch(setPlayers({ player1: player2, player2: player1 }));
@@ -209,7 +209,6 @@ export default function useChessGameOffline() {
         player2LogoUrl: player1LogoUrl,
       })
     );
-    console.log(player1, player2);
   }, [rematch, player1, player2, player1LogoUrl, player2LogoUrl]);
   useEffect(() => {
     if (!hasResigned) return;

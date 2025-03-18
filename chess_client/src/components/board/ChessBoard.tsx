@@ -130,7 +130,7 @@ export default function ChessBoard({
       <div
         ref={boardRef}
         className={twMerge(
-          `ChessBoard grid grid-cols-8 grid-rows-8 sm:w-[100%] sm:h-auto}`,
+          `ChessBoard grid grid-cols-8 grid-rows-8 sm:w-[100%] sm:h-auto aspect-square`,
           className
         )}
       >

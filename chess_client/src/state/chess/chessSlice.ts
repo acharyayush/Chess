@@ -9,7 +9,6 @@ import {
   Square,
   WHITE,
 } from 'chess.js';
-import React from 'react';
 import { Mode, Move, updateMovePayload } from '../../types';
 import socket from '../../socket';
 import { SEND_MOVE } from '../../events';
@@ -44,7 +43,7 @@ const initialState: ChessState = {
   legalMoves: [],
   undo: false,
   showLegalMoves: true,
-  enableTimer: true,
+  enableTimer: false,
   move: { from: '', to: '' },
   aiMove: '',
   showPromotionOption: { canShow: false },
@@ -190,11 +189,15 @@ const chessSlice = createSlice({
     resetChess: (state) => {
       const mode = state.mode;
       const depth = state.botDepth;
+      const wasTimerEnabled = state.enableTimer;
+      const previousWorker = state.worker;
       Object.assign(state, initialState);
       state.chess = new Chess();
       state.board = state.chess.board();
       state.mode = mode;
       state.botDepth = depth;
+      state.enableTimer = wasTimerEnabled;
+      state.worker = previousWorker;
     },
     setWorker: (state, action: PayloadAction<Worker | null>) => {
       state.worker = action.payload;
@@ -224,6 +227,6 @@ export const {
   resetAIMove,
   setMode,
   resetChess,
-  setWorker
+  setWorker,
 } = chessSlice.actions;
 export default chessSlice.reducer;
