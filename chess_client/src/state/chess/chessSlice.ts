@@ -50,7 +50,7 @@ const initialState: ChessState = {
   promotion: null,
   mode: 'offline',
   prevMove: { from: '', to: '' },
-  botDepth: 1,
+  botDepth: 2,
   worker: null,
 };
 const chessSlice = createSlice({

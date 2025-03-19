@@ -45,3 +45,7 @@ export type ArrowType = {
   end: HTMLDivElement;
 };
 export type Mode = 'online' | 'offline' | 'ai';
+export type Message = {
+  source: string;
+  message: string;
+};

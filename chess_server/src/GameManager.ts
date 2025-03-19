@@ -5,6 +5,7 @@ import {
   RECEIVE_CAPTURED_DETAILS,
   RECEIVE_FEN,
   RECEIVE_LATEST_MOVE,
+  RECEIVE_MESSAGE,
   RECEIVE_MOVE_HISTORY,
   RECEIVE_PLAYER_DETAILS,
   RECEIVE_TIME,
@@ -37,12 +38,12 @@ export default class GameManager {
     this.io.to(game.player1.socket.id).emit(INIT_GAME, {
       fen: game.getFen(),
       mainPlayer: WHITE,
-      totalTime: game.player1.timer.getTime()
+      totalTime: game.player1.timer.getTime(),
     });
     this.io.to(game.player2.socket.id).emit(INIT_GAME, {
       fen: game.getFen(),
       mainPlayer: BLACK,
-      totalTime: game.player1.timer.getTime()
+      totalTime: game.player1.timer.getTime(),
     });
     this.emitToBothPlayers(game.roomId, RECEIVE_PLAYER_DETAILS, {
       player1: game.player1.name,
@@ -67,7 +68,7 @@ export default class GameManager {
           fen: game.getFen(),
           flag: moveRes.flags,
         });
-        socket.to(game.roomId).emit(RECEIVE_LATEST_MOVE, move)
+        socket.to(game.roomId).emit(RECEIVE_LATEST_MOVE, move);
         this.emitToBothPlayers(
           game.roomId,
           RECEIVE_MOVE_HISTORY,
@@ -85,18 +86,24 @@ export default class GameManager {
         //emit timeleft of the timer to both players
         this.emitToBothPlayers(game.roomId, RECEIVE_TIME, {
           //if player 1 had previous turn send time information of player1 else player 2
-          player1: previousTurn.socket.id == game.player1.socket.id ? game.player1.timer.getTime() : undefined,
-          player2: previousTurn.socket.id == game.player2.socket.id ? game.player2.timer.getTime() : undefined,
+          player1:
+            previousTurn.socket.id == game.player1.socket.id
+              ? game.player1.timer.getTime()
+              : undefined,
+          player2:
+            previousTurn.socket.id == game.player2.socket.id
+              ? game.player2.timer.getTime()
+              : undefined,
         });
         // start the timer of another player
-        game.getTurn().timer.start()
+        game.getTurn().timer.start();
         if (game.isGameOver()) {
           this.emitToBothPlayers(game.roomId, GAMEOVER, game.gameOverDetails);
-          game.pauseTimers()
+          game.pauseTimers();
         }
       } catch (e) {
         //this is just an invalid move
-        console.log("Attempted an invalid move")
+        console.log('Attempted an invalid move');
       }
     });
   }
@@ -124,15 +131,14 @@ export default class GameManager {
     const game = this.findGame(socket);
     if (!game || game.isPaused) return;
     game.isPaused = true;
-    game.pauseTimers()
+    game.pauseTimers();
     //get color of opponent of resigned player
     const winnerColor = socket.id === game.player1.socket.id ? BLACK : WHITE;
     game.gameOverDetails = {
-      gameOverDescription: "Resignation",
-      winnerColor: winnerColor
-    }
+      gameOverDescription: 'Resignation',
+      winnerColor: winnerColor,
+    };
     this.emitToBothPlayers(game.roomId, GAMEOVER, game.gameOverDetails);
-
   }
   handleRematch(socket: Socket) {
     const game = this.findGame(socket);
@@ -142,16 +148,23 @@ export default class GameManager {
       this.emitToInitiateGame(game);
       return;
     }
-    if(game.hasRejectedRematch==="pending") return;
+    if (game.hasRejectedRematch === 'pending') return;
     if (!isReady) {
-      socket.to(game.roomId).emit(REQUEST_REMATCH)
-      game.hasRejectedRematch = "pending";
+      socket.to(game.roomId).emit(REQUEST_REMATCH);
+      game.hasRejectedRematch = 'pending';
     }
   }
   handleRematchRejection(socket: Socket) {
     const game = this.findGame(socket);
     if (!game) return;
-    socket.to(game.roomId).emit(REJECT_REMATCH)
+    socket.to(game.roomId).emit(REJECT_REMATCH);
     game.resetRematchStatus();
+  }
+  handleMessageSend(sender: Socket, message: string) {
+    const game = this.findGame(sender);
+    if (!game) return;
+    const source =
+      game.player1.socket === sender ? game.player1.name : game.player2.name;
+    sender.to(game.roomId).emit(RECEIVE_MESSAGE, { source, message });
   }
 }

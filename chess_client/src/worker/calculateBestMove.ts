@@ -47,54 +47,60 @@ const evaluate = (board: ReturnType<Chess['board']>) => {
   totalScore = materialScore + pieceSquareScore;
   return totalScore;
 };
-const orderMoves = (moves: string[]): string[] => {
-  //ordering: Captures (pawn captures, knight capture, bishop capture, queen capture), non capture
-  const pawnCapture: string[] = [];
-  const knightCapture: string[] = [];
-  const bishopCapture: string[] = [];
-  const rookCapture: string[] = [];
-  const queenCapture: string[] = [];
-  const kingCapture: string[] = [];
-  const nonCapture: string[] = [];
-  for (const move of moves) {
-    //capture format notation: Piece + x + Target Square
-    if (move.includes('x')) {
-      const piece = move[0].toLowerCase();
-      switch (piece) {
-        case 'p':
-          pawnCapture.push(move);
-          break;
-        case 'n':
-          knightCapture.push(move);
-          break;
-        case 'b':
-          bishopCapture.push(move);
-          break;
-        case 'r':
-          rookCapture.push(move);
-          break;
-        case 'q':
-          queenCapture.push(move);
-          break;
-        case 'k':
-          kingCapture.push(move);
-          break;
-      }
-    } else {
-      nonCapture.push(move);
-    }
-  }
-  return [
-    ...pawnCapture,
-    ...knightCapture,
-    ...bishopCapture,
-    ...rookCapture,
-    ...queenCapture,
-    ...kingCapture,
-    ...nonCapture,
-  ];
-};
-let moveSearch = 0;
+// const orderMoves = (moves: string[]): string[] => {
+//   //ordering: Captures (pawn captures, knight capture, bishop capture, queen capture), non capture
+//   const pawnCapture: string[] = [];
+//   const knightCapture: string[] = [];
+//   const bishopCapture: string[] = [];
+//   const rookCapture: string[] = [];
+//   const queenCapture: string[] = [];
+//   const kingCapture: string[] = [];
+//   const nonCapture: string[] = [];
+//   for (const move of moves) {
+//     //capture format notation: Piece + x + Target Square
+//     if (move.includes('x')) {
+//       const piece = move[0].toLowerCase();
+//       switch (piece) {
+//         case 'p':
+//           pawnCapture.push(move);
+//           break;
+//         case 'n':
+//           knightCapture.push(move);
+//           break;
+//         case 'b':
+//           bishopCapture.push(move);
+//           break;
+//         case 'r':
+//           rookCapture.push(move);
+//           break;
+//         case 'q':
+//           queenCapture.push(move);
+//           break;
+//         case 'k':
+//           kingCapture.push(move);
+//           break;
+//       }
+//     } else {
+//       nonCapture.push(move);
+//     }
+//   }
+//   return [
+//     ...pawnCapture,
+//     ...knightCapture,
+//     ...bishopCapture,
+//     ...rookCapture,
+//     ...queenCapture,
+//     ...kingCapture,
+//     ...nonCapture,
+//   ];
+// };
+const orderMoves = (moves: string[])=>{
+  return moves.sort((moveA, moveB)=>{
+    
+    return 0
+  })
+}
+let moveSearch = 0; 
 const minimax = (
   chess: Chess,
   depth: number,
@@ -109,8 +115,8 @@ const minimax = (
     return chess.turn() === WHITE ? -10000 : 10000;
   }
   if (depth === 0) return evaluate(chess.board());
-  const moves = orderMoves(chess.moves());
-  // const moves = chess.moves();
+  // const moves = orderMoves(chess.moves());
+  const moves = chess.moves();
   moveSearch++;
   if (maximizingPlayer) {
     //try to maximize score
@@ -119,7 +125,7 @@ const minimax = (
       chess.move(move);
       score = Math.max(
         score,
-        minimax(chess, depth - 1, !maximizingPlayer, alpha, beta)
+        minimax(chess, depth - 1, false, alpha, beta)
       );
       chess.undo();
       alpha = Math.max(alpha, score);
@@ -133,7 +139,7 @@ const minimax = (
     chess.move(move);
     score = Math.min(
       score,
-      minimax(chess, depth - 1, !maximizingPlayer, alpha, beta)
+      minimax(chess, depth - 1, true, alpha, beta)
     );
     chess.undo();
     beta = Math.min(beta, score);
@@ -177,7 +183,7 @@ const getBestMove = (fen: string, depth: number) => {
       bestMove = move;
     }
   }
-  console.log('Move Search Count: ', moveSearch);
+  console.log("Move Search Count: ", moveSearch)
   return bestMove;
 };
 onmessage = (e: MessageEvent<{ task: string; fen: string; depth: number }>) => {

@@ -11,6 +11,7 @@ import {
   RECEIVE_LATEST_MOVE,
   REQUEST_REMATCH,
   REJECT_REMATCH,
+  RECEIVE_MESSAGE,
 } from '../events';
 import { Color, WHITE } from 'chess.js';
 import {
@@ -49,11 +50,18 @@ import {
   setShowRematchRequest,
   setWinner,
 } from '../state/gameStatus/gameStatusSlice';
-import { CapturedDetails, INIT_GAME_TYPE, Move, Winner } from '../types';
+import {
+  CapturedDetails,
+  INIT_GAME_TYPE,
+  Message,
+  Move,
+  Winner,
+} from '../types';
 import useTimer from './useTimer';
 import useCapturedPiecesAndScores from './useCapturedPiecesAndScores';
 import showToast from '../utils/toast';
 import { resetAnalysis } from '../state/analysis/analysisSlice';
+import { addMessage } from '../state/message/messageSlice';
 interface GameOverProps {
   gameOverDescription: string;
   winnerColor: Winner;
@@ -175,6 +183,9 @@ export default function useSocket() {
     socket.on(REJECT_REMATCH, () => {
       dispatch(setHasRejectedRematch(true));
     });
+    socket.on(RECEIVE_MESSAGE, (message: Message) => {
+      dispatch(addMessage(message));
+    });
     return () => {
       socket.off(INIT_GAME);
       socket.off(RECEIVE_FEN);
@@ -185,6 +196,7 @@ export default function useSocket() {
       socket.off(RECEIVE_TIME);
       socket.off(RECEIVE_LATEST_MOVE);
       socket.off(REQUEST_REMATCH);
+      socket.off(RECEIVE_MESSAGE);
     };
   }, []);
   useEffect(() => {

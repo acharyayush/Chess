@@ -18,6 +18,9 @@ import { REJECT_REMATCH, REMATCH, RESIGN } from '../events';
 import RequestModal from '../components/shared/RequestModal';
 import { setShowRematchRequest } from '../state/gameStatus/gameStatusSlice';
 import LocalSettings from '../components/settings/LocalSettings';
+import Chatbox from '../components/chat/Chatbox';
+import { useEffect } from 'react';
+import { resetMessages } from '../state/message/messageSlice';
 export default function Online() {
   const { board, moveHistory, turn } = useSelector(
     (state: RootState) => state.chess
@@ -35,6 +38,9 @@ export default function Online() {
   } = useSelector((state: RootState) => state.players);
   const dispatch = useDispatch();
   const { success } = useSocket();
+  useEffect(() => {
+    dispatch(resetMessages());
+  }, []);
   const renderPage = () => {
     return (
       <div className='bg-slate-700 min-h-screen p-5 xsm:p-2 grid items-center'>
@@ -97,8 +103,9 @@ export default function Online() {
               />
             </BoardSectionContainer>
 
-            <GameDetailContainer className='GameDetailContainer sm:max-w-full h-[90vh] lg:h-[600px]'>
+            <GameDetailContainer className='GameDetailContainer sm:max-w-full h-[90vh] lg:h-[700px]'>
               <MoveHistory className='flex-grow' moveHistory={moveHistory} />
+              <Chatbox />
               <div className='settings p-4'>
                 <div className='buttons flex'>
                   <Button

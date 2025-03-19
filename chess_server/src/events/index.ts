@@ -14,3 +14,5 @@ export const RECEIVE_TIME = 'receive_time'
 export const TIMEUP = 'time_up'
 export const RECEIVE_LATEST_MOVE = 'receive_latest_move';
 export const RESIGN = 'resign'
+export const RECEIVE_MESSAGE = 'receive_message'
+export const SEND_MESSAGE = 'send_message'

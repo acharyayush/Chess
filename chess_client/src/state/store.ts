@@ -3,12 +3,14 @@ import gameStatusReducer from './gameStatus/gameStatusSlice';
 import playersReducer from './players/playerSlice';
 import chessReducer from './chess/chessSlice';
 import analysisReducer from './analysis/analysisSlice';
+import messageReducer from './message/messageSlice';
 export const store = configureStore({
   reducer: {
     gameStatus: gameStatusReducer,
     players: playersReducer,
     chess: chessReducer,
     analysis: analysisReducer,
+    messages: messageReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

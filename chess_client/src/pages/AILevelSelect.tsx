@@ -30,7 +30,7 @@ export default function AILevelSelect() {
                   player2LogoUrl: '/images/bots/bob.svg',
                 })
               );
-              dispatch(setBotDepth(1));
+              dispatch(setBotDepth(2));
               navigate('/play/ai');
             }}
           />
@@ -47,7 +47,7 @@ export default function AILevelSelect() {
                   player2LogoUrl: '/images/bots/kukudo.svg',
                 })
               );
-              dispatch(setBotDepth(2));
+              dispatch(setBotDepth(3));
               navigate('/play/ai');
             }}
           />

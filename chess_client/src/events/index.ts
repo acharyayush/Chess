@@ -13,3 +13,5 @@ export const RECEIVE_CAPTURED_DETAILS = 'receive_captured_details';
 export const RECEIVE_TIME = 'receive_time';
 export const RECEIVE_LATEST_MOVE = 'receive_latest_move';
 export const RESIGN = 'resign';
+export const RECEIVE_MESSAGE = 'receive_message';
+export const SEND_MESSAGE = 'send_message';
