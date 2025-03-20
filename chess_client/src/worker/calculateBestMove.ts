@@ -94,12 +94,12 @@ const evaluate = (board: ReturnType<Chess['board']>) => {
 //     ...nonCapture,
 //   ];
 // };
-const orderMoves = (moves: string[])=>{
-  return moves.sort((moveA, moveB)=>{
+// const orderMoves = (moves: string[])=>{
+//   return moves.sort((moveA, moveB)=>{
     
-    return 0
-  })
-}
+//     return 0
+//   })
+// }
 let moveSearch = 0; 
 const minimax = (
   chess: Chess,
@@ -152,8 +152,8 @@ const getBestMove = (fen: string, depth: number) => {
   //if there is only move then there is no need to search deeper inside that move
   moveSearch = 1;
   if (tempChess.moves().length === 1) return tempChess.moves()[0];
-  const moves = orderMoves(tempChess.moves());
-  // const moves = tempChess.moves();
+  // const moves = orderMoves(tempChess.moves());
+  const moves = tempChess.moves();
   const maximizingPlayer = tempChess.turn() === WHITE;
   let bestMove = '';
   let bestScore = maximizingPlayer ? -Infinity : Infinity;

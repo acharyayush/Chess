@@ -23,9 +23,10 @@ function Chatbox({ className }: ChatboxProps) {
     setMessage('');
   };
   useEffect(() => {
-    console.log("inside message")
+    console.log('inside message');
     if (messageContentContainerRef.current) {
-      messageContentContainerRef.current.scrollTop = messageContentContainerRef.current.scrollHeight;
+      messageContentContainerRef.current.scrollTop =
+        messageContentContainerRef.current.scrollHeight;
     }
   }, [messages]);
   return (

@@ -167,4 +167,17 @@ export default class GameManager {
       game.player1.socket === sender ? game.player1.name : game.player2.name;
     sender.to(game.roomId).emit(RECEIVE_MESSAGE, { source, message });
   }
+  handleGameAbandon(leaver: Socket){
+    
+    let gameIndex = this.games.findIndex(game=>game.player1.socket.id==leaver.id || game.player2.socket.id==leaver.id)
+    if(gameIndex==-1) return;
+    const gameToRemove = this.games[gameIndex]
+    this.games.splice(gameIndex,1);
+    const winnerColor = leaver.id === gameToRemove.player1.socket.id ? BLACK : WHITE;
+    gameToRemove.gameOverDetails = {
+      gameOverDescription: 'Abandonment',
+      winnerColor: winnerColor,
+    };
+    leaver.to(gameToRemove.roomId).emit(GAMEOVER, gameToRemove.gameOverDetails);
+  }
 }

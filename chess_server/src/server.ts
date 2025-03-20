@@ -52,6 +52,7 @@ io.on('connection', (socket) => {
     if (wasWaiting) return;
 
     //TODO: try to reconnect and if it fails, remove player from the game, declare another player as winner
+    gameManager.handleGameAbandon(socket)
   });
 });
 server.listen(PORT, () => {

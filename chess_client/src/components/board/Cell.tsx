@@ -178,8 +178,8 @@ export default function Cell({
   };
   //dragging feature
   const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
-    if (isDisable) return;
     dispatch(resetAnalysis());
+    if (isDisable) return;
     setIsDragging(true);
     e.dataTransfer.setDragImage(emptyImg, 50, 50);
     const imgElement = e.target as HTMLImageElement;
@@ -201,8 +201,8 @@ export default function Cell({
     setIsDragging(false);
   };
   const handleDrop = () => {
-    if (isDisable) return;
     dispatch(resetAnalysis());
+    if (isDisable) return;
     dispatch(updateMove({ cell, position }));
   };
   const classes = stylesforCell();
